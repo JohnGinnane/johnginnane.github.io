@@ -4,8 +4,8 @@
 		<script src="tinycolor.js"></script>
 	</head>
 	
-	<body id='body' style='position:relative; font-family:"Courier New", Courier, monospace;'>
-		<div id='background' style='position: absolute; overflow: hidden; border: 0px solid black; height: 99%; width: 99%;'></div>
+	<body id='body' style='font-family:"Courier New", Courier, monospace;'>
+		<div id='background'></div>
 		
 		<p>
 			Hello world
@@ -57,7 +57,7 @@
 				letter.x = event.pageX;
 				letter.y = event.pageY;
 				letter.html = function(){
-					return "<div style='overflow: hidden; position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
+					return "<div style='position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
 				}
 				
 				a.push(letter);
