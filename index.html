@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="tinycolor.js"></script>
+	</head>
+	
+	<body id='body'>
+		<div style='position:absolute; color:#ff2b00; top:258px; left:662px;'>Y</div
+	</body>
+	
+	<script>
+		var x = 0;
+		var a = [];
+		var out = '';
+		var rate = 10;
+		var maxlife = 200;
+		
+		$("#body").mousemove(function(event){
+			//$("#body").html("x: " + event.pageX + " y: " + event.pageY);
+			//$("#body").html(x);
+			x++;
+			
+			if (x % rate == 0 && x != 0){
+				var letter = {};
+				letter.char = String.fromCharCode(65 + Math.round(Math.random() * 25));
+				letter.life = maxlife;
+				letter.colour = tinycolor("hsl(" + x + ", 100%, 50%)").toHexString();
+				letter.x = event.pageX;
+				letter.y = event.pageY;
+				letter.html = function(){
+					return "<div style='font-size: " + (letter.life / 10) + "px; position:absolute; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
+				}
+				
+				//$("#body").html(letter.char + " " + letter.rgb);
+				
+				a.push(letter);
+			}
+			
+			if(x >= 255){
+				x = 0;
+			}
+			
+			out = '';
+			
+			
+		});
+		
+		function update(){
+			out = '';
+			
+			for(i = 0; i < a.length; i++)
+			{				
+				a[i].life = a[i].life - 1;
+				
+				if(a[i].life <= 0){
+					a.splice(i, 1);
+					
+					out = '';
+					
+					continue;
+				}
+				
+				a[i].y = a[i].y + 0.2 + (0.01 * (a[i].life * 0.5));
+				
+				out += a[i].html();
+			}
+			
+			$("#body").html(out);
+		}
+		
+		setInterval(update);
+	</script>
+</html>
