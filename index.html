@@ -4,8 +4,39 @@
 		<script src="tinycolor.js"></script>
 	</head>
 	
-	<body id='body'>
-		<div style='position:absolute; color:#ff2b00; top:258px; left:662px;'>Y</div
+	<body id='body' style='position:relative; font-family:"Courier New", Courier, monospace;'>
+		<div id='background' style='position: absolute; overflow: hidden; border: 0px solid black; height: 99%; width: 99%;'></div>
+		
+		<p>
+			Hello world
+			<br/><br/>
+			<a href='https://github.com/JohnGinnane/johnginnane.github.io'>Here</a> is a link to the source
+		</p>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#fff; color: #000;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#CCC; color: #333;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#999; color: #666;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#666; color: #999;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#333; color: #ccc;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
+		<div id='div1' style='border: 1px solid black; background-color:#000; color: #fff;'>
+			The quick brown fox jumps over the lazy dog
+		</div>
+		
 	</body>
 	
 	<script>
@@ -16,8 +47,6 @@
 		var maxlife = 200;
 		
 		$("#body").mousemove(function(event){
-			//$("#body").html("x: " + event.pageX + " y: " + event.pageY);
-			//$("#body").html(x);
 			x++;
 			
 			if (x % rate == 0 && x != 0){
@@ -28,10 +57,8 @@
 				letter.x = event.pageX;
 				letter.y = event.pageY;
 				letter.html = function(){
-					return "<div style='font-size: " + (letter.life / 10) + "px; position:absolute; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
+					return "<div style='overflow: hidden; position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
 				}
-				
-				//$("#body").html(letter.char + " " + letter.rgb);
 				
 				a.push(letter);
 			}
@@ -41,8 +68,6 @@
 			}
 			
 			out = '';
-			
-			
 		});
 		
 		function update(){
@@ -65,7 +90,7 @@
 				out += a[i].html();
 			}
 			
-			$("#body").html(out);
+			$("#background").html(out);
 		}
 		
 		setInterval(update);
