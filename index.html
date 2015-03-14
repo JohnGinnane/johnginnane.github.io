@@ -3,12 +3,12 @@
 	<script src="tinycolor.js"></script>
 
 	<body id='body' style='position:relative; font-family:"Courier New", Courier, monospace;'>
-		<div id='background' style='position: absolute; overflow: hidden; border: 0px solid black; height: 99%; width: 99%;'></div>
-		
-		<p>
+		<div id='background' style='position: absolute; overflow: hidden; height: 100%; width: 100%; z-index: 1;'></div>
+
+		<p style='z-index:2;'>
 			Hello world
 			<br/><br/>
-			<a href='https://github.com/JohnGinnane/johnginnane.github.io'>Here</a> is a link to the source
+			<a href='https://github.com/JohnGinnane/johnginnane.github.io' style='z-index:2; position: relative;'>Here</a> is a link to the source
 		</p>
 		
 		<div id='div1' style='border: 1px solid black; background-color:#fff; color: #000;'>
@@ -34,7 +34,6 @@
 		<div id='div1' style='border: 1px solid black; background-color:#000; color: #fff;'>
 			The quick brown fox jumps over the lazy dog
 		</div>
-		
 	</body>
 	
 	<script>
@@ -55,7 +54,7 @@
 				letter.x = event.pageX;
 				letter.y = event.pageY;
 				letter.html = function(){
-					return "<div style='overflow: hidden; position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</div>";
+					return "<span style='overflow: hidden; position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</span>";
 				}
 				
 				a.push(letter);
