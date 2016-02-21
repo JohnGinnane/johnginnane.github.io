@@ -1,0 +1,30 @@
+<!DOCTPYE html>
+
+<html>
+	<head>
+		<title>Planets</title>
+
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+
+	<body onload="init();">
+		<canvas id="canvas"></canvas>
+	</body>
+
+	<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="js/tinycolor.js"></script>
+
+	<script type="text/javascript">
+		var c;
+		var ctx;
+
+		function init() {
+			c = $("#canvas")[0];
+			ctx = c.getContext("2d");
+
+			ctx.moveTo(0, 0);
+			ctx.lineTo(200, 100);
+			ctx.stroke();
+		}
+	</script>
+</html>
