@@ -1,100 +1,30 @@
-<html>
-	<head>
-		<script src="lib/jquery-1.11.2.min.js"></script>
-		<script src="lib/tinycolor.js"></script>
+<DOCTYPE html>
+    <head>
+        <title>John Fergus Ginnane</title>
+        <link rel="stylesheet" href="styles/style.css"/>
+    </head>
+    <body>
+        <h1>JOHN FERGUS GINNANE</h1>
+        <h3>
+            📧:
+            <a class="lighttext" href="mailto:John.Ginnane1@gmail.com">John.Ginnane1@gmail.com</a>
+            | 📞: <span class="lighttext">085 152 6400</span>
+        </h3>
 
-		<title>Hello, internet</title>
-	</head>
-
-	<body id='body' style='position:relative; font-family:"Courier New", Courier, monospace;'>
-		<div id='background' style='position: absolute; overflow: hidden; height: 100%; width: 100%; z-index: 1;'></div>
-
-		<p style='z-index:2;'>
-			Hello world
-			<br/><br/>
-			<a href='https://github.com/JohnGinnane/johnginnane.github.io' style='z-index:2; position: relative;'>Here</a> is a link to the source
-		</p>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#fff; color: #000;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#CCC; color: #333;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#999; color: #666;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#666; color: #999;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#333; color: #ccc;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-		
-		<div id='div1' style='border: 1px solid black; background-color:#000; color: #fff;'>
-			The quick brown fox jumps over the lazy dog
-		</div>
-	</body>
-	
-	<script>
-		var x = 0;
-		var a = [];
-		var out = '';
-		var rate = 10;
-		var maxlife = 200;
-		
-		$("#body").mousemove(function(event){
-			x++;
-			
-			if (x % rate == 0 && x != 0){
-				var letter = {};
-				letter.char = String.fromCharCode(65 + Math.round(Math.random() * 25));
-				letter.life = maxlife;
-				letter.colour = tinycolor("hsl(" + x + ", 100%, 50%)").toHexString();
-				letter.x = event.pageX;
-				letter.y = event.pageY;
-				letter.html = function(){
-					return "<span style='overflow: hidden; position:absolute; font-size: " + (letter.life / 10) + "px; color:" + letter.colour + "; top:" + letter.y + "px; left:" + letter.x + "px;'>" + letter.char + "</span>";
-				}
-				
-				a.push(letter);
-			}
-			
-			if(x >= 255){
-				x = 0;
-			}
-			
-			out = '';
-		});
-		
-		function update(){
-			out = '';
-			
-			for(i = 0; i < a.length; i++)
-			{				
-				a[i].life = a[i].life - 1;
-				
-				if(a[i].life <= 0){
-					a.splice(i, 1);
-					
-					out = '';
-					
-					continue;
-				}
-				
-				a[i].y = a[i].y + 0.2 + (0.01 * (a[i].life * 0.5));
-				
-				out += a[i].html();
-			}
-			
-			$("#background").html(out);
-		}
-		
-		setInterval(update);
-	</script>
-</html>
-
+        <h2 id="education">Cover Letter ✉</h2>
+        <p class="middle-column">
+Due to financial difficulties I was unable to pay the fees for college, and so I dropped out of college in 2013. After a short time on social welfare I joined the work force a few months later in early 2014, starting work as a software assistant to a company that provides software to legal companies. Over the last ten years I have moved from supporting the software to writing it and maintain legacy software. I kept deferring going back to college as I was unsure how I could get a diploma if I was working full time, and what sort of course I would apply for.
+        </p>
+        <br/>
+        <p class="middle-column">
+With the introduction of the Springboard+ scheme I was able to find this course. I hope to complete the Higher Diploma in Science in Computing while continuing to work over the next two years. Some of the modules in the course, such as ‘Software Development’, ‘Object Oriented Software Engineering’, and particularly ‘Introduction to Databases’ will already be familiar to me having moved into a software engineer role in my work. However other modules in Year 2, such as ‘Computer Architecture Operating Systems and Networks’ and ‘Distributed Systems’ are of particular interest and I hope to make use of any new information in my job to improve the software I write and maintain.
+        </p>
+        <br/>
+        <p class="middle-column">
+Right now I have almost 10 years of experience in my current job and the personal programming projects I have worked on as evidence of my knowledge. I hope to use this course as a formal recognition and to expand on this knowledge and experience of software development. Furthermore I hope to find other subjects that might interest me more and could be useful in my current position, where I could specialise in that subject, for example web development for enterprise, using tools such as Microsoft Azure.
+        </p>
+        <h2>
+            <a href="cv.html">Curriculum Vitae ➡</a>
+        </h2>
+    </body>
+</DOCTYPE>
