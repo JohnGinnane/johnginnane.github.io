@@ -123,7 +123,16 @@ li {
     font-weight: bold;
 }
 
+#portrait-link {
+    width: 256px;
+    height: 256px;
+    padding: 0px;
+    margin: 0px;
+}
+
 #portrait {
+    padding: 0px;
+    margin: 0px;
     width:256px;
     height:256px;
     border-radius: 5px;
