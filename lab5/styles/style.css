@@ -1,0 +1,125 @@
+body {
+    font-family: Helvetica;
+    background: #123;
+    color: #fef;
+    text-align: center;
+    width: 650px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+h1 {
+    font-family: Tahoma;
+    color: #fed;
+    text-shadow: 2px 3px #978;
+}
+
+h3 {
+    color: #654321;
+}
+
+h2 {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+p {
+    color: #def;
+}
+
+a {
+    color: #fed;
+}
+
+li {
+    list-style-type: square;
+}
+
+.lighttext {
+    color: #fed;
+    text-decoration: none;
+}
+
+#skillsbox_new {
+    margin: auto;
+    max-width: 500px;
+}
+
+.onethousandpixels {
+    margin-bottom: 1000px;
+}
+
+.italic {
+    font-style: italic;
+}
+
+/* Responsive layout:
+   Change layout to match the availabe space
+   Mobile phones typically aren't very wide */
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex-item-left, .flex-item-right {
+    flex: 33%;
+}
+
+.flex-item-middle {
+    flex: 33%;
+}
+
+.highlight-background { 
+    background: #1F2F3F;
+}
+
+.highlight-background:hover {
+    background: #246;
+}
+
+@media only screen and (max-width: 800px) {
+    .flex-item-left, .flex-item-middle, .flex-item-right {
+        flex: 100%;
+    }
+}
+
+.outline {
+    border: 3px solid #900;
+}
+
+.ul_skill_tree {
+    margin: auto;
+    text-align: left;
+}
+
+#education-block {
+    text-align: left;
+}
+
+.middle-column {
+    width: 564px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#experience-block {
+    text-align: left;
+}
+
+#leaving-cert-results {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#leaving-cert-results td {
+    border-bottom: 1px grey solid;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+#portrait {
+    width:256px;
+    height:256px;
+}
