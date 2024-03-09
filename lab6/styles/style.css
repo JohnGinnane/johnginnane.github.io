@@ -115,10 +115,25 @@ li {
 #leaving-cert-results {
     margin-left: auto;
     margin-right: auto;
+    width: 600px;
+}
+
+@media (max-width: 768px) {
+    #leaving-cert-results {
+        width: 350px;
+    }
 }
 
 #leaving-cert-results td {
-    border-bottom: 1px grey solid;
+    border-bottom: 1px #def solid;
+}
+
+tr:hover {    
+    background: #468;
+}
+
+.leaving-cert-results-header {
+    background: #246;
 }
 
 .bold {
