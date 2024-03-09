@@ -3,7 +3,7 @@ body {
     background: #123;
     color: #fef;
     text-align: center;
-    width: 650px;
+    width: 80%;
     margin-right: auto;
     margin-left: auto;
 }
@@ -18,13 +18,17 @@ h3 {
     color: #654321;
 }
 
+h4 {
+    color: #654321;
+}
+
 h2 {
-    text-decoration: underline;
     font-weight: bold;
 }
 
 p {
     color: #def;
+    text-align: left;
 }
 
 a {
