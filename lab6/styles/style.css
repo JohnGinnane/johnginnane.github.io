@@ -3,7 +3,6 @@ body {
     background: #123;
     color: #fef;
     text-align: center;
-    width: 80%;
     margin-right: auto;
     margin-left: auto;
 }
@@ -12,6 +11,7 @@ h1 {
     font-family: Tahoma;
     color: #fed;
     text-shadow: 2px 3px #978;
+    font-weight: bold;
 }
 
 h3 {
@@ -23,6 +23,8 @@ h4 {
 }
 
 h2 {
+    padding-top: 20px;
+    padding-bottom: 20px;
     font-weight: bold;
 }
 
@@ -126,8 +128,7 @@ li {
 #portrait-link {
     width: 256px;
     height: 256px;
-    padding: 0px;
-    margin: 0px;
+    margin-bottom: 32px;
 }
 
 #portrait {
@@ -137,4 +138,21 @@ li {
     height:256px;
     border-radius: 5px;
     border: 5px solid white;
+}
+
+div {
+    border: 0px solid red;
+}
+
+#education-top-border {
+    border-top: 8px solid #fed;    
+}
+
+#education-heading {
+    background: #246;
+}
+
+#education-block {
+    padding: 20px;
+    background: #357;
 }
