@@ -144,15 +144,16 @@ div {
     border: 0px solid red;
 }
 
-#education-top-border {
+.section-border {
     border-top: 8px solid #fed;    
 }
 
-#education-heading {
+.section-header {
     background: #246;
 }
 
-#education-block {
+.section-body {
     padding: 20px;
     background: #357;
+    text-align: left;
 }
