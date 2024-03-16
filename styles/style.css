@@ -53,36 +53,66 @@
     border: 1px solid red;
 }
 
-.player-outline {
+.rps-player-outline {
     width: 300px;
     height: 400px;
     border-radius: 5px;
-    background-color: #3DD6EB;
-    border: 4px solid #1FCFE8;
 }
 
-.computer-outline {
+.rps-computer-outline {
     width: 300px;
     height: 400px;
     border-radius: 5px;
-    background-color: #EB523D;
-    border: 4px solid #E8371F;
 }
 
 .rpc-title {
     font-weight: bold;
 }
 
+/* Colours! */
+.rps-player-light-colour { background-color: #4EE7FC; }
+
+.rps-player-medium-colour { background-color: #3DD6EB; }
+
+.rps-player-dark-colour { background-color: #0EBED6; }
+
+.rps-player-dark-colour-outline {  border: 4px solid #0EBED6; }
+
+.rps-computer-light-colour { background-color: #FC634E; }
+
+.rps-computer-medium-colour { background-color: #EB523D; }
+
+.rps-computer-dark-colour { background-color: #E8371F; }
+
+.rps-computer-dark-colour-outline { border: 4px solid #E8371F; }
+
 .rps-playable-move {
-    background-color: #0EBED6;
     border-radius: 5px;
     margin-top: 12px;
     height: 70px;
     width: 70px;
-    font-size:50px
+    font-size:50px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.rps-playable-move:hover {
+.rps-playable-move:hover { 
     background-color: #0DADC5;
+}
 
+.rps-playable {
+    margin-top: -5px;
+    margin-left: -3px;
+}
+
+.rps-move {
+    height: 73%;
+    width: 99%;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.rps-player-selected {
+    font-size: 140px;
+    padding-left: 60px;
 }
