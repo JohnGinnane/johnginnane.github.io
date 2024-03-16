@@ -1,6 +1,4 @@
 window.addEventListener("load", (event) => {
-    console.log("page is fully loaded");
-    
     divPlayerSelected = document.getElementById("div-player-selected");
     divCPUSelected = document.getElementById("div-computer-selected");
 
