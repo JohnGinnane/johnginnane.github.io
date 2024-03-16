@@ -116,3 +116,29 @@
     font-size: 140px;
     padding-left: 60px;
 }
+
+@media (max-width: 768px) {
+        
+    .rps-player-outline {
+        width: 300px;
+        height: 300px;
+    }
+
+    .rps-computer-outline {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .rps-player-selected {
+        font-size: 100px;
+        padding-left: 80px;
+    }
+
+    .rps-move {
+        height: 63%;
+        width: 99%;
+        margin-top: 10px;
+        border-radius: 5px;
+    }    
+    
+}
