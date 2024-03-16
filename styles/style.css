@@ -86,7 +86,7 @@
 
 .rps-computer-dark-colour-outline { border: 4px solid #E8371F; }
 
-.rps-playable-move {
+.rps-playable-move, .rps-computer-move {
     border-radius: 5px;
     margin-top: 12px;
     height: 70px;
