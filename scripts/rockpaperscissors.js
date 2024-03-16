@@ -1,12 +1,13 @@
 window.addEventListener("load", (event) => {
     divPlayerSelected = document.getElementById("div-player-selected");
     divCPUSelected = document.getElementById("div-computer-selected");
-
+    
+    // Global vars
+    playerSelectedMove = "";
+    gameInPlay = false;
+    computerMoveTime = 1000;
   });
 
-var playerSelectedMove = "";
-var gameInPlay = false;
-var computerMoveTime = 1000;
 
 function playerSelected(sender) {
     divCPUSelected.innerHTML = "❓";
@@ -14,7 +15,6 @@ function playerSelected(sender) {
     playerSelectedMove = move;
     
     divPlayerSelected.innerHTML = move;
-    console.log("playerSelectedMove: " + playerSelectedMove);
 
     if (!gameInPlay) {
         play();
@@ -30,7 +30,6 @@ function computerSelected() {
     let randomNum = Math.floor(Math.random() * 3);
     let moves = ["✊", "✋", "✌"];
     let computerSelectedMove = moves[randomNum];
-    console.log("computerSelectedMove: " + computerSelectedMove);
     divCPUSelected.innerHTML = computerSelectedMove;
 
     let playerWin = false;
@@ -42,10 +41,16 @@ function computerSelected() {
         playerWin = true;
     }
 
+    let audioPath = "";
+
     if (playerWin) {
         randomNum = Math.floor(Math.random() * 5) + 1;
-        let audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
-        console.log(audioPath);
+        audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
+    } else {
+        audioPath = "../media/sound/boowomp.mp3"
+    }
+
+    if (audioPath !== "") {        
         var audio = new Audio(audioPath);
         audio.play();
     }
