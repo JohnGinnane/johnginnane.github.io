@@ -136,9 +136,10 @@
         height: 300px;
     }
     
-    .rps-player-selected {
-        font-size: 100px;
-        padding-left: 80px;
+    #img-player-selected-move, #img-computer-selected-move {
+        margin-left: 8px;
+        width: 140px;
+        height: 140px
     }
 
     .rps-move {
