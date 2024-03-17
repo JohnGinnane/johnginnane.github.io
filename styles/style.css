@@ -94,15 +94,24 @@
     font-size:50px;
     text-decoration: none;
     cursor: pointer;
+    position: relative;
 }
 
 .rps-playable-move:hover { 
     background-color: #0DADC5;
 }
-
+/* 
 .rps-playable {
     margin-top: -20px;
     margin-left: -5px;
+} */
+
+.rps-playable {
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .rps-move {
@@ -135,6 +144,14 @@
 
 .rps-div-moves {
     height: 70px;
+}
+
+#canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    left: 0px;
 }
 
 @media (max-width: 605px) {        
@@ -170,10 +187,10 @@
         cursor: pointer;
     }
         
-    .rps-playable {
+    /* .rps-playable {
         margin-top: -12px;
         margin-left: -5px;
-    }
+    } */
 
     .rps-move {
         height: 47%;
