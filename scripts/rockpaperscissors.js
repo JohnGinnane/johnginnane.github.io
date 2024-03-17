@@ -1,21 +1,27 @@
 window.addEventListener("load", (event) => {
-    divPlayerSelected = document.getElementById("div-player-selected");
-    divCPUSelected = document.getElementById("div-computer-selected");
+    imgPlayerSelectedMove = document.getElementById("img-player-selected-move");
+    imgComputerSelectedMove = document.getElementById("img-computer-selected-move");
     
     // Global vars
     playerSelectedMove = "";
     gameInPlay = false;
     computerMoveTime = 1000;
+
+    emojiQuestionMark = "../media/images/emoji-question-mark-w10.png"
+    emojiRock         = "../media/images/emoji-raised-fist-w10.png"
+    emojiPaper        = "../media/images/emoji-raised-hand-w10.png"
+    emojiScissors     = "../media/images/emoji-victory-hand-w10.png"
   });
 
 
-function playerSelected(sender) {
-    divCPUSelected.innerHTML = "❓";
-    let move = sender.querySelector(".rps-playable").innerHTML;
-    playerSelectedMove = move;
+function playerSelected(sender, move) {
+    if (gameInPlay) { return; }
     
-    divPlayerSelected.innerHTML = move;
-
+    imgComputerSelectedMove.src = emojiQuestionMark;
+    
+    playerSelectedMove = move;
+    imgPlayerSelectedMove.src = getEmojiPicture(move);
+    
     if (!gameInPlay) {
         play();
     }
@@ -26,18 +32,33 @@ function play() {
     setTimeout(computerSelected, computerMoveTime);
 }
 
+function getEmojiPicture(type) {
+    switch (type) {
+        case 'rock':
+            return emojiRock;
+        case 'paper':
+            return emojiPaper;
+        case 'scissors':
+            return emojiScissors;
+        default:
+            return emojiQuestionMark;
+    }
+
+    return emojiQuestionMark;
+}
+
 function computerSelected() {
     let randomNum = Math.floor(Math.random() * 3);
-    let moves = ["✊", "✋", "✌"];
+    let moves = ["rock", "paper", "scissors"];
     let computerSelectedMove = moves[randomNum];
-    divCPUSelected.innerHTML = computerSelectedMove;
+    imgComputerSelectedMove.src = getEmojiPicture(computerSelectedMove);
 
     let playerWin = false;
-    if (playerSelectedMove == "✊" && computerSelectedMove == "✌")  {
+    if (playerSelectedMove == "rock" && computerSelectedMove == "scissors")  {
         playerWin = true;
-    } else if (playerSelectedMove == "✋" && computerSelectedMove == "✊") {
+    } else if (playerSelectedMove == "paper" && computerSelectedMove == "rock") {
         playerWin = true;
-    } else if (playerSelectedMove == "✌" && computerSelectedMove == "✋") {
+    } else if (playerSelectedMove == "scissors" && computerSelectedMove == "paper") {
         playerWin = true;
     }
 

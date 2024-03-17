@@ -22,19 +22,21 @@
                         <!-- Player Card -->
                         <div class="col-4 rps-player-outline rps-player-medium-colour rps-player-dark-colour-outline">
                             <div class="row">
-                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this)">
-                                    <p class="rps-playable">✊</p>
+                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this, 'rock')">
+                                    <img class="rps-playable" src="../media/images/emoji-raised-fist-w10.png" height="50" width="50"/>
                                 </div>
-                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this)">
-                                    <p class="rps-playable">✋</p>
+                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this, 'paper')">
+                                    <img class="rps-playable" src="../media/images/emoji-raised-hand-w10.png" height="50" width="50"/>
                                 </div>
-                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this)">
-                                    <p class="rps-playable">✌</p>
+                                <div class="col-3 rps-playable-move rps-player-dark-colour text-center justify-content-evenly mx-auto" onclick="playerSelected(this, 'scissors')">
+                                    <img class="rps-playable" src="../media/images/emoji-victory-hand-w10.png" height="50" width="50"/>
                                 </div>
                             </div>
 
                             <div class="row rps-move justify-content-evenly mx-auto rps-player-light-colour">
-                                <div id="div-player-selected" class="rps-player-selected align-items-center d-flex">👌</div>
+                                <div id="div-player-selected" class="rps-player-selected align-items-center d-flex">
+                                    <img id="img-player-selected-move" src="../media/images/emoji-ok-hand-w10.png" height="180" width="180">
+                                </div>
                             </div>
                         </div>
 
@@ -42,18 +44,20 @@
                         <div class="col-4 rps-computer-outline rps-computer-medium-colour rps-computer-dark-colour-outline">
                             <div class="row">
                                 <div class="col-3 rps-computer-move rps-computer-dark-colour text-center justify-content-evenly mx-auto">
-                                    <p class="rps-playable">✊</p>
+                                    <img class="rps-playable" src="../media/images/emoji-raised-fist-w10.png" height="50" width="50"/>
                                 </div>
                                 <div class="col-3 rps-computer-move rps-computer-dark-colour text-center justify-content-evenly mx-auto">
-                                    <p class="rps-playable">✋</p>
+                                    <img class="rps-playable" src="../media/images/emoji-raised-hand-w10.png" height="50" width="50"/>
                                 </div>
-                                <div class="col-3 rps-computer-move rps-computer-dark-colour text-center justify-content-evenly mx-auto"
-                                    <p class="rps-playable">✌</p>
+                                <div class="col-3 rps-computer-move rps-computer-dark-colour text-center justify-content-evenly mx-auto">
+                                    <img class="rps-playable" src="../media/images/emoji-victory-hand-w10.png" height="50" width="50"/>
                                 </div>
                             </div>
 
                             <div class="row rps-move justify-content-evenly mx-auto rps-computer-light-colour">
-                                <div id="div-computer-selected" class="rps-player-selected align-items-center d-flex">❓</div>
+                                <div id="div-computer-selected" class="rps-player-selected align-items-center d-flex">
+                                    <img id="img-computer-selected-move" src="../media/images/emoji-question-mark-w10.png" height="180" width="180">
+                                </div>
                             </div>
                         </div>
                     </div>
