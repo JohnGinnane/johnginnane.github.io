@@ -146,6 +146,11 @@
     height: 70px;
 }
 
+.computer-hover {
+    /* border: 3px solid blue; */
+    background-color: #D7260E;
+}
+
 #canvas {
     z-index: 2;
     pointer-events: none;

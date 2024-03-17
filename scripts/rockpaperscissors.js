@@ -1,16 +1,29 @@
 window.addEventListener("load", (event) => {
+    // I accidentally scared myself when I played the audio 33 times in one second
+    // so I'm implementing a 'watch dog' to stop that from happening again
+    SOUND_COOLDOWN = 1000; // ms
+    NEXT_SOUND_TIME = Date.now();
+
     imgPlayerSelectedMove = document.getElementById("img-player-selected-move");
     imgComputerSelectedMove = document.getElementById("img-computer-selected-move");
     
     // Global vars
-    playerSelectedMove = "";
+    playerSelectedMove = -1;
     gameInPlay = false;
-    computerMoveTime = 1000;
+
+    computerSelection = Math.random() * 10;
+    computerSelectionSpeed = 10;
+
+    moves = ["rock", "paper", "scissors"];
 
     emojiQuestionMark = "../media/images/emoji-question-mark-w10.png"
     emojiRock         = "../media/images/emoji-raised-fist-w10.png"
     emojiPaper        = "../media/images/emoji-raised-hand-w10.png"
     emojiScissors     = "../media/images/emoji-victory-hand-w10.png"
+
+    divComputerRock     = document.getElementById("rps-div-computer-rock");
+    divComputerPaper    = document.getElementById("rps-div-computer-paper");
+    divComputerScissors = document.getElementById("rps-div-computer-scissors");
 
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
@@ -25,6 +38,50 @@ window.addEventListener("load", (event) => {
         let deltaTime = (Date.now() - lastUpdate) / 1000;
         lastUpdate = Date.now();
 
+        // Reduce computerSelectionSpeed
+        if (gameInPlay) {
+            // Cycle through computer's moves like a slot machine almost
+            // Apply 'drag' to selection speed
+            if (computerSelectionSpeed >= 1) {
+                computerSelectionSpeed -= computerSelectionSpeed * 0.98 * deltaTime;
+                
+                // Iterate up the selection
+                computerSelection += computerSelectionSpeed * 2 * deltaTime;
+
+                // Computer can only pick between 0, 1, and 2
+                computerSelectedMove = Math.floor(computerSelection % 3);
+                
+                // Apply the 'hover' colour to the computer's move
+                divComputerRock.classList.remove("computer-hover");
+                divComputerPaper.classList.remove("computer-hover");
+                divComputerScissors.classList.remove("computer-hover");
+
+                // Highlight the hovered piece
+                switch (computerSelectedMove) {
+                    case 0:
+                        divComputerRock.classList.add("computer-hover");
+                        break;
+
+                    case 1:
+                        divComputerPaper.classList.add("computer-hover");
+                        break;
+
+                    case 2:
+                        divComputerScissors.classList.add("computer-hover");
+                        break;
+                }
+            }
+
+            // Once we slow down enough then stop the movement and pick this move
+            // set speed to -1 so as to not trigger this if statement lots of times
+            if (computerSelectionSpeed < 1 && computerSelectionSpeed > 0) {
+                computerSelectionSpeed = -1;
+                setTimeout(determineWinner, 500, playerSelectedMove, computerSelectedMove % moves.length);
+            }
+
+        }
+        
+        // Render the confetti 
         context.clearRect(0, 0, windowWidth, windowHeight);
         for (let k = 0; k < confetti.length; k++) {
             let v = confetti[k];
@@ -51,7 +108,6 @@ window.addEventListener("load", (event) => {
     setInterval(update, 1);
     
     window.addEventListener('resize', windowResized, true);
-
 });
 
 function windowResized(event) {
@@ -59,8 +115,7 @@ function windowResized(event) {
     windowHeight = window.innerHeight;
 
     canvas.width = windowWidth;
-    canvas.height = windowHeight;
-    
+    canvas.height = windowHeight;    
 }
 
 var ConfettiItem = function(pos, vel, radius, colour) {
@@ -95,25 +150,37 @@ function spawnConfetti(amount) {
         let pos = new Vector2(windowWidth / 2, windowHeight - 10);
         let vel = new Vector2((Math.random() - 0.5) * windowWidth / 2, (-windowHeight + (Math.random() - 0.5) * -windowHeight / 2) * 1.5);
         
-        confetti[i] = new ConfettiItem(pos, vel, 5, "hsl(" + Math.random() * 360 + ", 100%, 50%)");
+        confetti[confetti.length + i] = new ConfettiItem(pos, vel, 5, "hsl(" + Math.random() * 360 + ", 100%, 50%)");
     }
 }
-function playerSelected(sender, move) {
+
+function playerSelected(sender, strMove) {
     if (gameInPlay) { return; }
-    
-    imgComputerSelectedMove.src = emojiQuestionMark;
-    
-    playerSelectedMove = move;
-    imgPlayerSelectedMove.src = getEmojiPicture(move);
-    
-    if (!gameInPlay) {
-        play();
+
+    playerSelectedMove = 0;
+    for (let i = 0; i < moves.length; i++) {
+        if (strMove == moves[i]) {
+            playerSelectedMove = i;
+            break;
+        }
     }
+
+    imgPlayerSelectedMove.src = getEmojiPicture(moves[playerSelectedMove]);
+
+    play();
+}
+
+function computerSelected(move) {
+    // Reveal the computer's selected move
+    imgComputerSelectedMove.src = getEmojiPicture(moves[move]);
 }
 
 function play() {
     gameInPlay = true;
-    setTimeout(computerSelected, computerMoveTime);
+
+    computerSelectionSpeed = 10;
+    computerSelection = Math.random() * 100;    
+    imgComputerSelectedMove.src = emojiQuestionMark;
 }
 
 function getEmojiPicture(type) {
@@ -131,29 +198,30 @@ function getEmojiPicture(type) {
     return emojiQuestionMark;
 }
 
-function computerSelected() {
-    let randomNum = Math.floor(Math.random() * 3);
-    let moves = ["rock", "paper", "scissors"];
-    let computerSelectedMove = moves[randomNum];
-    imgComputerSelectedMove.src = getEmojiPicture(computerSelectedMove);
+function determineWinner(playerMove, computerMove) {
+    if (!gameInPlay) { return; }
+
+    computerSelected(computerMove);
 
     let outcome = "lose";
 
-    if (playerSelectedMove == computerSelectedMove) {
+    // I know comparing numbers is better for the computer
+    // but comparing strings is better for the human
+    if (playerMove == computerMove) {
         outcome = "draw";
-    } else if (playerSelectedMove == "rock" && computerSelectedMove == "scissors")  {
+    } else if (moves[playerMove] == "rock" && moves[computerMove] == "scissors")  {
         outcome = "win";
-    } else if (playerSelectedMove == "paper" && computerSelectedMove == "rock") {
+    } else if (moves[playerMove] == "paper" && moves[computerMove] == "rock") {
         outcome = "win";
-    } else if (playerSelectedMove == "scissors" && computerSelectedMove == "paper") {
+    } else if (moves[playerMove] == "scissors" && moves[computerMove] == "paper") {
         outcome = "win";
     }
 
     let audioPath = "";
 
     if (outcome == "win") {
+        // yippee!
         spawnConfetti(Math.floor(25 + Math.random() * 10));
-
         randomNum = Math.floor(Math.random() * 5) + 1;
         audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
     } else if (outcome == "lose") {
@@ -162,7 +230,8 @@ function computerSelected() {
         audioPath = "../media/sound/crowd-oooh.wav";
     }
 
-    if (audioPath !== "") {        
+    if (audioPath !== "" && NEXT_SOUND_TIME <= Date.now()) {
+        NEXT_SOUND_TIME = Date.now() + SOUND_COOLDOWN;
         var audio = new Audio(audioPath);
         audio.play();
     }
