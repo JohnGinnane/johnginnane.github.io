@@ -15,60 +15,53 @@ window.addEventListener("load", (event) => {
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
     
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
-
-    canvas.width = windowWidth;
-    canvas.height = windowHeight;
-
+    windowResized(null);
     lastUpdate = Date.now();
 
     confetti = new Array();
 
-    test = false;
-
     function update() {
-        let deltaTime = Date.now() - lastUpdate;
+        // DeltaTime is in seconds
+        let deltaTime = (Date.now() - lastUpdate) / 1000;
         lastUpdate = Date.now();
-
-        let k = confetti.length;
-
-        while (k > 0) {
-            let v = confetti[k-1];
-
-            if (v) {
-                v.update(deltaTime);
-
-                if (v.pos.y > window.innerHeight) {
-                    confetti[k-1] = null;
-                }
-            }
-
-            k--;
-        }
 
         context.clearRect(0, 0, windowWidth, windowHeight);
         for (let k = 0; k < confetti.length; k++) {
             let v = confetti[k];
-            v.draw(context);
 
-            if (!test) {
-                test = true;
-                console.log(v);
+            if (v) {
+                v.update(deltaTime);
+                v.draw(context);
+            }
+        }
+
+        let count = confetti.length;
+        // Delete confetti that are off screen
+        for (let k = confetti.length - 1; k >= 0; k--) {
+            let v = confetti[k];
+
+            if (v) {
+                if (v.pos.y > windowHeight) {
+                    confetti.splice(k, 1)
+                }
             }
         }
     }
 
     setInterval(update, 1);
+    
+    window.addEventListener('resize', windowResized, true);
+
 });
 
-window.addEventListener('resize', function(event) {
+function windowResized(event) {
     windowWidth = window.innerWidth;
     windowHeight = window.innerHeight;
 
     canvas.width = windowWidth;
     canvas.height = windowHeight;
-}, true);
+    
+}
 
 var ConfettiItem = function(pos, vel, radius, colour) {
     this.pos = pos;
@@ -77,13 +70,13 @@ var ConfettiItem = function(pos, vel, radius, colour) {
     this.colour = colour;
 
     this.update = function(deltaTime) {
-        this.pos = this.pos.add(this.vel);
+        this.pos = this.pos.add(this.vel.mul(deltaTime));
         let newVel = this.vel;
 
         // Drag
-        //newVel = newVel.add(newVel.mul(-0.1 * deltaTime));
+        newVel = newVel.add(newVel.mul(-0.1 * deltaTime));
         // Gravity
-        //newVel = newVel.add(0, 1 * deltaTime);
+        newVel = newVel.add(0, 981 * deltaTime);
 
         this.vel = newVel;
     }
@@ -97,16 +90,16 @@ var ConfettiItem = function(pos, vel, radius, colour) {
 }
 
 function spawnConfetti() {
-    let CONFETTI_COUNT = 10;
+    // Would be nice if the confetti was to "spin" and have rotation
+    let CONFETTI_COUNT = 20;
 
     for (var i = 0; i < CONFETTI_COUNT; i++) {
-        //let pos = new Vector2(windowWidth / 2, window.innerHeight - 10);
-        let pos = new Vector2(windowWidth / 2, windowHeight / 2);
-        //let vel = new Vector2((Math.random() - 1) * 10, -20 + Math.random() * -10)
-        let vel = new Vector2();
+        let pos = new Vector2(windowWidth / 2, windowHeight - 10);
+
+        //let vel = new Vector2((Math.random() - 0.5) * windowWidth / 300, windowHeight / -150 + Math.random() * -(windowHeight / -500));
+        let vel = new Vector2((Math.random() - 0.5) * windowWidth / 2, -windowHeight + (Math.random() - 0.5) * -windowHeight / 2);
         
-        //hsl(" + Math.random() * 360 + ", 100%, 50%)
-        confetti[i] = new ConfettiItem(pos, vel, 50, "red");
+        confetti[i] = new ConfettiItem(pos, vel, 5, "hsl(" + Math.random() * 360 + ", 100%, 50%)");
     }
 }
 function playerSelected(sender, move) {
@@ -161,11 +154,11 @@ function computerSelected() {
     }
 
     let audioPath = "";
-    spawnConfetti();
 
     if (outcome == "win") {
         randomNum = Math.floor(Math.random() * 5) + 1;
         audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
+        spawnConfetti();
     } else if (outcome == "lose") {
         audioPath = "../media/sound/boowomp.mp3";
     } else {
