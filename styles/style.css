@@ -89,8 +89,8 @@
 .rps-playable-move, .rps-computer-move {
     border-radius: 5px;
     margin-top: 5px;
-    height: 70px;
-    width: 70px;
+    height: 65px;
+    width: 65px;
     font-size:50px;
     text-decoration: none;
     cursor: pointer;
@@ -101,8 +101,8 @@
 }
 
 .rps-playable {
-    margin-top: -17px;
-    margin-left: -2px;
+    margin-top: -20px;
+    margin-left: -5px;
 }
 
 .rps-move {
@@ -130,34 +130,60 @@
 }
 
 .rps-div-player-title, .rps-div-computer-title {
-    height: 65px;
+    height: 60px;
 }
 
 .rps-div-moves {
     height: 70px;
 }
 
-@media (max-width: 576px) {        
+@media (max-width: 605px) {        
     .rps-player-outline {
-        width: 300px;
         height: 300px;
     }
 
     .rps-computer-outline {
-        width: 300px;
         height: 300px;
+    }
+
+    .rps-div-moves {
+        height: 70px;
+    }
+
+    .rpc-title {
+        
     }
     
     #img-player-selected-move, #img-computer-selected-move {
-        margin-left: 8px;
-        width: 140px;
-        height: 140px
+        margin-left: 20px;
+        width: 100px;
+        height: 100px
+    }
+
+    .rps-playable-move, .rps-computer-move {
+        border-radius: 5px;
+        margin-top: 0px;
+        height: 60px;
+        width: 60px;
+        font-size: 40px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+        
+    .rps-playable {
+        margin-top: -12px;
+        margin-left: -5px;
     }
 
     .rps-move {
-        height: 63%;
+        height: 47%;
         width: 99%;
-        margin-top: 10px;
+        margin-top: 5px;
         border-radius: 5px;
-    }    
+    }
+
+    .rps-p-title {
+        font-size: 35px;
+    }
+ 
 }
