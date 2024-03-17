@@ -53,22 +53,27 @@ function computerSelected() {
     let computerSelectedMove = moves[randomNum];
     imgComputerSelectedMove.src = getEmojiPicture(computerSelectedMove);
 
-    let playerWin = false;
-    if (playerSelectedMove == "rock" && computerSelectedMove == "scissors")  {
-        playerWin = true;
+    let outcome = "lose";
+
+    if (playerSelectedMove == computerSelectedMove) {
+        outcome = "draw";
+    } else if (playerSelectedMove == "rock" && computerSelectedMove == "scissors")  {
+        outcome = "win";
     } else if (playerSelectedMove == "paper" && computerSelectedMove == "rock") {
-        playerWin = true;
+        outcome = "win";
     } else if (playerSelectedMove == "scissors" && computerSelectedMove == "paper") {
-        playerWin = true;
+        outcome = "win";
     }
 
     let audioPath = "";
 
-    if (playerWin) {
+    if (outcome == "win") {
         randomNum = Math.floor(Math.random() * 5) + 1;
         audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
+    } else if (outcome == "lose") {
+        audioPath = "../media/sound/boowomp.mp3";
     } else {
-        audioPath = "../media/sound/boowomp.mp3"
+        audioPath = "../media/sound/crowd-oooh.wav";
     }
 
     if (audioPath !== "") {        

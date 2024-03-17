@@ -55,13 +55,13 @@
 
 .rps-player-outline {
     width: 300px;
-    height: 400px;
+    height: 450px;
     border-radius: 5px;
 }
 
 .rps-computer-outline {
     width: 300px;
-    height: 400px;
+    height: 450px;
     border-radius: 5px;
 }
 
@@ -88,7 +88,7 @@
 
 .rps-playable-move, .rps-computer-move {
     border-radius: 5px;
-    margin-top: 12px;
+    margin-top: 5px;
     height: 70px;
     width: 70px;
     font-size:50px;
@@ -106,10 +106,14 @@
 }
 
 .rps-move {
-    height: 73%;
+    height: 65%;
     width: 99%;
-    margin-top: 10px;
+    margin-top: 13px;
     border-radius: 5px;
+}
+
+.rps-p-title {
+    font-size:40px;
 }
 
 .rps-player-selected {
@@ -125,7 +129,15 @@
     margin-left: -12px;
 }
 
-@media (max-width: 768px) {        
+.rps-div-player-title, .rps-div-computer-title {
+    height: 65px;
+}
+
+.rps-div-moves {
+    height: 70px;
+}
+
+@media (max-width: 576px) {        
     .rps-player-outline {
         width: 300px;
         height: 300px;
