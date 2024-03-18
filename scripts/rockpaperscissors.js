@@ -7,6 +7,9 @@ window.addEventListener("load", (event) => {
     imgPlayerSelectedMove = document.getElementById("img-player-selected-move");
     imgComputerSelectedMove = document.getElementById("img-computer-selected-move");
     
+    computerSelectedMove = 0;
+    lastComputerSelectedMove = 0;
+
     // Global vars
     playerSelectedMove = -1;
     gameInPlay = false;
@@ -49,26 +52,34 @@ window.addEventListener("load", (event) => {
                 computerSelection += computerSelectionSpeed * 2 * deltaTime;
 
                 // Computer can only pick between 0, 1, and 2
+                lastComputerSelectedMove = computerSelectedMove;
                 computerSelectedMove = Math.floor(computerSelection % 3);
                 
-                // Apply the 'hover' colour to the computer's move
-                divComputerRock.classList.remove("computer-hover");
-                divComputerPaper.classList.remove("computer-hover");
-                divComputerScissors.classList.remove("computer-hover");
+                if (lastComputerSelectedMove != computerSelectedMove) {
+                    // Apply the 'hover' colour to the computer's move
+                    divComputerRock.classList.remove("computer-hover");
+                    divComputerPaper.classList.remove("computer-hover");
+                    divComputerScissors.classList.remove("computer-hover");
 
-                // Highlight the hovered piece
-                switch (computerSelectedMove) {
-                    case 0:
-                        divComputerRock.classList.add("computer-hover");
-                        break;
+                    // Highlight the hovered piece
+                    switch (computerSelectedMove) {
+                        case 0:
+                            divComputerRock.classList.add("computer-hover");
+                            break;
 
-                    case 1:
-                        divComputerPaper.classList.add("computer-hover");
-                        break;
+                        case 1:
+                            divComputerPaper.classList.add("computer-hover");
+                            break;
 
-                    case 2:
-                        divComputerScissors.classList.add("computer-hover");
-                        break;
+                        case 2:
+                            divComputerScissors.classList.add("computer-hover");
+                            break;
+                    }
+
+                    // Credit: https://freesound.org/people/Glitched7777/sounds/723291/
+                    audioDing = new Audio("../media/sound/doding.wav");
+                    audioDing.volume = 0.3;
+                    audioDing.play();
                 }
             }
 
@@ -223,6 +234,7 @@ function determineWinner(playerMove, computerMove) {
         // yippee!
         spawnConfetti(Math.floor(25 + Math.random() * 10));
         randomNum = Math.floor(Math.random() * 5) + 1;
+        // Credit for party horn: https://pixabay.com/sound-effects/party-horn-68443/
         audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
     } else if (outcome == "lose") {
         audioPath = "../media/sound/boowomp.mp3";
