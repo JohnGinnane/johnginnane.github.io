@@ -106,7 +106,6 @@ window.addEventListener("load", (event) => {
             }
         }
 
-        let count = confetti.length;
         // Delete confetti that are off screen
         for (let k = confetti.length - 1; k >= 0; k--) {
             let v = confetti[k];
@@ -251,15 +250,20 @@ function determineWinner(playerMove, computerMove) {
         randomNum = Math.floor(Math.random() * 5) + 1;
         // Credit for party horn: https://pixabay.com/sound-effects/party-horn-68443/
         audioPath = "../media/sound/party-horn-" + randomNum + ".mp3";
+        $("#h1-modal-title").html("You win!");
     } else if (outcome == "lose") {
         audioPath = "../media/sound/boowomp.mp3";
+        $("#h1-modal-title").html("You lost!");
     } else {
         audioPath = "../media/sound/crowd-oooh.wav";
+        $("#h1-modal-title").html("It's a draw!");
     }
+
+    $("#divGameOutcomeModal").modal('show');
 
     if (audioPath !== "" && NEXT_SOUND_TIME <= Date.now() && getVolumeToggle()) {
         NEXT_SOUND_TIME = Date.now() + SOUND_COOLDOWN;
-        var audio = new Audio(audioPath);
+        let audio = new Audio(audioPath);
         audio.play();
     }
 
