@@ -6,7 +6,8 @@ window.addEventListener("load", (event) => {
 
     imgPlayerSelectedMove = document.getElementById("img-player-selected-move");
     imgComputerSelectedMove = document.getElementById("img-computer-selected-move");
-    
+    useVolumeToggle = document.getElementById("use-volume-toggle");
+
     computerSelectedMove = 0;
     lastComputerSelectedMove = 0;
 
@@ -76,10 +77,12 @@ window.addEventListener("load", (event) => {
                             break;
                     }
 
-                    // Credit: https://freesound.org/people/Glitched7777/sounds/723291/
-                    audioDing = new Audio("../media/sound/doding.wav");
-                    audioDing.volume = 0.3;
-                    audioDing.play();
+                    if (getVolumeToggle()) {
+                        // Credit: https://freesound.org/people/Glitched7777/sounds/723291/
+                        audioDing = new Audio("../media/sound/doding.wav");
+                        audioDing.volume = 0.3;
+                        audioDing.play();
+                    }
                 }
             }
 
@@ -120,6 +123,18 @@ window.addEventListener("load", (event) => {
     
     window.addEventListener('resize', windowResized, true);
 });
+
+function toggleVolume(sender) {
+    if (sender.classList.contains("active")) {
+        useVolumeToggle.setAttribute("href", "#volume-up-fill");
+    } else {
+        useVolumeToggle.setAttribute("href", "#volume-mute-fill");
+    }
+}
+
+function getVolumeToggle() {
+    return useVolumeToggle.getAttribute("href") == "#volume-up-fill";
+}
 
 function windowResized(event) {
     windowWidth = window.innerWidth;
@@ -242,7 +257,7 @@ function determineWinner(playerMove, computerMove) {
         audioPath = "../media/sound/crowd-oooh.wav";
     }
 
-    if (audioPath !== "" && NEXT_SOUND_TIME <= Date.now()) {
+    if (audioPath !== "" && NEXT_SOUND_TIME <= Date.now() && getVolumeToggle()) {
         NEXT_SOUND_TIME = Date.now() + SOUND_COOLDOWN;
         var audio = new Audio(audioPath);
         audio.play();
