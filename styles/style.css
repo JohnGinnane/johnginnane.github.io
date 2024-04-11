@@ -241,3 +241,20 @@
     }
  
 }
+
+#lab9-body {
+    background-color: #FFFFF0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#lab9-title {
+    font-weight: normal;
+    padding-bottom: 10px;
+}
+
+#lab9-column {
+    border-left: 5px solid navy;
+    width: 530px;
+    font-size: 18px;
+    margin-bottom: 50px;
+}
