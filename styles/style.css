@@ -258,3 +258,61 @@
     font-size: 18px;
     margin-bottom: 50px;
 }
+
+.my-bubble {
+    background-color: #E4A5FF;
+    width: 200px;
+    margin: 2px;
+    border-radius: 25px;
+    text-align: center;
+    font-family: verdana;
+    padding-bottom: 10px;
+
+    transition: all .1s ease-in;
+    background-color: #eec6ff;
+    color: #023d79;
+}
+
+.my-bubble-header {
+    background-color: #E4A5FF;
+    color: #023d79;
+    border-radius: 25px;
+    width: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px
+}
+
+.medium-basic-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #023d79;
+    margin: 8px;
+}
+
+.subject-result-input {
+    margin: 2px;
+    width: 60px;
+}
+
+#subject-count {
+    margin-left: 5px;
+    width: 60px;
+}
+
+#lab9-subjects-header {
+    padding-bottom: 2px;
+    border-bottom: 2px solid black;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+#lab9-summary {
+    border-top: 4px double black;
+    text-align: right;
+}
+
+.result-grade {
+    margin-left: 4px;
+    width: 40px;
+}
