@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){ 
-    let body = document.getElementById("lab9-column");
+    let body = document.getElementById("ninetynine-bottles-column");
     let newLine = "";
     let originalBottles = 99;
     let bottles = originalBottles;
