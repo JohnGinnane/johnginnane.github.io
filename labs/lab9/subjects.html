@@ -10,6 +10,8 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+
+        <script src="../../scripts/subjects.js"></script>
     </head>
     <body id="lab9-body">
         <div class="container-fluid h-100">
@@ -25,27 +27,41 @@
                 
                 <div class="row justify-content-evenly flex-grow-1">
                     <div class="col-7 d-flex align-items-center justify-content-center">
-                        For Lab 9 I decided to implement a very VERY basic data-binding method. This means you can set the number of subjects using number field below. This will create an appropriate number of fields to enter the subject name, and result. As you change the result of a subject, both the average result at the bottom, and the grade (A-F) will be updated in real time to reflect your changes.
+                        For Lab 9 I decided to implement a very VERY basic data-binding method. 
+                        This means you can set the number of subjects using number field below, 
+                        this will create an appropriate number of fields to enter the subject name and result,
+                        or use the + button to append more subjects. 
                         <br><br>
-                        While this doesn't show a typical prompt to "output the result" it does use an array (of objects) to store the results and summarise on them.
+                        As you change the result of a subject, both the average result (e.g. 55%) at the bottom, 
+                        and each subject's grade (e.g. 'C') will be updated in real time to reflect your changes.
+                        <br><br>
+                        While this doesn't explicitly "ask a user how many subjects they take" using 
+                        a prompt(), and show a typical prompt to "output the result" using an alert() 
+                        it does use an array (of objects) to store the results, and then use the array 
+                        to constantly re-construct the HTML and to calculate the average result.
                     </div>
                 </div>
 
                 <div class="row justify-content-evenly flex-grow-1">
                     <div id="lab9-subjects-header" class="col-5 d-flex align-items-center justify-content-center">
-                        Subjects:
+                        Number of Subjects:
                         <input id="subject-count" type="number" value="0">
                     </div>
                 </div>
 
                 <!-- Main Body -->
                 <div class="row justify-content-evenly flex-grow-1">
-                    <div id="lab9-column" class="mx-auto col-5 grid">
+                    <div id="subjects-column" class="mx-auto col-5 grid">
                         <!-- <input id="name-0"   class="subject-name-input"   type="text"   value="English">
                         <input id="result-0" class="subject-result-input" type="number" value="65">%<br>
                         <input id="name-1"   class="subject-name-input"   type="text"   value="Maths">
                         <input id="result-0" class="subject-result-input" type="number" value="84">%<br> -->
                     </div>
+                </div>
+                <div class="row justify-content-evenly flex-grow-1">
+                    <button class="button-add-subject" onclick="addSubject_OnClick(this)">
+                        <img class="img-add-subject" src="../../media/images/emoji-plus-sign-w10.png">
+                    </button>
                 </div>
 
                 <!-- Summary -->
@@ -57,173 +73,4 @@
             </div>
         </div>
     </body>
-    <script>
-        subjectsArray = [];
-
-        let subjectCount = document.getElementById("subject-count");
-        subjectCount.addEventListener("change", subjectCount_Change)
-        subjectCount_Change({target: subjectCount});
-
-        function calculateSummary() {
-            let total = 0;
-
-            for (let i = 0; i < subjectsArray.length; i++) {
-                let subject = subjectsArray[i];
-
-                if (subject) {
-                    console.log(subject);
-                    total += subject.result;
-                    
-                    let resultGrade = document.getElementById("result-grade-" + i);
-                    resultGrade.innerHTML = getGradeForResult(subject.result);
-
-                }
-            }
-
-            let spanSummary = document.getElementById("lab9-total");
-
-            if (subjectsArray.length > 0) {
-                total /= subjectsArray.length;
-            }
-            
-            spanSummary.innerHTML = total.toFixed(2) + "%";
-        }
-
-        function getGradeForResult(result) {
-            let resultNum = Number(result);
-            if (resultNum == NaN) { return ""; }
-
-            if (resultNum >= 85) {
-                return "A";
-            } else if (resultNum >= 70) {
-                return "B";
-            } else if (resultNum >= 55) {
-                return "C";
-            } else if (resultNum >= 40) {
-                return "D";
-            } else if (resultNum >= 25) {
-                return "E";
-            } else if (resultNum >= 10) {
-                return "F";
-            } else {
-                return "NG";
-            }
-        }
-
-        function subjectResult_Change(e) {
-            // Extract the index from the ID
-            // e.g. "result-1" -> 1
-            let subjectResultID = e.target.id;
-            let id = Number(subjectResultID.split("-")[1]);
-            let thisSubject = subjectsArray[id];
-            let originalResult = thisSubject.result;
-            let result = Number(e.target.value);
-
-            if (result < 0) {
-                result = 0;
-                e.target.setAttribute("value", result);
-                e.target.value = result;
-            } else if (result > 100) {
-                result = 100;
-                e.target.setAttribute("value", result);
-                e.target.value = result;
-            }
-
-            if (result == NaN) {
-                result = originalResult;
-                e.target.setAttribute("value", result);
-            }
-
-            thisSubject.result = result;
-
-            calculateSummary();
-        }
-
-        function subjectName_Change(e) {
-            let subjectNameID = e.target.id;
-            let id = Number(subjectNameID.split("-")[1]);
-            let name = e.target.value;
-
-            let thisSubject = subjectsArray[id];
-            thisSubject.name = name;
-
-            calculateSummary();
-        }
-        
-        function subjectCount_Change(e) {
-            e.target.disabled = true;
-            // A VERY hacky implementation of "data binding"
-            // If the user changes the number of subjects we
-            // need to create/destroy fields and keep our
-            // array up to date
-
-            let innerHTML = "";
-            let originalCount = Number(subjectsArray.length);
-            let newCount = Number(e.target.value);
-            let newHTML = "";
-
-            //console.log("Original: " + originalCount + ", new: " + newCount);
-
-            if (newCount > originalCount) {
-                // Create new subjects if we go from
-                // a low number of subjects to a
-                // higher amount of subjects
-                let n = originalCount;
-                while (n < newCount) {
-                    createNewSubject(n);
-                    subjectsArray[subjectsArray.length] = {name: "", result: 0};
-                    n++;
-                }
-            } else if (newCount < originalCount) {
-                // Inversely, pop items from the array if 
-                // we go from a high number to a low number
-                let n = originalCount;
-                while (n > newCount) {
-                    subjectsArray.pop();
-                    n--;
-                }
-            }
-
-            // Now we will re-construct the innerHTML of the column
-            let subjectResults = document.getElementsByClassName("subject-result-input");
-            let subjectNames = document.getElementsByClassName("subject-name-input");
-
-            for (let i = 0; i < newCount; i++) {
-                // Maintain the values of the nodes
-                subjectNames[i].setAttribute("value", subjectsArray[i].name);
-                subjectResults[i].setAttribute("value", subjectsArray[i].result);
-
-                innerHTML += "<div class='d-flex justify-content-center align-items-center'>\n";
-                innerHTML += subjectNames[i].outerHTML;
-                innerHTML += "\n";
-                innerHTML += subjectResults[i].outerHTML;
-                innerHTML += "% - <span id='result-grade-" + i + "' class='result-grade'></span><br>";
-                innerHTML += "</div>";
-            }
-            
-            let column = document.getElementById("lab9-column");
-            column.innerHTML = innerHTML;
-
-            // Need to re-apply event handlers after changing HTML
-            for (let i = 0; i < newCount; i++) {
-                subjectResults[i].removeEventListener("change", subjectResult_Change);
-                subjectResults[i].addEventListener("change", subjectResult_Change);
-                subjectNames[i].removeEventListener("change", subjectName_Change);
-                subjectNames[i].addEventListener("change", subjectName_Change);
-            }
-
-            calculateSummary();
-            
-            e.target.disabled = false;
-        }
-
-        function createNewSubject(id) {
-            let newHTML = "<input id='name-" + id + "' class='subject-name-input' type='text'>";
-            newHTML += "\n<input id='result-" + id + "' class='subject-result-input' type='number'>";
-            newHTML += "<span id='result-grade-" + id + "' class='result-grade'></span><br>";
-
-            let column = document.getElementById("lab9-column");
-            column.innerHTML += newHTML;
-        }
-    </script>
 </html>
