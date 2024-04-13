@@ -383,3 +383,44 @@
 .lab-detail-row {
 
 }
+
+/* LAB 10 */
+#button-lab10-generate {
+    margin: 4px;
+}
+
+.ta-lab10-random-number {
+    width: 40px;
+    height: 40px;
+    resize: none;
+    margin: 2px;
+    padding: 6px;
+    text-align: center;
+    overflow: hidden;
+    filter: blur(5px)
+}
+
+#lab10-subjects-header {
+    padding-top: 15px;
+    padding-bottom: 2px;
+    border-top: 2px solid black;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+#input-lab10-guess {
+    width: 50px;
+    margin: 4px;
+    text-align: right;
+}
+
+#input-lab10-occurrences {
+    width: 40px;
+    margin: 4px;
+    text-align: right;
+}
+
+#button-lab10-toggle-blur {
+    width: 60px;
+    margin-left: 4px;
+}
