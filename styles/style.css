@@ -362,3 +362,24 @@
     top:10%;
     left:10%;
 }
+
+.lab-row {
+    width: 200px;
+    padding: 20px;
+    margin:2px;
+    border-radius: 25px;
+    text-align: center;
+    font-family: verdana;
+
+    transition: all .1s ease-in;
+    background-color: #E4A5FF;
+    color: #023d79;
+}
+
+.lab-header-row {
+
+}
+
+.lab-detail-row {
+
+}
