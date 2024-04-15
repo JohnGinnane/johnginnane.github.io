@@ -295,6 +295,14 @@
     margin: 8px;
 }
 
+.subject-div {
+    
+}
+
+.subject-name-input {
+    max-width: 200px;
+}
+
 .subject-result-input {
     margin: 2px;
     width: 60px;
@@ -319,7 +327,7 @@
 
 .result-grade {
     margin-left: 4px;
-    width: 40px;
+    width: 30px;
 }
 
 .button-add-subject {
@@ -343,9 +351,11 @@
 }
 
 .button-delete-subject {
-    width: 40px;
-    height: 40px;
-    margin: 2px;    
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 2px;
     position: relative;
     border: 1px solid black;
 }
@@ -356,11 +366,13 @@
 
 .img-delete-subject {
     /* margin-left: -2px; */
-    width: 30px;
-    height: 30px;
+    min-width: 25px;
+    min-height: 25px;
+    width: 25px;
+    height: 25px;
     position: absolute;
-    top:10%;
-    left:10%;
+    top: 1px;
+    left: 2px;
 }
 
 .lab-row {
@@ -390,6 +402,7 @@
 }
 
 .ta-lab10-random-number {
+    min-width: 40px;
     width: 40px;
     height: 40px;
     resize: none;
@@ -425,11 +438,29 @@
 
 #button-lab10-toggle-blur {
     width: 60px;
+    min-width: 60px;
     margin-left: 4px;
 }
 
 #input-lab10-largest-number {
     width: 40px;
+    min-width: 40px;
     margin-left: 4px;
+    text-align: right;
+}
+
+#input-lab10-array-mean {
+    width: 40px;
+    min-width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
+    text-align: right;
+}
+
+#input-lab10-array-sum {
+    width: 40px;
+    min-width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
     text-align: right;
 }

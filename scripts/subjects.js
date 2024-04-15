@@ -215,7 +215,7 @@ function getSubjectHTML(index) {
     let id = "item-" + String(index);
     let innerHTML = "";
 
-    innerHTML += "<div id='" + id + "' class='d-flex justify-content-center align-items-center'>\n";
+    innerHTML += "<div id='" + id + "' class='subject-div d-flex justify-content-center align-items-center'>\n";
     innerHTML += "<input class='subject-name-input' type='text'>"
     innerHTML += "\n<input class='subject-result-input' type='number'>";
     innerHTML += "% - <span class='result-grade'>" + getGradeForResult(subjectsArray[index].result) + "</span><br>";
