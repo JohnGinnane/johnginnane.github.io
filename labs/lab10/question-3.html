@@ -19,12 +19,16 @@
                 <!-- Page Title -->
                 <div class="row justify-content-center align-items-center flex-grow-1">
                     <div class="col-10 my-auto justify-content-evenly text-center">
-                        <h1 id="lab9-title" class="display-1">Lab 10 - Question 3</h1>
+                        <h1 id="lab-10-title" class="display-1">Lab 10</h1>
                     </div>
                 </div>
 
-                <!-- Header -->
-                
+                <!-- QUESTION 3 -->                
+                <div class="row justify-content-center align-items-center flex-grow-1">
+                    <div class="col-10 my-auto justify-content-evenly text-center">
+                        <h4 id="lab-10-title" class="display-4">Question 3</h4>
+                    </div>
+                </div>
                 <div class="row justify-content-evenly flex-grow-1">
                     <div class="col-7 d-flex align-items-center justify-content-center">
                         <p>
@@ -34,29 +38,93 @@
                         </p>
                     </div>
                 </div>
-
                 <div class="row justify-content-evenly flex-grow-1">
-                    <div id="lab10-subjects-header" class="col-5 d-flex align-items-center justify-content-center">
-                        <button id="button-lab10-generate" onclick="generateRandomNumbers()">Generate</button>
-                        <textarea class="ta-lab10-random-number blur"></textarea>
-                        <textarea class="ta-lab10-random-number blur"></textarea>
-                        <textarea class="ta-lab10-random-number blur"></textarea>
-                        <textarea class="ta-lab10-random-number blur"></textarea>
-                        <textarea class="ta-lab10-random-number blur"></textarea>
-                        <button id="button-lab10-toggle-blur" onclick="toggleBlur()">Show</button>
+                    <div id="div-lab-10-q3" class="col-5 d-flex align-items-center justify-content-center lab-10-numbers">
+                        <button onclick="generateRandomNumbers(this)" class="button-lab-10-generate">Generate</button>
+                        <textarea class="ta-lab-10-random-number blur"></textarea>
+                        <textarea class="ta-lab-10-random-number blur"></textarea>
+                        <textarea class="ta-lab-10-random-number blur"></textarea>
+                        <textarea class="ta-lab-10-random-number blur"></textarea>
+                        <textarea class="ta-lab-10-random-number blur"></textarea>
+                        <button id="button-lab-10-toggle-blur" onclick="toggleBlur()">Show</button>
                     </div>
                 </div>
-
-                <!-- Main Body -->
                 <div class="row justify-content-evenly flex-grow-1">
                     <div class="col-12 d-flex align-items-center justify-content-center">
                         The number
-                        <input id="input-lab10-guess" type="number" onchange="guessChanged(this)">
+                        <input id="input-lab-10-guess" type="number" onchange="guessChanged(this)">
                         is found
-                        <input id="input-lab10-occurrences" disabled="true" type="text">
+                        <input id="input-lab-10-occurrences" disabled="true" type="text">
                         time(s) in the array.
                     </div>
                 </div>
+
+                <!-- QUESTION 4 -->
+                <div class="row justify-content-center align-items-center flex-grow-1">
+                    <div class="col-10 my-auto justify-content-evenly text-center">
+                        <h4 id="lab-10-title" class="display-4">Question 4</h4>
+                    </div>
+                </div>             
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div class="col-7 d-flex align-items-center justify-content-center">
+                        <p>
+                            Generate an array of 5 <b>random</b> numbers between 1 and 10. 
+                            Display the largest number in the array.
+                        </p>
+                    </div>
+                </div>
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div id="div-lab-10-q4" class="col-5 d-flex align-items-center justify-content-center lab-10-numbers">
+                        <button onclick="generateRandomNumbers(this)" class="button-lab-10-generate">Generate</button>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                    </div>
+                </div>
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        The largest number in the array is 
+                        <input id="input-lab-10-largest-number" disabled="true" type="text">
+                    </div>
+                </div>
+                
+                <!-- QUESTION 5 -->
+                <div class="row justify-content-center align-items-center flex-grow-1">
+                    <div class="col-10 my-auto justify-content-evenly text-center">
+                        <h4 id="lab-10-title" class="display-4">Question 5</h4>
+                    </div>
+                </div>               
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div class="col-7 d-flex align-items-center justify-content-center">
+                        <p>
+                            Generate an array of 5 <b>random</b> numbers between 1 and 10. 
+                            Display the mean and sum of the array.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div id="div-lab-10-q5" class="col-5 d-flex align-items-center justify-content-center lab-10-numbers">
+                        <button onclick="generateRandomNumbers(this)" class="button-lab-10-generate">Generate</button>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                        <textarea class="ta-lab-10-random-number"></textarea>
+                    </div>
+                </div>
+
+                <div class="row justify-content-evenly flex-grow-1">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        The mean is
+                        <input id="input-lab-10-array-mean" disabled="true" type="text">
+                        and the sum is
+                        <input id="input-lab-10-array-sum" disabled="true" type="text">
+                    </div>
+                </div>
+                <br>
             </div>
         </div>
     </body>

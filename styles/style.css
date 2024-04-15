@@ -397,11 +397,22 @@
 }
 
 /* LAB 10 */
-#button-lab10-generate {
+#lab-10-title {
+    margin-top: 20px;
+    font-weight: normal;
+    padding-bottom: 10px;
+}
+
+#lab-10-body {
+    background-color: #FFFFF0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.button-lab-10-generate {
     margin: 4px;
 }
 
-.ta-lab10-random-number {
+.ta-lab-10-random-number {
     min-width: 40px;
     width: 40px;
     height: 40px;
@@ -416,40 +427,40 @@
     filter: blur(5px)
 }
 
-#lab10-subjects-header {
+.lab-10-numbers {
     padding-top: 15px;
     padding-bottom: 2px;
-    border-top: 2px solid black;
+    border-top: 1px solid black;
     margin-bottom: 10px;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
-#input-lab10-guess {
+#input-lab-10-guess {
     width: 50px;
     margin: 4px;
     text-align: right;
 }
 
-#input-lab10-occurrences {
+#input-lab-10-occurrences {
     width: 40px;
     margin: 4px;
     text-align: right;
 }
 
-#button-lab10-toggle-blur {
+#button-lab-10-toggle-blur {
     width: 60px;
     min-width: 60px;
     margin-left: 4px;
 }
 
-#input-lab10-largest-number {
+#input-lab-10-largest-number {
     width: 40px;
     min-width: 40px;
     margin-left: 4px;
     text-align: right;
 }
 
-#input-lab10-array-mean {
+#input-lab-10-array-mean {
     width: 40px;
     min-width: 40px;
     margin-left: 4px;
@@ -457,7 +468,7 @@
     text-align: right;
 }
 
-#input-lab10-array-sum {
+#input-lab-10-array-sum {
     width: 40px;
     min-width: 40px;
     margin-left: 4px;

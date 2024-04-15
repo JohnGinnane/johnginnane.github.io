@@ -5,14 +5,20 @@ var hideNumbers = true;
 
 
 document.addEventListener('DOMContentLoaded', function(){ 
-    let taGuess = document.getElementById("input-lab10-guess");
+    let taGuess = document.getElementById("input-lab-10-guess");
     taGuess.value = minValue;
     taGuess.setAttribute("value", minValue);
-    generateRandomNumbers();
+
+    let generateButtons = document.querySelectorAll("button.button-lab-10-generate");
+    console.log(generateButtons);
+    for (button of generateButtons) {
+        generateRandomNumbers(button);
+    }
 });
 
-function generateRandomNumbers() {
-    let taNumberElements = document.getElementsByClassName("ta-lab10-random-number");
+function generateRandomNumbers(sender) {
+    let parentDiv = sender.parentElement;
+    let taNumberElements = parentDiv.querySelectorAll("textarea");
 
     for (element of taNumberElements) {
         let randomInt = Math.floor(Number(Math.random() * maxValue) + minValue);
@@ -21,12 +27,14 @@ function generateRandomNumbers() {
     }
 
     countOccurrences();
+    findLargestNumber();
+    findMeanAndSum();
 }
 
 function countOccurrences() {
     let occurrences = 0;
 
-    let taNumberElements = document.getElementsByClassName("ta-lab10-random-number");
+    let taNumberElements = document.querySelectorAll("#div-lab-10-q3 textarea");
 
     for (element of taNumberElements) {
         let randomNumber = Number(element.value);
@@ -35,9 +43,10 @@ function countOccurrences() {
         }
     }
 
-    let taOccurrences = document.getElementById("input-lab10-occurrences");
+    let taOccurrences = document.getElementById("input-lab-10-occurrences");
     taOccurrences.value = occurrences;
     taOccurrences.setAttribute("value", occurrences);
+
 }
 
 function guessChanged(sender) {
@@ -59,8 +68,8 @@ function guessChanged(sender) {
 }
 
 function toggleBlur(sender) {
-    let randomNumberClasses = document.getElementsByClassName("ta-lab10-random-number");
-    let showHideToggle = document.getElementById("button-lab10-toggle-blur");
+    let randomNumberClasses = document.querySelectorAll("#div-lab-10-q3 textarea");
+    let showHideToggle = document.getElementById("button-lab-10-toggle-blur");
 
     hideNumbers = !hideNumbers;
 
@@ -77,4 +86,45 @@ function toggleBlur(sender) {
             element.style.filter = "none";
         }
     } 
+}
+
+function findLargestNumber() {
+    let largestNumber = minValue;
+    let taNumberElements = document.querySelectorAll("#div-lab-10-q4 textarea");
+
+    for (element of taNumberElements) {
+        let number = Number(element.value);
+
+        if (number > largestNumber) {
+            largestNumber = number;
+        }
+    }
+
+    let taLargestNumber = document.getElementById("input-lab-10-largest-number");
+    taLargestNumber.value = largestNumber;
+    taLargestNumber.setAttribute("value", largestNumber);
+}
+
+function findMeanAndSum() {
+    let mean = 0;
+    let sum = 0;
+    
+    let taNumberElements = document.querySelectorAll("#div-lab-10-q5 textarea");
+
+    for (element of taNumberElements) {
+        let number = Number(element.value);
+
+        sum += number;
+    }
+
+    mean = sum / taNumberElements.length;
+
+    let taArrayMean = document.getElementById("input-lab-10-array-mean");
+    let taArraySum = document.getElementById("input-lab-10-array-sum");
+
+    taArrayMean.value = mean.toFixed(1);
+    taArrayMean.setAttribute("value", mean.toFixed(1));
+
+    taArraySum.value = sum;
+    taArraySum.setAttribute("value", sum);
 }
