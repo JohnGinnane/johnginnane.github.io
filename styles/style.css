@@ -295,10 +295,6 @@
     margin: 8px;
 }
 
-.subject-div {
-    
-}
-
 .subject-name-input {
     max-width: 200px;
 }
@@ -474,4 +470,71 @@
     margin-left: 4px;
     margin-right: 4px;
     text-align: right;
+}
+
+.shopping-list-name-input {
+    background-color: white;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    font-family: 'Nanum Pen Script';
+    font-size: 24px;
+    padding: 0px 5px, 5px 0px;
+}
+
+@font-face {
+    font-family: 'Cedarville-Cursive';
+    src: url(../fonts/CedarvilleCursive-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'Nanum Pen Script';
+    src: url(../fonts/NanumPenScript-Regular.ttf);
+}
+
+#lab-10-shopping-list-title {
+    margin: 20px;
+    font-family: 'Cedarville-Cursive'
+}
+
+.postit-note {
+    margin: 40px;
+    background-color: #feff9c;
+}
+
+#lab-10-shopping-list-header {
+    margin-left: 10px;
+    border-bottom: 2px solid black;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+#shopping-list-column {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* .shopping-list-name-input {
+    max-width: 200px;
+} */
+
+.shopping-list-amount-input {
+    margin: 2px;
+    width: 60px;
+}
+
+
+#shopping-list-count {
+    margin-left: 5px;
+    width: 60px;
+}
+
+.ul-shopping-list {
+    margin: 0px;
+    padding: 0px;
+}
+
+.li-shopping-list {
+    margin: 0px;
+    padding: 0px;
 }
