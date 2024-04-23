@@ -28,9 +28,9 @@ h2 {
     font-weight: bold;
 }
 
-.cv-email-title {
+.cv-subtitle {
     padding-top: 0px;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
 }
 
 p {
