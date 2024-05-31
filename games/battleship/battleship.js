@@ -105,10 +105,32 @@ $(document).ready(function() {
         let header = document.getElementById(element.id + "-body")
         if (header) {
             header.onmousedown = dragMouseDown;
-            header.touchstart = dragMouseDown;
+            header.touchstart = dragTouchDown;
         } else {
             element.onmousedown = dragMouseDown;
-            element.touchstart = dragMouseDown;
+            element.touchstart = dragTouchDown;
+        }
+
+        function dragTouchDown(e) {
+            let touch = e.changedTouches[1];
+
+            if (touch != null) {
+                clickDetails.startTime = new Date();
+                clickDetails.startX = touch.clientX;
+                clickDetails.startY = touch.clientY;
+                clickDetails.endTime = 0;
+                clickDetails.endX = null;
+                clickDetails.endY = null;
+
+                e = e || window.event;
+                e.preventDefault();
+    
+                pos3 = touch.clientX;
+                pos4 = touch.clientY;
+
+                document.touchend = closeDragElement;
+                document.touchmove = elementDrag;
+            }
         }
 
         function dragMouseDown(e) {
@@ -126,8 +148,6 @@ $(document).ready(function() {
             pos4 = e.clientY;
             document.onmouseup = closeDragElement;
             document.onmousemove = elementDrag;
-            document.touchend = closeDragElement;
-            document.touchmove = elementDrag;
         }
 
         function elementDrag(e) {
@@ -202,6 +222,7 @@ $(document).ready(function() {
     }
     
     function log(msg) {
+        console.log(msg);
         if ($("#test_log") != null) {
             if ($("#test_log").html() == null) {
                 $("#test_log").html("");
