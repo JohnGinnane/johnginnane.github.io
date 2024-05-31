@@ -142,6 +142,9 @@ $(document).ready(function() {
 
             let x = (element.offsetLeft - pos1);
             let y = (element.offsetTop - pos2);
+
+            log("x: " + x + ", y: " + y);
+
             debugCoords(vec2(x, y));
 
             element.style.top = y + "px";
@@ -195,6 +198,17 @@ $(document).ready(function() {
 
                 element.classList.toggle("div-rotate-90");
             }
+        }
+    }
+    
+    function log(msg) {
+        if ($("#test_log") != null) {
+            if ($("#test_log").html() == null) {
+                $("#test_log").html("");
+            }
+
+            $("#test_log").html($("#test_log").html() + "\n<option>" + msg + "</option>");
+
         }
     }
 });
