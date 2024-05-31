@@ -105,10 +105,10 @@ $(document).ready(function() {
         let header = document.getElementById(element.id + "-body")
         if (header) {
             header.onmousedown = dragMouseDown;
-            header.touchstart = dragTouchDown;
+            header.ontouchstart = dragTouchDown;
         } else {
             element.onmousedown = dragMouseDown;
-            element.touchstart = dragTouchDown;
+            element.ontouchstart = dragTouchDown;
         }
 
         function dragTouchDown(e) {
@@ -129,8 +129,8 @@ $(document).ready(function() {
                 pos3 = touch.clientX;
                 pos4 = touch.clientY;
 
-                document.touchend = closeDragElement;
-                document.touchmove = elementDrag;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementDrag;
             } else {
                 log("touch NOT found???");
             }
@@ -212,8 +212,8 @@ $(document).ready(function() {
 
             document.onmouseup = null;
             document.onmousemove = null;
-            document.touchend = null;
-            document.touchmove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
 
             if (clickDetails.startX === clickDetails.endX &&
                 clickDetails.startY === clickDetails.endY) {
