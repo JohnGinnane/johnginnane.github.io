@@ -7,28 +7,89 @@ let clickDetails = {
     endY: null
 }
 
+var varRoot = document.querySelector(":root");
+var gameOrigin = {};
+
+let dragDetails = {
+    lastX: 0,
+    lastY: 0,
+    X: 0,
+    Y: 0,
+    lastPiece: null
+}
+
+function setDragDetails(p) {
+    dragDetails.lastX = dragDetails.X;
+    dragDetails.lastY = dragDetails.Y;
+    dragDetails.X = p.X;
+    dragDetails.Y = p.Y;
+}
+
+function checkDragDetails() {
+    return (dragDetails.X !=  dragDetails.lastX || dragDetails.Y != dragDetails.lastY);
+}
+
+function getCSSVar(field) {
+    return getComputedStyle(varRoot).getPropertyValue(field);
+}
+
+function setCSSVar(field, value) {
+    varRoot.style.setProperty(field, value);
+}
+
+function pointInBox(p, b) {
+    return (p.X >= b.left && p.X <= b.right &&
+            p.Y >= b.top  && p.Y <= b.bottom);
+}
+
+function vec2(x, y) {
+    return {X: x, Y: y};
+}
+
+function debugCoords(p) {
+    let spanX = document.getElementById("span-battleship-x");
+    let spanY = document.getElementById("span-battleship-y");
+
+    spanX.innerText = p.X;
+    spanY.innerText = p.Y;
+}
+
+$(document).on("mousemove", function(event) {
+    let p = vec2(event.pageX, event.pageY);
+    let mouseX = document.getElementById("span-battleship-mouse-x");
+    let mouseY = document.getElementById("span-battleship-mouse-y");
+
+    mouseX.innerText = p.X;
+    mouseY.innerText = p.Y;
+});
+
 $(document).ready(function() {
     // Create grid
     innerHTML = "";
-
+    
     for (let y = 0; y < 10; y++) {
         innerHTML += "<div class='row'>\n";
 
         for (let x = 0; x < 10; x++) {
-            innerHTML += "\t<div class='div-battleship-grid-piece'></div>\n";
+            innerHTML += "\t<div class='div-battleship-grid-piece grid-x-" + x + " grid-y-" + y + "'></div>\n";
         }
 
         innerHTML += "</div>\n";
     }
+    
+    debugCoords(gameOrigin);
 
     $("#div-battleship-grid").html(innerHTML);
 
+    gameOrigin.X = $("#div-battleship-grid").offset().left;
+    gameOrigin.Y = $("#div-battleship-grid").offset().top;
+
     // Mark element as "draggable"
-    makeDraggable(document.getElementById("div-draggable-test"));
+    makeDraggable(document.getElementById("div-draggable-root"));
 
     function makeDraggable(element) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        let header = document.getElementById(element.id + "-header")
+        let header = document.getElementById(element.id + "-body")
         if (header) {
             header.onmousedown = dragMouseDown;
         } else {
@@ -62,8 +123,43 @@ $(document).ready(function() {
             pos3 = e.clientX;
             pos4 = e.clientY;
 
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
+            let x = (element.offsetLeft - pos1);
+            let y = (element.offsetTop - pos2);
+            debugCoords(vec2(x, y));
+
+            element.style.top = y + "px";
+            element.style.left = x + "px";
+
+            let scale = parseInt(getCSSVar("--scale"));
+            let centre = vec2(x, y);
+
+            // Subtract the grid origin from the
+            // centre of the draggable element
+            // Then divide by the scale to get
+            // the integer co-ordinate of the grid
+            let predictedPlace = {
+                X: Math.round((centre.X - gameOrigin.X) / scale),
+                Y: Math.round((centre.Y - gameOrigin.Y) / scale)
+            };
+
+            setDragDetails(predictedPlace);
+            
+            // Find piece using co-ords
+            let pieceClass = ".div-battleship-grid-piece";
+            pieceClass += ".grid-x-" + predictedPlace.X;
+            pieceClass += ".grid-y-" + predictedPlace.Y;
+            let piece = document.querySelector(pieceClass);
+            
+            if (piece != null) {
+                // Change the previous piece to 
+                // not be "selected"
+                if (dragDetails.lastPiece != null) {
+                    dragDetails.lastPiece.style.background = getCSSVar("--water");
+                }
+
+                piece.style.background = getCSSVar("--waterSelected");
+                dragDetails.lastPiece = piece;
+            }
         }
 
         function closeDragElement(e) {
@@ -82,5 +178,4 @@ $(document).ready(function() {
             }
         }
     }
-
 });

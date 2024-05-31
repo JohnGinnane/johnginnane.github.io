@@ -540,6 +540,11 @@
 }
 
 /* Battleship */
+:root {
+    --scale: 30px;
+    --water: #9cedf7;
+    --waterSelected: #7abec7;
+}
 #div-battleship-grid {
     border: 1px solid red;
     width: auto;
@@ -547,30 +552,29 @@
 
 .div-battleship-grid-piece {
     border: 1px solid blue;
-    width: 30px;
-    height: 30px;
-    background-color: #9cedf7
+    width: var(--scale);
+    height: var(--scale);
+    background-color: var(--water);
 }
 
 .div-battleship-grid-piece:hover {
     background-color: #2dcbe0;
 }
 
-#div-draggable-test {
+#div-draggable-root {
     position: absolute;
     z-index: 9;
     text-align: center;
     padding: 0px;
 
-    width: 100px;
-    height: 20px;
+    width: var(--scale);
+    height: var(--scale);
 }
 
-#div-draggable-header {
+#div-draggable-body {
     cursor: move;
     z-index: 10;
-    background-color: #d3d3d3;
-    border: 1px solid #9a9a9a;
+    background-color: rgba(70, 200, 70, 0.5);
     color: #fff;
 
     margin: 0px;
