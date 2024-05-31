@@ -64,7 +64,7 @@ $(document).on("mousemove", function(event) {
 });
 
 $(document).on("touchmove", function(event) {
-    let p = vec2(event.pageX, event.pageY);
+    let p = vec2(event.touches[1].pageX, event.touches[1].pageY);
     let mouseX = document.getElementById("span-battleship-mouse-x");
     let mouseY = document.getElementById("span-battleship-mouse-y");
 
