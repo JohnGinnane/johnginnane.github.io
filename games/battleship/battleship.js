@@ -64,12 +64,16 @@ $(document).on("mousemove", function(event) {
 });
 
 $(document).on("touchmove", function(event) {
-    let p = vec2(event.touches[1].pageX, event.touches[1].pageY);
-    let mouseX = document.getElementById("span-battleship-mouse-x");
-    let mouseY = document.getElementById("span-battleship-mouse-y");
+    let touch = e.changedTouches[1];
 
-    mouseX.innerText = p.X;
-    mouseY.innerText = p.Y;
+    if (touch != null) {
+        let p = vec2(touch.pageX, touch.pageY);
+        let mouseX = document.getElementById("span-battleship-mouse-x");
+        let mouseY = document.getElementById("span-battleship-mouse-y");
+
+        mouseX.innerText = p.X;
+        mouseY.innerText = p.Y;
+    }
 });
 
 $(document).ready(function() {
