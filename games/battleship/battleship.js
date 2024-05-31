@@ -115,6 +115,7 @@ $(document).ready(function() {
             let touch = e.changedTouches[1];
 
             if (touch != null) {
+                log("touch found");
                 clickDetails.startTime = new Date();
                 clickDetails.startX = touch.clientX;
                 clickDetails.startY = touch.clientY;
@@ -130,6 +131,8 @@ $(document).ready(function() {
 
                 document.touchend = closeDragElement;
                 document.touchmove = elementDrag;
+            } else {
+                log("touch NOT found???");
             }
         }
 
