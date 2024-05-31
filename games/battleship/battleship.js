@@ -63,6 +63,15 @@ $(document).on("mousemove", function(event) {
     mouseY.innerText = p.Y;
 });
 
+$(document).on("touchmove", function(event) {
+    let p = vec2(event.pageX, event.pageY);
+    let mouseX = document.getElementById("span-battleship-mouse-x");
+    let mouseY = document.getElementById("span-battleship-mouse-y");
+
+    mouseX.innerText = p.X;
+    mouseY.innerText = p.Y;
+});
+
 $(document).ready(function() {
     // Create grid
     innerHTML = "";
@@ -92,8 +101,10 @@ $(document).ready(function() {
         let header = document.getElementById(element.id + "-body")
         if (header) {
             header.onmousedown = dragMouseDown;
+            header.touchstart = dragMouseDown;
         } else {
             element.onmousedown = dragMouseDown;
+            element.touchstart = dragMouseDown;
         }
 
         function dragMouseDown(e) {
@@ -111,6 +122,8 @@ $(document).ready(function() {
             pos4 = e.clientY;
             document.onmouseup = closeDragElement;
             document.onmousemove = elementDrag;
+            document.touchend = closeDragElement;
+            document.touchmove = elementDrag;
         }
 
         function elementDrag(e) {
@@ -169,6 +182,8 @@ $(document).ready(function() {
 
             document.onmouseup = null;
             document.onmousemove = null;
+            document.touchend = null;
+            document.touchmove = null;
 
             if (clickDetails.startX === clickDetails.endX &&
                 clickDetails.startY === clickDetails.endY) {
