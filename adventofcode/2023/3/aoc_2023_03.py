@@ -80,23 +80,26 @@ for k in range(len(symbols)):
 # Now iterate over the indices and check for adjacency
 # between parts and symbols
 
+# For each line of parts
+#     For each part in line (via index)
+#         For each line (previous, current, next)
+#             For each symbol in line (via index)
+#                 If symbol.x is close to part.x then mark part
+
 for part_line in parts_index:    
     parts_on_line = parts_index[part_line]
-    #print("line: " + str(part_line))
     
     for part_index in parts_on_line:
         part = parts[part_index]
         # If part was already marked then go next
         if part.isPart:
             continue
-        
-        #print("\tpart: " + str(part))
-
-        # Now look at neighbouring lines for this part
+    
+        # Now look at neighbouring
+        # lines (above, on, below)
+        # for symbols
         line_min = max(part_line - 1, 0)
         line_max = part_line + 1
-        
-        #print(str(line_min) + " - " + str(line_max))
         
         for symbol_line in range(line_min, line_max + 1):
             # No symbols on this line
@@ -117,31 +120,10 @@ for part_line in parts_index:
                 break
 
 total_sum = 0
-last_line = 0
-debug = ""
-line_total = 0
 
+# Part 1 - Sum total parts
 for part in parts:
     if part.isPart:
         total_sum += part.value
-
-##for k in range(len(parts)):
-##    v = parts[k]
-##    
-##    if last_line != v.y:
-##        if debug != "":
-##            print(debug + " = " + str(line_total))
-##        line_total = 0
-##        debug = ""
-##
-##    last_line = v.y
-##    
-##    if v.isPart:
-##        if debug != "":
-##            debug += " + "
-##        debug += str(v.value)
-##            
-##        line_total += v.value
-##        total_sum += v.value
 
 print("Sum of Parts: " + str(total_sum))
