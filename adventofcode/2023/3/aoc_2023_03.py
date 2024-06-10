@@ -21,7 +21,8 @@ class symbol:
     def __str__(self):
         return "[" + str(self.x) + ", " + str(self.y) + "] " + self.symbol
 
-lines = open("input_03.txt", "r").readlines()
+#lines = open("input_03.txt", "r").readlines()
+lines = open("test2_03.txt", "r").readlines()
 parts = []
 symbols = []
 
@@ -85,13 +86,20 @@ for part_line in parts_index:
     
     for part_index in parts_on_line:
         part = parts[part_index]
+        # If part was already marked then go next
+        if part.isPart:
+            continue
+        
         #print("\tpart: " + str(part))
 
         # Now look at neighbouring lines for this part
         line_min = max(part_line - 1, 0)
-        line_max = min(part_line + 1, len(parts_index))
+        line_max = part_line + 1
+        
+        #print(str(line_min) + " - " + str(line_max))
         
         for symbol_line in range(line_min, line_max + 1):
+            # No symbols on this line
             if not symbol_line in symbols_index:
                 continue
             
@@ -110,19 +118,30 @@ for part_line in parts_index:
 
 total_sum = 0
 last_line = 0
+debug = ""
+line_total = 0
 
-for k in range(len(parts)):
-    v = parts[k]
-    
-    if last_line != v.y:
-        print("\n")
+for part in parts:
+    if part.isPart:
+        total_sum += part.value
 
-    last_line = v.y
-    
-    print(v)
-
-
-    if v.isPart:
-        total_sum += v.value
+##for k in range(len(parts)):
+##    v = parts[k]
+##    
+##    if last_line != v.y:
+##        if debug != "":
+##            print(debug + " = " + str(line_total))
+##        line_total = 0
+##        debug = ""
+##
+##    last_line = v.y
+##    
+##    if v.isPart:
+##        if debug != "":
+##            debug += " + "
+##        debug += str(v.value)
+##            
+##        line_total += v.value
+##        total_sum += v.value
 
 print("Sum of Parts: " + str(total_sum))
