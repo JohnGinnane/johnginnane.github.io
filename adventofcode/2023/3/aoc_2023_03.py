@@ -21,8 +21,8 @@ class symbol:
     def __str__(self):
         return "[" + str(self.x) + ", " + str(self.y) + "] " + self.symbol
 
-#lines = open("input_03.txt", "r").readlines()
-lines = open("test2_03.txt", "r").readlines()
+lines = open("input_03.txt", "r").readlines()
+#lines = open("test2_03.txt", "r").readlines()
 parts = []
 symbols = []
 
@@ -109,7 +109,7 @@ for part_line in parts_index:
                 symbol = symbols[symbol_index]
 
                 # check if symbol is within X distance
-                if symbol.x >= part.x - 1 and symbol.x <= part.x + part.width + 1:
+                if symbol.x >= part.x - 1 and symbol.x <= part.x + part.width:
                     part.isPart = True
                     break
             
