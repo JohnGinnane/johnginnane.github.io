@@ -17,12 +17,14 @@ class symbol:
         self.x = x
         self.y = y
         self.symbol = symbol
+        self.ratio = 0
+        self.touched = 0
 
     def __str__(self):
-        return "[" + str(self.x) + ", " + str(self.y) + "] " + self.symbol
+        return "[" + str(self.x) + ", " + str(self.y) + "] " + self.symbol + ", ratio: " + str(self.ratio)
 
 lines = open("input_03.txt", "r").readlines()
-#lines = open("test2_03.txt", "r").readlines()
+#lines = open("test_03.txt", "r").readlines()
 parts = []
 symbols = []
 
@@ -127,3 +129,47 @@ for part in parts:
         total_sum += part.value
 
 print("Sum of Parts: " + str(total_sum))
+
+# Part 2 - Do the inverse of the above loop
+# Iterate over symbols, then iterate over
+# neighbouring parts
+for symbol_line in symbols_index:
+    symbols_on_line = symbols_index[symbol_line]
+
+    for symbol_index in symbols_on_line:
+        symbol = symbols[symbol_index]
+
+        # We're only interested in 'gears'
+        if symbol.symbol != "*":
+            continue
+
+        # Now look for neighbouring numbers
+        line_min = max(symbol_line - 1, 0)
+        line_max = symbol_line + 1
+
+        for part_line in range(line_min, line_max + 1):
+            # No parts on this line
+            if not part_line in parts_index:
+                continue
+
+            parts_on_line = parts_index[part_line]
+
+            for part_index in parts_on_line:
+                part = parts[part_index]
+                
+                # Check if part is within distance
+                if symbol.x >= part.x - 1 and symbol.x <= part.x + part.width:
+                    symbol.touched += 1
+                    
+                    if symbol.ratio == 0:
+                        symbol.ratio = part.value
+                    else:
+                        symbol.ratio *= part.value
+
+total_ratio = 0
+for symbol in symbols:
+    if symbol.symbol == "*" and symbol.touched > 1:
+        #print(symbol)
+        total_ratio += symbol.ratio
+
+print("Total Ratio: " + str(total_ratio))
