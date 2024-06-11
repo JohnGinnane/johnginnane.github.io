@@ -49,8 +49,8 @@ class card:
             if target in self.picked_numbers:
                 self.winning_numbers.append(target)
 
-lines = open("input_04.txt", "r").readlines()
-#lines = open("test_04.txt", "r").readlines()
+#lines = open("input_04.txt", "r").readlines()
+lines = open("test_04.txt", "r").readlines()
 cards = []
 pattern = r"Card\s*([0-9]+):((?:\s*[0-9]+)+)\s*\|((?:\s*[0-9]+)+)"
 
@@ -74,6 +74,8 @@ for line in lines:
 
         cards.append(card(card_number, target_numbers, picking_numbers))
 
+
+# Part 1
 total_points = 0
 
 for c in cards:
@@ -81,4 +83,44 @@ for c in cards:
     total_points += c.points
     #print(c)
 
-print(total_points)
+print("Total Points: " + str(total_points))
+
+# Part 2
+copies = []
+
+def findCopies(index, depth):
+    v = cards[index]
+
+    for k in range(len(v.winning_numbers)):
+        copy_index = index + k + 1
+
+        if copy_index < len(cards):
+            copies.append({"index": copy_index, "depth": depth})
+            findCopies(copy_index, depth+1)
+
+for k in range(len(cards)):
+    copies.append({"index": k, "depth": 0})
+
+    findCopies(k, 1)
+
+for k in copies:
+    copy = cards[k["index"]]
+    
+    #print("\t" * k["depth"] + "Card " + pad(copy.number, 3))
+
+print("Copies: " + str(len(copies)))
+
+# copies_summary = {}
+
+# for k in copies:
+#     copy = cards[k["index"]]
+
+#     if not copy.number in copies_summary:
+#         copies_summary[copy.number] = 0
+    
+#     copies_summary[copy.number] += 1
+
+# print("-" * 10)
+
+# for cs in copies_summary:
+#     print(str(cs) + ": " + str(copies_summary[cs]))
