@@ -132,13 +132,32 @@ for line in lines:
 # for m in maps:
 #     print(m)
 
-# SeedToSoil = getMap("seed", "soil")
+SeedToSoil = getMap("seed", "soil")
 
-# test_cases = [79, 14, 55, 13]
+test_cases = [79, 14, 55, 13]
+path = {"seed":        "soil",
+        "soil":        "fertilizer",
+        "fertilizer":  "water",
+        "water":       "light",
+        "light":       "temperature",
+        "temperature": "humidity",
+        "humidity":    "location"}
 
-# if SeedToSoil:
-#     for n in test_cases:
-#         dest = SeedToSoil.getDestination(n)
-#         print(SeedToSoil.source_type + " number " + str(n) + " corresponds to " + SeedToSoil.destination_type + " number " + str(dest))
+lowest_location = -1
 
-# Part 1
+for n in test_cases:
+    last_number = n
+    output = next(iter(path)) + " " + str(last_number)
+
+    for from_type in path:
+        to_type = path[from_type]
+        last_number = getMap(from_type, to_type).getDestination(last_number)
+        output += ", " + to_type + " " + str(last_number)
+
+        if from_type == list(path)[-1]:
+            if lowest_location < 0 or last_number < lowest_location:
+                lowest_location = last_number
+    
+    print(output)
+
+print("Lowest Location: " + str(lowest_location))
