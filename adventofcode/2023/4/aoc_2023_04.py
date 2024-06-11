@@ -16,10 +16,10 @@ class card:
         self.points = -1
 
     def __str__(self):
-        output = "Card " + ("   " + str(self.number))[-3:] + ": "
+        output = "Card " + pad(self.number, 3) + ": " #("   " + str(self.number))[-3:] + ": "
 
         for num in self.target_numbers:
-            output += ("   " + str(num))[-3:]
+            output += pad(num, 3) #("   " + str(num))[-3:]
 
         output += " |"
 
