@@ -49,8 +49,8 @@ class card:
             if target in self.picked_numbers:
                 self.winning_numbers.append(target)
 
-#lines = open("input_04.txt", "r").readlines()
-lines = open("test_04.txt", "r").readlines()
+lines = open("input_04.txt", "r").readlines()
+#lines = open("test_04.txt", "r").readlines()
 cards = []
 pattern = r"Card\s*([0-9]+):((?:\s*[0-9]+)+)\s*\|((?:\s*[0-9]+)+)"
 
