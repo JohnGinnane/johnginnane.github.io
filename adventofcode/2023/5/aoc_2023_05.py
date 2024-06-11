@@ -23,6 +23,13 @@ class map:
         self.destination_type = dest_type
         self.ranges = []
 
+    def getDestination(self, source):
+        for m in self.ranges:
+            if source >= m.source_start and source <= m.source_start + m.range:
+                return source + (m.dest_start - m.source_start)
+            
+        return source
+
     def addMapRange(self, source_start, dest_start, new_range):
         # Keep ranges in order pls
         found = False
@@ -62,12 +69,16 @@ class map:
 
         return output
 
+def getMap(source_type, destination_type):
+    for m in maps:
+        if m.source_type == source_type and m.destination_type == destination_type:
+            return m
+
+    return None
+
 lines = open("test_05.txt", "r").readlines()
 seeds = []
 maps = []
-
-for k in range(3):
-    print(k)
 
 mapping = False
 last_map_index = -1
@@ -118,7 +129,14 @@ for line in lines:
 
                 last_map.addMapRange(new_source_start, new_destination_start, new_range)
 
-print(seeds)
-
 for m in maps:
     print(m)
+
+SeedToSoil = getMap("seed", "soil")
+
+test_cases = [79, 14, 55, 13]
+
+if SeedToSoil:
+    for n in test_cases:
+        dest = SeedToSoil.getDestination(n)
+        print(SeedToSoil.source_type + " number " + str(n) + " corresponds to " + SeedToSoil.destination_type + " number " + str(dest))
