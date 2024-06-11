@@ -76,8 +76,10 @@ def getMap(source_type, destination_type):
 
     return None
 
+#lines = open("input_05.txt", "r").readlines()
 lines = open("test_05.txt", "r").readlines()
 seeds = []
+seed_ranges = {}
 maps = []
 
 mapping = False
@@ -88,10 +90,17 @@ for line in lines:
         continue
     
     if not mapping:
-        # Identify seeds
+        # Part 1 - Identify seeds
         seed_matches = re.findall(r"[0-9]+", line)
         for m in seed_matches:
             seeds.append(int(m))
+
+        # Part 2 - Seed Matches
+        seed_matches = re.findall(r"([0-9]+) ([0-9]+)", line)
+        
+        for pairs in seed_matches:
+            #print(pairs[0] + " ... " + str(int(pairs[0]) + int(pairs[1])))
+            seed_ranges[int(pairs[0])] = int(pairs[1])
 
         mapping = True
     else:
@@ -129,12 +138,9 @@ for line in lines:
 
                 last_map.addMapRange(new_source_start, new_destination_start, new_range)
 
-# for m in maps:
-#     print(m)
+for m in maps:
+    print(m)
 
-SeedToSoil = getMap("seed", "soil")
-
-test_cases = [79, 14, 55, 13]
 path = {"seed":        "soil",
         "soil":        "fertilizer",
         "fertilizer":  "water",
@@ -145,7 +151,7 @@ path = {"seed":        "soil",
 
 lowest_location = -1
 
-for n in test_cases:
+for n in seeds:
     last_number = n
     output = next(iter(path)) + " " + str(last_number)
 
@@ -158,6 +164,13 @@ for n in test_cases:
             if lowest_location < 0 or last_number < lowest_location:
                 lowest_location = last_number
     
-    print(output)
+    #print(output)
 
-print("Lowest Location: " + str(lowest_location))
+print("Part 1 Lowest Location: " + str(lowest_location))
+
+# To solve part 2 
+# treat numbers as coordinates
+# and do line intersection perhaps?
+# Or see if numbers overlap
+
+print(seed_ranges)
