@@ -33,25 +33,23 @@ class map:
 
         if not found:
             new_map_range = map_range(source_start, dest_start, new_range)
-            self.ranges.append(new_map_range)
             
             # No recorded ranges, just slap it in
-            # if len(self.ranges) <= 0:
-            #     self.ranges.append(new_map_range)
-            # else:
-            #     # Try to place in order
-            #     found = False
-            #     for k in range(len(self.ranges)):
-            #         v = self.ranges[k]
-            #         if v.source_start > source_start:
-            #             found = True
-            #             self.ranges.insert(k, v)
-            #             break
+            if len(self.ranges) <= 0:
+                self.ranges.append(new_map_range)
+            else:
+                # Try to place in order
+                found = False
+                for k in range(len(self.ranges)):
+                    v = self.ranges[k]
+                    if v.source_start > source_start:
+                        found = True
+                        self.ranges.insert(k, new_map_range)
+                        break
 
-            #     # None found, just slap it in
-            #     if not found:
-            #         self.ranges.append(new_map_range)
-
+                # None found, just slap it in
+                if not found:
+                    self.ranges.append(new_map_range)
 
     def __str__(self):
         output = ""
@@ -116,7 +114,7 @@ for line in lines:
 
                 new_destination_start = int(map_match.group(1))
                 new_source_start = int(map_match.group(2))
-                new_range = int(map_match.group(3))
+                new_range = int(map_match.group(3)) - 1
 
                 last_map.addMapRange(new_source_start, new_destination_start, new_range)
 
