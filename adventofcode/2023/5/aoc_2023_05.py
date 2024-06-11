@@ -129,14 +129,16 @@ for line in lines:
 
                 last_map.addMapRange(new_source_start, new_destination_start, new_range)
 
-for m in maps:
-    print(m)
+# for m in maps:
+#     print(m)
 
-SeedToSoil = getMap("seed", "soil")
+# SeedToSoil = getMap("seed", "soil")
 
-test_cases = [79, 14, 55, 13]
+# test_cases = [79, 14, 55, 13]
 
-if SeedToSoil:
-    for n in test_cases:
-        dest = SeedToSoil.getDestination(n)
-        print(SeedToSoil.source_type + " number " + str(n) + " corresponds to " + SeedToSoil.destination_type + " number " + str(dest))
+# if SeedToSoil:
+#     for n in test_cases:
+#         dest = SeedToSoil.getDestination(n)
+#         print(SeedToSoil.source_type + " number " + str(n) + " corresponds to " + SeedToSoil.destination_type + " number " + str(dest))
+
+# Part 1
