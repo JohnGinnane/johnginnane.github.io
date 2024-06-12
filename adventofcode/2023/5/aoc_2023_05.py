@@ -14,7 +14,9 @@ class map_range:
         self.range = range
 
     def __str__(self):
-        output  = "\n" + pad(self.source_start, 5) + " -> " + pad(self.dest_start, 5) + " ... " + pad(self.source_start + self.range, 5) + " -> " + pad(self.dest_start + self.range, 5)
+        p = 3
+        #output  = "\n" + pad(self.source_start, p) + " -> " + pad(self.dest_start, p) + " ... " + pad(self.source_start + self.range, p) + " -> " + pad(self.dest_start + self.range, p)
+        output = "\n" + pad(self.source_start, p) + "..." + pad(self.source_start + self.range, p) + " -> " + pad(self.dest_start, p) + "..." + pad(self.dest_start + self.range, p)
         return output
 
 class map:
