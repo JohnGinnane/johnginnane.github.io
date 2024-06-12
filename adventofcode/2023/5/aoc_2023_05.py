@@ -161,24 +161,24 @@ path = {"seed":        "soil",
         "temperature": "humidity",
         "humidity":    "location"}
 
-# lowest_location = -1
+lowest_location = -1
 
-# for n in seeds:
-#     last_number = n
-#     output = next(iter(path)) + " " + str(last_number)
+for n in seeds:
+    last_number = n
+    output = next(iter(path)) + " " + str(last_number)
 
-#     for from_type in path:
-#         to_type = path[from_type]
-#         last_number = getMap(from_type, to_type).getDestination(last_number)
-#         output += ", " + to_type + " " + str(last_number)
+    for from_type in path:
+        to_type = path[from_type]
+        last_number = getMap(from_type, to_type).getDestination(last_number)
+        output += ", " + to_type + " " + str(last_number)
 
-#         if from_type == list(path)[-1]:
-#             if lowest_location < 0 or last_number < lowest_location:
-#                 lowest_location = last_number
+        if from_type == list(path)[-1]:
+            if lowest_location < 0 or last_number < lowest_location:
+                lowest_location = last_number
     
-#     #print(output)
+    #print(output)
 
-# print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
+print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
 
 # print("Part 2 Seed Ranges:")
 # for r in seed_ranges:
@@ -202,8 +202,8 @@ def filterRange(r:number_range, m:map):
 
     rangeConsumed = False
     for mr in m.ranges:
-        print("Range: " + str(r))
-        print("Check: " + str(mr))
+        # print("Range: " + str(r))
+        # print("Check: " + str(mr))
 
         # If the entire input range is inside the map range
         # then just convert to destination
@@ -241,17 +241,40 @@ def filterRange(r:number_range, m:map):
 
     return output
 
-TestMap = None
-TestSeedRange = seed_ranges[1]
-for m in maps:
-    if m.source_type == "light" and m.destination_type == "temperature":
-        TestMap = m
-        break
+# TestMap = None
+# TestSeedRange = seed_ranges[1]
+# for m in maps:
+#     if m.source_type == "light" and m.destination_type == "temperature":
+#         TestMap = m
+#         break
 
-if TestMap:
-    print("Testing seed range" + str(TestSeedRange))
-    print(TestMap)
+# if TestMap:
+#     print("Testing seed range" + str(TestSeedRange))
+#     print(TestMap)
 
-    result = filterRange(seed_ranges[1], TestMap)
-    for huh in result:
-        print(huh)
+#     result = filterRange(seed_ranges[1], TestMap)
+#     for huh in result:
+#         print(huh)
+
+def printListOfNumberRanges(ranges):
+    output = ""
+    for r in ranges:
+        if output != "":
+            output += ", "
+        output += "'" + str(r) + "'"
+
+    print("[" + output + "]")
+
+cur_ranges = seed_ranges.copy()
+
+for from_type in path:
+    to_type = path[from_type]
+    cur_map = getMap(from_type, to_type)
+    new_ranges = []
+
+    while len(cur_ranges) > 0:
+        new_ranges = new_ranges + filterRange(cur_ranges[0], cur_map)
+        printListOfNumberRanges(new_ranges)
+        del cur_ranges[0]
+    
+    cur_ranges = new_ranges.copy()
