@@ -161,30 +161,30 @@ path = {"seed":        "soil",
         "temperature": "humidity",
         "humidity":    "location"}
 
-lowest_location = -1
+# lowest_location = -1
 
-for n in seeds:
-    last_number = n
-    output = next(iter(path)) + " " + str(last_number)
+# for n in seeds:
+#     last_number = n
+#     output = next(iter(path)) + " " + str(last_number)
 
-    for from_type in path:
-        to_type = path[from_type]
-        last_number = getMap(from_type, to_type).getDestination(last_number)
-        output += ", " + to_type + " " + str(last_number)
+#     for from_type in path:
+#         to_type = path[from_type]
+#         last_number = getMap(from_type, to_type).getDestination(last_number)
+#         output += ", " + to_type + " " + str(last_number)
 
-        if from_type == list(path)[-1]:
-            if lowest_location < 0 or last_number < lowest_location:
-                lowest_location = last_number
+#         if from_type == list(path)[-1]:
+#             if lowest_location < 0 or last_number < lowest_location:
+#                 lowest_location = last_number
     
-    #print(output)
+#     #print(output)
 
-print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
+# print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
 
-print("Part 2 Seed Ranges:")
-for r in seed_ranges:
-    print(r)
+# print("Part 2 Seed Ranges:")
+# for r in seed_ranges:
+#     print(r)
 
-def filterRange(r:range, m:map):
+def filterRange(r:number_range, m:map):
     if m == None:
         return [r]
     
@@ -200,12 +200,58 @@ def filterRange(r:range, m:map):
     # mr[1] {50...97} -> {52...99}
     # mr[2] {98...99} -> {50...51}
 
-    # wip
-    # for mr in m.ranges:
-    #     cutoff = None
+    rangeConsumed = False
+    for mr in m.ranges:
+        print("Range: " + str(r))
+        print("Check: " + str(mr))
 
-    #     if r.start < mr.start:
-    #         cutoff = mr.start - r.start
-    #         new_range = 
+        # If the entire input range is inside the map range
+        # then just convert to destination
+        if r.start >= mr.source_range.start and r.end <= mr.source_range.end:
+            output.append(number_range(m.getDestination(r.start), r.length))
+            rangeConsumed = True
+            break
+        elif r.start >= mr.source_range.start and r.start <= mr.source_range.end:
+            sub_start = m.getDestination(r.start)
+            sub_end = m.getDestination(mr.source_range.end)
+            sub_range = number_range(sub_start, sub_end - sub_start)
+            output.append(sub_range)
+
+            # Truncate the input range for future checks
+            r.start = mr.source_range.end + 1
+
+        elif r.end >= mr.source_range.start and r.end <= mr.source_range.end:
+            # End of input range fits into map range
+            # so cut into two pieces and finish
+            sub_start_1 = r.start
+            sub_end_1 = mr.source_range.start - 1
+            sub_range_1 = number_range(sub_start_1, sub_end_1 - sub_start_1)
+            output.append(sub_range_1)
+
+            sub_start_2 = m.getDestination(mr.source_range.start)
+            sub_end_2 = m.getDestination(r.end)
+            sub_range_2 = number_range(sub_start_2, sub_end_2 - sub_start_2)
+            output.append(sub_range_2)
+            return output
+    
+    # Range (or what's left of it) couldn't
+    # fit into map range
+    if not rangeConsumed:
+        output.append(r)
 
     return output
+
+TestMap = None
+TestSeedRange = seed_ranges[1]
+for m in maps:
+    if m.source_type == "light" and m.destination_type == "temperature":
+        TestMap = m
+        break
+
+if TestMap:
+    print("Testing seed range" + str(TestSeedRange))
+    print(TestMap)
+
+    result = filterRange(seed_ranges[1], TestMap)
+    for huh in result:
+        print(huh)
