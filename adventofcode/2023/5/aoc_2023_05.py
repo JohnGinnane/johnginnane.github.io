@@ -91,8 +91,8 @@ def getMap(source_type, destination_type):
 
     return None
 
-#lines = open("input_05.txt", "r").readlines()
-lines = open("test_05.txt", "r").readlines()
+lines = open("input_05.txt", "r").readlines()
+#lines = open("test_05.txt", "r").readlines()
 seeds = []
 seed_ranges = []
 maps = []
@@ -280,20 +280,20 @@ def numberRangeKey(e):
 
 cur_ranges = seed_ranges.copy()
 cur_ranges.sort(key=numberRangeKey)
-printListOfNumberRanges(cur_ranges)
+#printListOfNumberRanges(cur_ranges)
 
 for from_type in path:
     to_type = path[from_type]
     cur_map = getMap(from_type, to_type)
     new_ranges = []
 
-    print("\t" + str(cur_map))
+    #print("\t" + str(cur_map))
     while len(cur_ranges) > 0:
         new_ranges = new_ranges + filterRange(cur_ranges[0], cur_map)
         del cur_ranges[0]
     
     new_ranges.sort(key=numberRangeKey)
-    printListOfNumberRanges(new_ranges)
+    #printListOfNumberRanges(new_ranges)
     cur_ranges = new_ranges.copy()
 
 print("Lowest number: " + str(cur_ranges[0].start))
