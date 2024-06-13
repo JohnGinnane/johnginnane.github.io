@@ -1,6 +1,7 @@
 import re
-import math
+import time
 
+solution_start = time.time()
 def right(s, l):
     return str(s)[-l:]
 
@@ -186,6 +187,7 @@ for n in seeds:
     #print(output)
 
 print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
+part_1_end = time.time()
 
 def filterRange(r:number_range, m:map):
     if m == None:
@@ -274,4 +276,8 @@ for from_type in path:
     #printListOfNumberRanges(new_ranges)
     cur_ranges = new_ranges.copy()
 
-print("Lowest number: " + str(cur_ranges[0].start))
+print("\n Part 2 Lowest Location: " + str(cur_ranges[0].start))
+part_2_end = time.time()
+
+print("Part 1: " + str((part_1_end - solution_start) * 1000) + "ms")
+print("Part 2: " + str((part_2_end - solution_start) * 1000) + "ms")
