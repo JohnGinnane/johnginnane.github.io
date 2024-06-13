@@ -160,9 +160,6 @@ for line in lines:
 
                 last_map.addMapRange(source_start, destination_start, length)
 
-# for m in maps:
-#     print(m)
-
 path = {"seed":        "soil",
         "soil":        "fertilizer",
         "fertilizer":  "water",
@@ -189,10 +186,6 @@ for n in seeds:
     #print(output)
 
 print("\nPart 1 Lowest Location: " + str(lowest_location) + "\n\n")
-
-# print("Part 2 Seed Ranges:")
-# for r in seed_ranges:
-#     print(r)
 
 def filterRange(r:number_range, m:map):
     if m == None:
@@ -250,21 +243,6 @@ def filterRange(r:number_range, m:map):
         output.append(r)
 
     return output
-
-# TestMap = None
-# TestSeedRange = seed_ranges[1]
-# for m in maps:
-#     if m.source_type == "light" and m.destination_type == "temperature":
-#         TestMap = m
-#         break
-
-# if TestMap:
-#     print("Testing seed range" + str(TestSeedRange))
-#     print(TestMap)
-
-#     result = filterRange(seed_ranges[1], TestMap)
-#     for huh in result:
-#         print(huh)
 
 def printListOfNumberRanges(ranges):
     output = ""
