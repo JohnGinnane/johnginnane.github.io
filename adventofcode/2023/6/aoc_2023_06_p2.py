@@ -23,23 +23,17 @@ class race:
     def __str__(self):
         return str(self.distance) + "mm@" + str(self.time) + "s - (" + str(self.min_charge) + " <= c <= " + str(self.max_charge) + ") - Diff: " + str(self.max_charge - self.min_charge)
 
-lines = open("test_06.txt", "r").readlines()
+lines = open("input_06.txt", "r").readlines()
 
 time_match = re.search(r"Time:([0-9]+)", re.sub(r"\s*", "", lines[0]))
 dist_match = re.search(r"Distance:([0-9]+)", re.sub(r"\s*", "", lines[1]))
 big_race = race(int(time_match.group(1)), int(dist_match.group(1)))
 
 # Distance = (MaxTime - ChargeTime) * ChargeTime
-low = 0
-high = big_race.time
-mid = (high + low) // 2
-i = 0
-
 def findLimit(max:int, target:int):
     low = 0
     high = max
     mid = (high + low) // 2
-    i = 0
     lower_limit = 0
     upper_limit = 0
     findUpper = False
@@ -68,7 +62,7 @@ def findLimit(max:int, target:int):
 
         # Update mid to new location
         mid = (high + low) // 2
-        
+
         if mid <= low and not findUpper:
             print("Finished lower limit, moving to upper")
             # Swap to finding upper limit
