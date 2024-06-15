@@ -17,7 +17,7 @@ class race:
     def __str__(self):
         return str(self.distance) + "mm@" + str(self.time) + "s - (" + str(self.min_charge) + " <= c <= " + str(self.max_charge) + ") - Diff: " + str(self.max_charge - self.min_charge)
 
-lines = open("test_06.txt", "r").readlines()
+lines = open("input_06.txt", "r").readlines()
 races = []
 
 time_match = re.search(r"Time:([0-9]+)", re.sub(r"\s*", "", lines[0]))
@@ -26,6 +26,9 @@ races.append(race(int(time_match.group(1)), int(dist_match.group(1))))
 
 ways = 0
 
+# This original method from part 1 technically 
+# works in part 2, however it's brute force
+# and takes much longer to solve
 for r in races:
     c = 0
     while c < r.time:
@@ -52,4 +55,4 @@ for r in races:
     
     print(r)
 
-print("Part 1 Number of Ways: " + str(ways))
+print("Part 2 Number of Ways: " + str(ways))
