@@ -35,61 +35,55 @@ high = big_race.time
 mid = (high + low) // 2
 i = 0
 
-def findLimit(max:int, target:int, findUpper:bool):
+def findLimit(max:int, target:int):
     low = 0
     high = max
     mid = (high + low) // 2
     i = 0
-    limit = 0
+    lower_limit = 0
+    upper_limit = 0
+    findUpper = False
 
     while True:
         dist = (max - mid) * mid
-        debug = pad(i, 4) + ": "
-        debug += str(low) + "-" + str(mid) + "-" + str(high)
 
         if not findUpper:
             if dist < target:
                 # Not charged for long enough
                 # Look right
                 low = mid
-                debug = padr(debug, 30) + "looking right"
             else:
                 # Charged for adequate amount of time, 
                 # make note of this time (to find upper limit)
                 # Look left (to find lower limit)
-                limit = mid
+                lower_limit = mid
                 high = mid
-                debug = padr(debug, 30) + "looking left "
         else:
             if dist >= target:
                 # Charged for long enough
                 low = mid
-                limit = mid
-                debug = padr(debug, 30) + "looking right"
+                upper_limit = mid
             else:
                 high = mid
-                debug = padr(debug, 30) + "looking left "
 
         # Update mid to new location
         mid = (high + low) // 2
-
-        debug += " " + pad(limit, 6)
-        print(debug)
-
-        if mid <= low or mid >= high:
-            print("binary search complete")
+        
+        if mid <= low and not findUpper:
+            print("Finished lower limit, moving to upper")
+            # Swap to finding upper limit
+            findUpper = True
+            low = 0
+            high = max
+            mid = (high + low) // 2
+        elif high - low <= 1 and findUpper:
+            print("Finished upper limit, exiting")
+            # Finished binary search
             break
-        i+=1
 
-        # watchdog
-        if i >= 20:
-            print("Too many steps, stopping!")
-            break
+    return lower_limit, upper_limit
 
-    return limit
-
-big_race.min_charge = findLimit(big_race.time, big_race.distance, False)
-big_race.max_charge = findLimit(big_race.time, big_race.distance, True)
+big_race.min_charge, big_race.max_charge = findLimit(big_race.time, big_race.distance)
 
 print(big_race)
 print("Part 2 Number of Ways: " + str(big_race.max_charge - big_race.min_charge + 1))
