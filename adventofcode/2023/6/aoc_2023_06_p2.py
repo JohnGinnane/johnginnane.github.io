@@ -17,16 +17,12 @@ class race:
     def __str__(self):
         return str(self.distance) + "mm@" + str(self.time) + "s - (" + str(self.min_charge) + " <= c <= " + str(self.max_charge) + ") - Diff: " + str(self.max_charge - self.min_charge)
 
-lines = open("input_06.txt", "r").readlines()
+lines = open("test_06.txt", "r").readlines()
 races = []
 
-time_matches = re.findall(r"([0-9]+)+", lines[0])
-dist_matches = re.findall(r"([0-9]+)+", lines[1])
-
-for k in range(len(time_matches)):
-    t = int(time_matches[k])
-    d = int(dist_matches[k])
-    races.append(race(t, d))
+time_match = re.search(r"Time:([0-9]+)", re.sub(r"\s*", "", lines[0]))
+dist_match = re.search(r"Distance:([0-9]+)", re.sub(r"\s*", "", lines[1]))
+races.append(race(int(time_match.group(1)), int(dist_match.group(1))))
 
 ways = 0
 
