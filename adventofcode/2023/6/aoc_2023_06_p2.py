@@ -4,8 +4,14 @@ import math
 def right(s, l):
     return str(s)[-l:]
 
+def left(s, l):
+    return str(s)[:l]
+
 def pad(s, l):
     return right(" " * l + str(s), l)
+
+def padr(s, l):
+    return left(str(s) + " " * l, l)
 
 class race:
     def __init__(self, time:int, distance:int):
@@ -23,42 +29,56 @@ time_match = re.search(r"Time:([0-9]+)", re.sub(r"\s*", "", lines[0]))
 dist_match = re.search(r"Distance:([0-9]+)", re.sub(r"\s*", "", lines[1]))
 big_race = race(int(time_match.group(1)), int(dist_match.group(1)))
 
-ways = 0
-
 # Distance = (MaxTime - ChargeTime) * ChargeTime
 low = 0
 high = big_race.time
 mid = (high + low) // 2
 i = 0
 
-def findLowerLimit(max:int):
+def findLimit(max:int, target:int, findUpper:bool):
     low = 0
     high = max
     mid = (high + low) // 2
     i = 0
-    lower_limit = 0
+    limit = 0
 
-    while mid > low:
+    while True:
         dist = (max - mid) * mid
         debug = pad(i, 4) + ": "
         debug += str(low) + "-" + str(mid) + "-" + str(high)
 
-        if dist < big_race.distance:
-            # Not charged for long enough
-            # Look right
-            low = mid
-            debug += pad("looking right", 20)
+        if not findUpper:
+            if dist < target:
+                # Not charged for long enough
+                # Look right
+                low = mid
+                debug = padr(debug, 30) + "looking right"
+            else:
+                # Charged for adequate amount of time, 
+                # make note of this time (to find upper limit)
+                # Look left (to find lower limit)
+                limit = mid
+                high = mid
+                debug = padr(debug, 30) + "looking left "
         else:
-            # Charged for adequate amount of time, 
-            # make note of this time (to find upper limit)
-            # Look left (to find lower limit)
-            lower_limit = mid
-            high = mid
-            debug += pad("looking left", 20)
+            if dist >= target:
+                # Charged for long enough
+                low = mid
+                limit = mid
+                debug = padr(debug, 30) + "looking right"
+            else:
+                high = mid
+                debug = padr(debug, 30) + "looking left "
 
+        # Update mid to new location
         mid = (high + low) // 2
-        debug += " " + str(lower_limit)
+
+        debug += " " + pad(limit, 6)
         print(debug)
+
+        if mid <= low or mid >= high:
+            print("binary search complete")
+            break
         i+=1
 
         # watchdog
@@ -66,9 +86,10 @@ def findLowerLimit(max:int):
             print("Too many steps, stopping!")
             break
 
-    return lower_limit
+    return limit
 
-big_race.min_charge = findLowerLimit(big_race.time)
+big_race.min_charge = findLimit(big_race.time, big_race.distance, False)
+big_race.max_charge = findLimit(big_race.time, big_race.distance, True)
 
 print(big_race)
-print("Part 2 Number of Ways: " + str(ways))
+print("Part 2 Number of Ways: " + str(big_race.max_charge - big_race.min_charge + 1))
