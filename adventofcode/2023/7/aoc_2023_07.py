@@ -70,7 +70,6 @@ class hand:
             summary_second = next(i)
         
         self.type = ""
-        print(str(summary_first) + ", " + str(summary_second))
 
         # Find the type
         if summary_first == 5:
@@ -90,6 +89,23 @@ class hand:
 
     def __str__(self):
         return "Cards: " + "".join(self.cards) + ", Bid: " + pad(self.bid, 5) + ", Type; " + self.type + ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.summary.items()])
+    
+    def __lt__(self, other):
+        if self.type == other.type:
+            # Iterate over cards
+            # and figure out precedence
+            for k in range(len(self.cards)):
+                if hand.card_hierarchy[self.cards[k]] == hand.card_hierarchy[other.cards[k]]:
+                    # Cards are the same :(
+                    continue
+                else:
+                    return hand.card_hierarchy[self.cards[k]] < hand.card_hierarchy[other.cards[k]]
+        else:
+            # Just check type
+            return hand.type_hierarchy[self.type] < hand.type_hierarchy[other.type]
+        
+        print("bingus")
+        return False
 
 lines = open("test_07.txt", "r").readlines()
 hands = []
