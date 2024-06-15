@@ -110,21 +110,20 @@ class hand:
     def __eq__(self, other):
         return self.cards_str == other.cards_str
 
-lines = open("test_07.txt", "r").readlines()
+lines = open("input_07.txt", "r").readlines()
 hands = []
 
 for line in lines:
     hands.append(hand(line))
 
-print("Before sorting:")
-
-for k in range(len(hands)):
-    v = hands[k]
-    print(pad(k, 3) + ": " + str(v))
-
-print("After sorting:")
-
 hands.sort()
+
+total_winnings = 0
+
 for k in range(len(hands)):
     v = hands[k]
     print(pad(k, 3) + ": " + str(v))
+    total_winnings += v.bid * (k+1)
+
+# 253675479 is too low?
+print("Part 1 Total Winnings: " + str(total_winnings))
