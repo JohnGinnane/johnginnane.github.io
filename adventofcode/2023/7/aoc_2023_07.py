@@ -18,13 +18,13 @@ class hand:
         self.original_string = original
 
     def __str__(self):
-        print(self.original_string)
+        return self.original_string
 
 lines = open("test_07.txt", "r").readlines()
 hands = []
 
 for line in lines:
-    hands.append(hand(line))
+    hands.append(hand(line.strip()))
 
 for h in hands:
     print(h)
