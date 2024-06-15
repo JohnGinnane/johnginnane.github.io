@@ -106,6 +106,9 @@ class hand:
         
         print("bingus")
         return False
+    
+    def __eq__(self, other):
+        return self.cards_str == other.cards_str
 
 lines = open("test_07.txt", "r").readlines()
 hands = []
@@ -113,5 +116,15 @@ hands = []
 for line in lines:
     hands.append(hand(line))
 
-for h in hands:
-    print(h)
+print("Before sorting:")
+
+for k in range(len(hands)):
+    v = hands[k]
+    print(pad(k, 3) + ": " + str(v))
+
+print("After sorting:")
+
+hands.sort()
+for k in range(len(hands)):
+    v = hands[k]
+    print(pad(k, 3) + ": " + str(v))
