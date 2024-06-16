@@ -15,7 +15,7 @@ def padr(s, l):
 
 class hand:
     card_hierarchy = {
-        "J":  0,
+        "J":  0, # WILD CARD
         "2":  1,
         "3":  2,
         "4":  3,
@@ -79,7 +79,7 @@ class hand:
         summary_first = next(i)
         summary_second = 0
 
-        if len(self.summary) > 1:
+        if len(self.simulated_summary) > 1:
             summary_second = next(i)
         
         self.type = ""
@@ -101,10 +101,11 @@ class hand:
             self.type = "H"
 
     def __str__(self):
-        output  = "Cards: " + "".join([k*v for (k, v) in self.summary.items()])
+        #output  = "Cards: " + "".join([k*v for (k, v) in self.summary.items()])
+        output  = "Cards: " + self.cards_str
         output += ", Bid: " + pad(self.bid, 5)
         output += ", Type; " + self.type
-        output += ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.simulated_summary.items()])
+        #output += ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.simulated_summary.items()])
 
         return output
 
@@ -158,7 +159,7 @@ class hand:
         
         return self > other
 
-lines = open("test_07.txt", "r").readlines()
+lines = open("input_07.txt", "r").readlines()
 hands = []
 
 for line in lines:
@@ -173,4 +174,5 @@ for k in range(len(hands)):
     print(pad(k, 3) + ": " + str(v))
     total_winnings += v.bid * (k+1)
 
+# 253,022,409 too low
 print("Part 2 Total Winnings: " + str(total_winnings))
