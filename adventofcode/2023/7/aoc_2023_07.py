@@ -50,7 +50,7 @@ class hand:
         self.cards = []
         self.summary = {}
         
-        # Parse he cards
+        # Parse the cards
         for c in cards_str:
             self.cards.append(c)
             if not c in self.summary:

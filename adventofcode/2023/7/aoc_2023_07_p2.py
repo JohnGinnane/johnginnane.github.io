@@ -15,16 +15,16 @@ def padr(s, l):
 
 class hand:
     card_hierarchy = {
-        "2":  0,
-        "3":  1,
-        "4":  2,
-        "5":  3,
-        "6":  4,
-        "7":  5,
-        "8":  6,
-        "9":  7,
-        "T":  8,
-        "J":  9,
+        "J":  0,
+        "2":  1,
+        "3":  2,
+        "4":  3,
+        "5":  4,
+        "6":  5,
+        "7":  6,
+        "8":  7,
+        "9":  8,
+        "T":  9,
         "Q": 10,
         "K": 11,
         "A": 12
@@ -49,8 +49,9 @@ class hand:
 
         self.cards = []
         self.summary = {}
-        
-        # Parse he cards
+        self.simulated_summary = {}
+
+        # Parse the cards
         for c in cards_str:
             self.cards.append(c)
             if not c in self.summary:
@@ -60,8 +61,21 @@ class hand:
 
         # Sort summary
         self.summary = dict(sorted(self.summary.items(), key=lambda item: item[1], reverse=True))
+        self.simulated_summary = self.summary.copy()
 
-        i = iter(self.summary.values())
+        most_card = next(iter(self.summary.keys()))
+
+        # Handle wildcards
+        wildcards = 0
+        for c in self.summary:
+            if c == "J":
+                wildcards = self.summary[c]
+
+        if most_card != "J" and wildcards > 0:
+            self.simulated_summary[most_card] += wildcards
+            del self.simulated_summary["J"]
+
+        i = iter(self.simulated_summary.values())
         summary_first = next(i)
         summary_second = 0
 
@@ -87,7 +101,12 @@ class hand:
             self.type = "H"
 
     def __str__(self):
-        return "Cards: " + "".join([k*v for (k, v) in self.summary.items()]) + ", Bid: " + pad(self.bid, 5) + ", Type; " + self.type + ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.summary.items()])
+        output  = "Cards: " + "".join([k*v for (k, v) in self.summary.items()])
+        output += ", Bid: " + pad(self.bid, 5)
+        output += ", Type; " + self.type
+        output += ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.simulated_summary.items()])
+
+        return output
 
     def __eq__(self, other):
         match = True
