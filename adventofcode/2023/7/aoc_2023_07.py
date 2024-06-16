@@ -92,23 +92,37 @@ class hand:
     
     def __lt__(self, other):
         if self.type == other.type:
-            # Iterate over cards
+            # Iterate over summary
             # and figure out precedence
-            for k in range(len(self.cards)):
-                if hand.card_hierarchy[self.cards[k]] == hand.card_hierarchy[other.cards[k]]:
+            these_cards = iter(self.summary)
+            those_cards = iter(other.summary)
+
+            while True:
+                this_card = next(these_cards)
+                that_card = next(those_cards)
+
+                if this_card == that_card:
                     # Cards are the same :(
                     continue
                 else:
-                    return hand.card_hierarchy[self.cards[k]] < hand.card_hierarchy[other.cards[k]]
+                    return this_card < that_card
         else:
             # Just check type
             return hand.type_hierarchy[self.type] < hand.type_hierarchy[other.type]
         
+        #QQQQJ < K2222 ? (NO!)
         print("bingus")
         return False
     
     def __eq__(self, other):
-        return self.cards_str == other.cards_str
+        match = True
+
+        for k in range(len(self.cards)):
+            if self.cards[k] != other.cards[k]:
+                match = False
+                break
+
+        return match
 
 lines = open("input_07.txt", "r").readlines()
 hands = []
@@ -125,5 +139,6 @@ for k in range(len(hands)):
     print(pad(k, 3) + ": " + str(v))
     total_winnings += v.bid * (k+1)
 
-# 253675479 is too low?
+# 253,675,479 is too low?
+# 253,726,582 still too low
 print("Part 1 Total Winnings: " + str(total_winnings))
