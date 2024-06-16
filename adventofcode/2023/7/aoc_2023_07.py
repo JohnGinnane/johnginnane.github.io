@@ -15,19 +15,19 @@ def padr(s, l):
 
 class hand:
     card_hierarchy = {
-        "2":  2,
-        "3":  3,
-        "4":  4,
-        "5":  5,
-        "6":  6,
-        "7":  7,
-        "8":  8,
-        "9":  9,
-        "T": 10,
-        "J": 11,
-        "Q": 12,
-        "K": 13,
-        "A": 14
+        "2":  0,
+        "3":  1,
+        "4":  2,
+        "5":  3,
+        "6":  4,
+        "7":  5,
+        "8":  6,
+        "9":  7,
+        "T":  8,
+        "J":  9,
+        "Q": 10,
+        "K": 11,
+        "A": 12
     }
 
     type_hierarchy = {
@@ -59,7 +59,7 @@ class hand:
                 self.summary[c] += 1
 
         # Sort cards and summary
-        self.cards.sort(key=lambda x: hand.card_hierarchy[x], reverse=True)
+        #self.cards.sort(key=lambda x: hand.card_hierarchy[x], reverse=True)
         self.summary = dict(sorted(self.summary.items(), key=lambda item: item[1], reverse=True))
 
         i = iter(self.summary.values())
@@ -88,32 +88,49 @@ class hand:
             self.type = "H"
 
     def __str__(self):
-        return "Cards: " + "".join(self.cards) + ", Bid: " + pad(self.bid, 5) + ", Type; " + self.type + ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.summary.items()])
-    
-    def __lt__(self, other):
-        if self.type == other.type:
-            # Iterate over summary
-            # and figure out precedence
-            these_cards = iter(self.summary)
-            those_cards = iter(other.summary)
-
-            while True:
-                this_card = next(these_cards)
-                that_card = next(those_cards)
-
-                if this_card == that_card:
-                    # Cards are the same :(
-                    continue
-                else:
-                    return this_card < that_card
-        else:
-            # Just check type
-            return hand.type_hierarchy[self.type] < hand.type_hierarchy[other.type]
+        return "Cards: " + "".join([k*v for (k, v) in self.summary.items()]) + ", Bid: " + pad(self.bid, 5) + ", Type; " + self.type + ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.summary.items()])
         
-        #QQQQJ < K2222 ? (NO!)
-        print("bingus")
-        return False
-    
+    # def test_equality(a, b):
+    #     if a == b:
+    #         print("a == b")
+    #         return
+
+    #     if a.type == a.type:
+    #         print("a.type == b.type")
+    #         # Iterate over summary
+    #         # and figure out precedence
+    #         these_cards = iter(a.summary)
+    #         those_cards = iter(b.summary)
+            
+    #         i = 0
+    #         while True:
+    #             try:
+    #                 print(i)
+    #                 i += 1
+    #                 this_card = next(these_cards)
+    #                 that_card = next(those_cards)
+                    
+    #                 if this_card == that_card:
+    #                     # Cards are the same :(
+    #                     print("a[" + this_card + "] == b[" + that_card + "]")
+    #                     continue
+    #                 else:
+    #                     if hand.card_hierarchy[this_card] < hand.card_hierarchy[that_card]:
+    #                         print("a < b (a[" + this_card + "] < b[" + that_card + "])")
+    #                         return
+    #                     else:
+    #                         print("a > b (a[" + this_card  + "] > b[" + that_card  + "])")
+    #             except StopIteration:
+    #                 break
+    #     else:
+    #         # Just check type
+    #         if hand.type_hierarchy[a.type] < hand.type_hierarchy[b.type]:
+    #             print("a.type < b.type")
+    #             return
+        
+    #     print("eof")
+    #     return 
+
     def __eq__(self, other):
         match = True
 
@@ -123,6 +140,46 @@ class hand:
                 break
 
         return match
+
+    def __lt__(self, other):
+        if self == other:
+            return False
+
+        if self.type == other.type:
+            # Iterate over cards
+            # and figure out precedence
+            for k in range(len(self.cards)):
+                this_card = self.cards[k]
+                that_card = other.cards[k]
+
+                if this_card == that_card:
+                    # Cards are the same :(
+                    continue
+                else:
+                    return hand.card_hierarchy[this_card] < hand.card_hierarchy[that_card]
+        else:
+            # Just check type
+            return hand.type_hierarchy[self.type] < hand.type_hierarchy[other.type]
+        
+        return False
+    
+    def __le__(self, other):
+        if self == other:
+            return True
+        
+        return self < other
+    
+    def __gt__(self, other):
+        if self == other:
+            return False
+        
+        return other < self
+    
+    def __ge__(self, other):
+        if self == other:
+            return True
+        
+        return self > other
 
 lines = open("input_07.txt", "r").readlines()
 hands = []
@@ -139,6 +196,4 @@ for k in range(len(hands)):
     print(pad(k, 3) + ": " + str(v))
     total_winnings += v.bid * (k+1)
 
-# 253,675,479 is too low?
-# 253,726,582 still too low
 print("Part 1 Total Winnings: " + str(total_winnings))
