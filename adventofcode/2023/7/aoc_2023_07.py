@@ -58,8 +58,7 @@ class hand:
             else:
                 self.summary[c] += 1
 
-        # Sort cards and summary
-        #self.cards.sort(key=lambda x: hand.card_hierarchy[x], reverse=True)
+        # Sort summary
         self.summary = dict(sorted(self.summary.items(), key=lambda item: item[1], reverse=True))
 
         i = iter(self.summary.values())
@@ -89,47 +88,6 @@ class hand:
 
     def __str__(self):
         return "Cards: " + "".join([k*v for (k, v) in self.summary.items()]) + ", Bid: " + pad(self.bid, 5) + ", Type; " + self.type + ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.summary.items()])
-        
-    # def test_equality(a, b):
-    #     if a == b:
-    #         print("a == b")
-    #         return
-
-    #     if a.type == a.type:
-    #         print("a.type == b.type")
-    #         # Iterate over summary
-    #         # and figure out precedence
-    #         these_cards = iter(a.summary)
-    #         those_cards = iter(b.summary)
-            
-    #         i = 0
-    #         while True:
-    #             try:
-    #                 print(i)
-    #                 i += 1
-    #                 this_card = next(these_cards)
-    #                 that_card = next(those_cards)
-                    
-    #                 if this_card == that_card:
-    #                     # Cards are the same :(
-    #                     print("a[" + this_card + "] == b[" + that_card + "]")
-    #                     continue
-    #                 else:
-    #                     if hand.card_hierarchy[this_card] < hand.card_hierarchy[that_card]:
-    #                         print("a < b (a[" + this_card + "] < b[" + that_card + "])")
-    #                         return
-    #                     else:
-    #                         print("a > b (a[" + this_card  + "] > b[" + that_card  + "])")
-    #             except StopIteration:
-    #                 break
-    #     else:
-    #         # Just check type
-    #         if hand.type_hierarchy[a.type] < hand.type_hierarchy[b.type]:
-    #             print("a.type < b.type")
-    #             return
-        
-    #     print("eof")
-    #     return 
 
     def __eq__(self, other):
         match = True
