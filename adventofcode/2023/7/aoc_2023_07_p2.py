@@ -60,21 +60,48 @@ class hand:
                 self.summary[c] += 1
 
         # Sort summary
-        self.summary = dict(sorted(self.summary.items(), key=lambda item: item[1], reverse=True))
+        #self.summary = dict(sorted(self.summary.items(), key=lambda item: item[1], reverse=True))
         self.simulated_summary = self.summary.copy()
 
-        most_card = next(iter(self.summary.keys()))
-
-        # Handle wildcards
+        sumiter = iter(self.simulated_summary.keys())
+        most_card = ""
+        high_card = ""
         wildcards = 0
-        for c in self.summary:
-            if c == "J":
-                wildcards = self.summary[c]
 
-        if most_card != "J" and wildcards > 0:
-            self.simulated_summary[most_card] += wildcards
-            del self.simulated_summary["J"]
+        new_summary = {}
+        # Handle wildcards
+        while True:
+            try:
+                card = next(sumiter)
+                if card == "J":
+                    wildcards = self.simulated_summary[card]
+                    continue
 
+                new_summary[card] = self.simulated_summary[card]
+
+                if high_card == "":
+                    high_card = card
+                elif hand.card_hierarchy[card] > hand.card_hierarchy[high_card]:
+                    high_card = card
+
+                if most_card == "":
+                    most_card = card
+                elif self.simulated_summary[card] > self.simulated_summary[most_card]:
+                    most_card = card
+
+            except StopIteration:
+                break
+
+        self.most_card = most_card
+        self.high_card = high_card
+        
+        if len(new_summary) > 0:
+            self.simulated_summary = new_summary.copy()
+
+        if wildcards > 0 and wildcards < 5:
+            self.simulated_summary[high_card] += wildcards
+            
+        self.simulated_summary = dict(sorted(self.simulated_summary.items(), key=lambda item: item[1], reverse=True))
         i = iter(self.simulated_summary.values())
         summary_first = next(i)
         summary_second = 0
@@ -82,7 +109,7 @@ class hand:
         if len(self.simulated_summary) > 1:
             summary_second = next(i)
         
-        self.type = ""
+        self.type = "H"
 
         # Find the type
         if summary_first == 5:
@@ -97,15 +124,13 @@ class hand:
             self.type = "2"
         elif summary_first == 2:
             self.type = "1"
-        elif len(self.summary) == 5:
-            self.type = "H"
 
     def __str__(self):
         #output  = "Cards: " + "".join([k*v for (k, v) in self.summary.items()])
-        output  = "Cards: " + self.cards_str
+        output  = "Cards: " + self.cards_str #"".join([c for c in self.cards])
         output += ", Bid: " + pad(self.bid, 5)
-        output += ", Type; " + self.type
-        #output += ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.simulated_summary.items()])
+        output += ", Type: " + self.type
+        output += ", Summary: " + ", ".join([str(v)+"x"+k for (k, v) in self.simulated_summary.items()])
 
         return output
 
@@ -168,11 +193,28 @@ for line in lines:
 hands.sort()
 
 total_winnings = 0
+type_summary = {}
 
 for k in range(len(hands)):
     v = hands[k]
-    print(pad(k, 3) + ": " + str(v))
+
+    if not v.type in type_summary:
+        type_summary[v.type] = 1
+    else:
+        type_summary[v.type] += 1
+    
+    print(pad(k, 3) + ": " + str(v) + " (H: " + v.high_card + ", M: " + v.most_card + ")")
     total_winnings += v.bid * (k+1)
 
+# for t in type_summary:
+#     v = type_summary[t]
+#     print(t + ": " + str(v))
+
+# JJTA2
+# JJ369
+
 # 253,022,409 too low
+# 253,413,013 still too low
+# 253,995,656 incorrect
+# 253,846,975 incorrect
 print("Part 2 Total Winnings: " + str(total_winnings))
