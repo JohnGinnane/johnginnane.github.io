@@ -9,6 +9,7 @@ let clickDetails = {
 
 var varRoot = document.querySelector(":root");
 var gameOrigin = {};
+var ships = [];
 
 let dragDetails = {
     lastX: 0,
@@ -71,6 +72,7 @@ function isNumber(n) {
 }
 
 function makeDraggable(element) {
+    console.log("make drag: " + element.id);
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     let header = document.getElementById(element.id + "-body")
     if (header) {
@@ -86,7 +88,7 @@ function makeDraggable(element) {
         clickDetails.endTime = null;
         clickDetails.endX = null;
         clickDetails.endY = null;
-            
+        
         e = e || window.event;
         e.preventDefault();
 
@@ -106,33 +108,16 @@ function makeDraggable(element) {
         pos3 = e.clientX;
         pos4 = e.clientY;
 
-        let x = (element.offsetLeft - pos1);
-        let y = (element.offsetTop - pos2);
+        let pos = vec2((element.offsetLeft - pos1), (element.offsetTop - pos2));
         
-        debugCoords(vec2(x, y));
+        debugCoords(pos);
 
-        element.style.top = y + "px";
-        element.style.left = x + "px";
+        element.style.top = pos.Y + "px";
+        element.style.left = pos.X + "px";
 
-        let scale = parseInt(getCSSVar("--scale"));
-        let centre = vec2(x, y);
-
-        // Subtract the grid origin from the
-        // centre of the draggable element
-        // Then divide by the scale to get
-        // the integer co-ordinate of the grid
-        let predictedPlace = {
-            X: Math.round((centre.X - gameOrigin.X) / scale),
-            Y: Math.round((centre.Y - gameOrigin.Y) / scale)
-        };
-
+        let predictedPlace = globalToGrid(pos);
         setDragDetails(predictedPlace);
-        
-        // Find piece using co-ords
-        let pieceClass = ".div-battleship-grid-piece";
-        pieceClass += ".grid-x-" + predictedPlace.X;
-        pieceClass += ".grid-y-" + predictedPlace.Y;
-        let piece = document.querySelector(pieceClass);
+        let piece = getTile(predictedPlace);
         
         if (piece != null) {
             // Change the previous piece to 
@@ -156,9 +141,13 @@ function makeDraggable(element) {
 
         if (clickDetails.startX === clickDetails.endX &&
             clickDetails.startY === clickDetails.endY) {
-            console.log("rotate");
-
-            element.classList.toggle("div-rotate-90");
+            for (let i = 0; i < ships.length; i++) {
+                let s = ships[i];
+                
+                if (s.uuid == element.id) {
+                    s.rotate();
+                }
+            }
         }
     }
 }
@@ -168,7 +157,7 @@ function uuidv4() {
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
       (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
     );
-  }
+}
 
 class ship {
     constructor(len, x, y) {
@@ -181,21 +170,62 @@ class ship {
         if (len < 0 || x < 0 || y < 0) { return; }
     
         this.len = len;
-        this.x = x;
-        this.y = y;
+        this.pos = vec2(x, y);
         this.uuid = uuidv4();
+        this.angle = 0;
+        this.tilePosition = vec2(0, 0);
 
-        console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
-        innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"></div>";
-        //let body = document.getElementById("div-battleship-grid").parentElement;
+        //console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
+
+        // Add the HTML of the ship to the page
         let group = document.getElementById("div-ships-group");
+        let innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"></div>";
         group.innerHTML += innerHTML;
-        console.log(innerHTML)
-        let element = document.getElementById(this.uuid);
-        element.style.top = this.y + "px";
-        element.style.left = this.x + "px";
+        
+        let element = this.element();
+        element.style.top = this.pos.Y + "px";
+        element.style.left = this.pos.X + "px";
         makeDraggable(element)
     }
+
+    element() {
+        return document.getElementById(this.uuid);
+    }
+
+    rotate() {
+        this.angle = (this.angle + 90) % 360;
+        let e = this.element();
+        e.classList.toggle("div-rotate-90");
+        console.log("rotate");
+    }
+}
+
+function getTile(p) {
+    // Find piece using co-ords
+    let pieceClass = ".div-battleship-grid-piece";
+    pieceClass += ".grid-x-" + p.X;
+    pieceClass += ".grid-y-" + p.Y;
+    return document.querySelector(pieceClass);
+}
+
+function tileUnderPoint(p) {
+    let predictedPlace = globalToGrid(p);
+    return getTile(predictedPlace);
+}
+
+function globalToGrid(p) {
+    if (!p) { return; }
+    if (!isNumber(p.X)) { return; }
+    if (!isNumber(p.Y)) { return; }
+
+    let scale = parseInt(getCSSVar("--scale"));
+
+    // Subtract the grid origin from the
+    // centre of the draggable element
+    // Then divide by the scale to get
+    // the integer co-ordinate of the grid
+    return vec2(Math.round((p.X - gameOrigin.X) / scale),
+                Math.round((p.Y - gameOrigin.Y) / scale));
 }
 
 $(document).ready(function() {
@@ -221,8 +251,6 @@ $(document).ready(function() {
 
     // Mark element as "draggable"
     //makeDraggable(document.getElementById("div-draggable-root"));
-
-    let ships = []
 
     for (let i = 0; i < 3; i++) {
         let h = 5 + i * (parseInt(getCSSVar("--scale")) + 5)
