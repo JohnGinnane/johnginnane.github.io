@@ -63,19 +63,6 @@ $(document).on("mousemove", function(event) {
     mouseY.innerText = p.Y;
 });
 
-// $(document).on("touchmove", function(event) {
-//     let touch = e.changedTouches[1];
-
-//     if (touch != null) {
-//         let p = vec2(touch.pageX, touch.pageY);
-//         let mouseX = document.getElementById("span-battleship-mouse-x");
-//         let mouseY = document.getElementById("span-battleship-mouse-y");
-
-//         mouseX.innerText = p.X;
-//         mouseY.innerText = p.Y;
-//     }
-// });
-
 function isNumber(n) {
     if (!n) { return false; }
     if (typeof n !== "number") { return false; }
@@ -200,8 +187,9 @@ class ship {
 
         console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
         innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"></div>";
-        let body = document.getElementById("div-battleship-grid").parentElement;
-        body.innerHTML += innerHTML;
+        //let body = document.getElementById("div-battleship-grid").parentElement;
+        let group = document.getElementById("div-ships-group");
+        group.innerHTML += innerHTML;
         console.log(innerHTML)
         let element = document.getElementById(this.uuid);
         element.style.top = this.y + "px";
