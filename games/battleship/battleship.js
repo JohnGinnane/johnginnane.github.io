@@ -76,6 +76,169 @@ $(document).on("mousemove", function(event) {
 //     }
 // });
 
+function isNumber(n) {
+    if (!n) { return false; }
+    if (typeof n !== "number") { return false; }
+
+    return true;
+}
+
+function makeDraggable(element) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let header = document.getElementById(element.id + "-body")
+    if (header) {
+        header.onmousedown = dragMouseDown;
+        //header.ontouchstart = dragTouchDown;
+    } else {
+        element.onmousedown = dragMouseDown;
+        //element.ontouchstart = dragTouchDown;
+    }
+
+    // function dragTouchDown(e) {
+    //     let touch = e.changedTouches[1];
+
+    //     if (touch != null) {
+    //         log("touch found");
+    //         clickDetails.startTime = new Date();
+    //         clickDetails.startX = touch.clientX;
+    //         clickDetails.startY = touch.clientY;
+    //         clickDetails.endTime = 0;
+    //         clickDetails.endX = null;
+    //         clickDetails.endY = null;
+
+    //         e = e || window.event;
+    //         e.preventDefault();
+
+    //         pos3 = touch.clientX;
+    //         pos4 = touch.clientY;
+
+    //         document.ontouchend = closeDragElement;
+    //         document.ontouchmove = elementDrag;
+    //     } else {
+    //         log("touch NOT found???");
+    //     }
+    // }
+
+    function dragMouseDown(e) {
+        clickDetails.startTime = new Date();
+        clickDetails.startX = e.clientX;
+        clickDetails.startY = e.clientY;
+        clickDetails.endTime = null;
+        clickDetails.endX = null;
+        clickDetails.endY = null;
+            
+        e = e || window.event;
+        e.preventDefault();
+
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+
+        // Calculate new cursor position
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        let x = (element.offsetLeft - pos1);
+        let y = (element.offsetTop - pos2);
+        
+        debugCoords(vec2(x, y));
+
+        element.style.top = y + "px";
+        element.style.left = x + "px";
+
+        let scale = parseInt(getCSSVar("--scale"));
+        let centre = vec2(x, y);
+
+        // Subtract the grid origin from the
+        // centre of the draggable element
+        // Then divide by the scale to get
+        // the integer co-ordinate of the grid
+        let predictedPlace = {
+            X: Math.round((centre.X - gameOrigin.X) / scale),
+            Y: Math.round((centre.Y - gameOrigin.Y) / scale)
+        };
+
+        setDragDetails(predictedPlace);
+        
+        // Find piece using co-ords
+        let pieceClass = ".div-battleship-grid-piece";
+        pieceClass += ".grid-x-" + predictedPlace.X;
+        pieceClass += ".grid-y-" + predictedPlace.Y;
+        let piece = document.querySelector(pieceClass);
+        
+        if (piece != null) {
+            // Change the previous piece to 
+            // not be "selected"
+            if (dragDetails.lastPiece != null) {
+                dragDetails.lastPiece.style.background = getCSSVar("--water");
+            }
+
+            piece.style.background = getCSSVar("--waterSelected");
+            dragDetails.lastPiece = piece;
+        }
+    }
+
+    function closeDragElement(e) {
+        clickDetails.endTime = new Date();
+        clickDetails.endX = e.clientX;
+        clickDetails.endY = e.clientY;
+
+        document.onmouseup = null;
+        document.onmousemove = null;
+        // document.ontouchend = null;
+        // document.ontouchmove = null;
+
+        if (clickDetails.startX === clickDetails.endX &&
+            clickDetails.startY === clickDetails.endY) {
+            console.log("rotate");
+
+            element.classList.toggle("div-rotate-90");
+        }
+    }
+}
+
+// https://stackoverflow.com/a/2117523
+function uuidv4() {
+    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+      (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    );
+  }
+
+class ship {
+    constructor(len, x, y) {
+        if (!isNumber(len) ||
+            !isNumber(x)   ||
+            !isNumber(y)) {
+            return;
+        }
+        
+        if (len < 0 || x < 0 || y < 0) { return; }
+    
+        this.len = len;
+        this.x = x;
+        this.y = y;
+        this.uuid = uuidv4();
+
+        console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
+        innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"></div>";
+        let body = document.getElementById("div-battleship-grid").parentElement;
+        body.innerHTML += innerHTML;
+        console.log(innerHTML)
+        let element = document.getElementById(this.uuid);
+        element.style.top = this.y + "px";
+        element.style.left = this.x + "px";
+        makeDraggable(element)
+    }
+}
+
 $(document).ready(function() {
     // Create grid
     innerHTML = "";
@@ -98,141 +261,12 @@ $(document).ready(function() {
     gameOrigin.Y = $("#div-battleship-grid").offset().top;
 
     // Mark element as "draggable"
-    makeDraggable(document.getElementById("div-draggable-root"));
+    //makeDraggable(document.getElementById("div-draggable-root"));
 
-    function makeDraggable(element) {
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        let header = document.getElementById(element.id + "-body")
-        if (header) {
-            header.onmousedown = dragMouseDown;
-            //header.ontouchstart = dragTouchDown;
-        } else {
-            element.onmousedown = dragMouseDown;
-            //element.ontouchstart = dragTouchDown;
-        }
+    let ships = []
 
-        // function dragTouchDown(e) {
-        //     let touch = e.changedTouches[1];
-
-        //     if (touch != null) {
-        //         log("touch found");
-        //         clickDetails.startTime = new Date();
-        //         clickDetails.startX = touch.clientX;
-        //         clickDetails.startY = touch.clientY;
-        //         clickDetails.endTime = 0;
-        //         clickDetails.endX = null;
-        //         clickDetails.endY = null;
-
-        //         e = e || window.event;
-        //         e.preventDefault();
-    
-        //         pos3 = touch.clientX;
-        //         pos4 = touch.clientY;
-
-        //         document.ontouchend = closeDragElement;
-        //         document.ontouchmove = elementDrag;
-        //     } else {
-        //         log("touch NOT found???");
-        //     }
-        // }
-
-        function dragMouseDown(e) {
-            clickDetails.startTime = new Date();
-            clickDetails.startX = e.clientX;
-            clickDetails.startY = e.clientY;
-            clickDetails.endTime = null;
-            clickDetails.endX = null;
-            clickDetails.endY = null;
-                
-            e = e || window.event;
-            e.preventDefault();
-
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-        }
-
-        function elementDrag(e) {
-            e = e || window.event;
-            e.preventDefault();
-
-            // Calculate new cursor position
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-
-            let x = (element.offsetLeft - pos1);
-            let y = (element.offsetTop - pos2);
-
-            log("x: " + x + ", y: " + y);
-
-            debugCoords(vec2(x, y));
-
-            element.style.top = y + "px";
-            element.style.left = x + "px";
-
-            let scale = parseInt(getCSSVar("--scale"));
-            let centre = vec2(x, y);
-
-            // Subtract the grid origin from the
-            // centre of the draggable element
-            // Then divide by the scale to get
-            // the integer co-ordinate of the grid
-            let predictedPlace = {
-                X: Math.round((centre.X - gameOrigin.X) / scale),
-                Y: Math.round((centre.Y - gameOrigin.Y) / scale)
-            };
-
-            setDragDetails(predictedPlace);
-            
-            // Find piece using co-ords
-            let pieceClass = ".div-battleship-grid-piece";
-            pieceClass += ".grid-x-" + predictedPlace.X;
-            pieceClass += ".grid-y-" + predictedPlace.Y;
-            let piece = document.querySelector(pieceClass);
-            
-            if (piece != null) {
-                // Change the previous piece to 
-                // not be "selected"
-                if (dragDetails.lastPiece != null) {
-                    dragDetails.lastPiece.style.background = getCSSVar("--water");
-                }
-
-                piece.style.background = getCSSVar("--waterSelected");
-                dragDetails.lastPiece = piece;
-            }
-        }
-
-        function closeDragElement(e) {
-            clickDetails.endTime = new Date();
-            clickDetails.endX = e.clientX;
-            clickDetails.endY = e.clientY;
-
-            document.onmouseup = null;
-            document.onmousemove = null;
-            // document.ontouchend = null;
-            // document.ontouchmove = null;
-
-            if (clickDetails.startX === clickDetails.endX &&
-                clickDetails.startY === clickDetails.endY) {
-                console.log("rotate");
-
-                element.classList.toggle("div-rotate-90");
-            }
-        }
-    }
-    
-    function log(msg) {
-        //console.log(msg);
-        // if ($("#test_log") != null) {
-        //     if ($("#test_log").html() == null) {
-        //         $("#test_log").html("");
-        //     }
-
-        //     $("#test_log").html($("#test_log").html() + "\n<option>" + msg + "</option>");
-
-        // }
+    for (let i = 0; i < 3; i++) {
+        let h = 5 + i * (parseInt(getCSSVar("--scale")) + 5)
+        ships[i] = new ship(2, 5, h)
     }
 });
