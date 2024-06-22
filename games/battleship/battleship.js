@@ -88,36 +88,9 @@ function makeDraggable(element) {
     let header = document.getElementById(element.id + "-body")
     if (header) {
         header.onmousedown = dragMouseDown;
-        //header.ontouchstart = dragTouchDown;
     } else {
         element.onmousedown = dragMouseDown;
-        //element.ontouchstart = dragTouchDown;
     }
-
-    // function dragTouchDown(e) {
-    //     let touch = e.changedTouches[1];
-
-    //     if (touch != null) {
-    //         log("touch found");
-    //         clickDetails.startTime = new Date();
-    //         clickDetails.startX = touch.clientX;
-    //         clickDetails.startY = touch.clientY;
-    //         clickDetails.endTime = 0;
-    //         clickDetails.endX = null;
-    //         clickDetails.endY = null;
-
-    //         e = e || window.event;
-    //         e.preventDefault();
-
-    //         pos3 = touch.clientX;
-    //         pos4 = touch.clientY;
-
-    //         document.ontouchend = closeDragElement;
-    //         document.ontouchmove = elementDrag;
-    //     } else {
-    //         log("touch NOT found???");
-    //     }
-    // }
 
     function dragMouseDown(e) {
         clickDetails.startTime = new Date();
@@ -193,8 +166,6 @@ function makeDraggable(element) {
 
         document.onmouseup = null;
         document.onmousemove = null;
-        // document.ontouchend = null;
-        // document.ontouchmove = null;
 
         if (clickDetails.startX === clickDetails.endX &&
             clickDetails.startY === clickDetails.endY) {
