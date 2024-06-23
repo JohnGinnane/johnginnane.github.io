@@ -22,8 +22,8 @@ let dragDetails = {
 function setDragDetails(p) {
     dragDetails.lastX = dragDetails.X;
     dragDetails.lastY = dragDetails.Y;
-    dragDetails.X = p.X;
-    dragDetails.Y = p.Y;
+    dragDetails.X = p.x;
+    dragDetails.Y = p.y;
 }
 
 function checkDragDetails() {
@@ -39,29 +39,25 @@ function setCSSVar(field, value) {
 }
 
 function pointInBox(p, b) {
-    return (p.X >= b.left && p.X <= b.right &&
-            p.Y >= b.top  && p.Y <= b.bottom);
-}
-
-function vec2(x, y) {
-    return {X: x, Y: y};
+    return (p.x >= b.left && p.x <= b.right &&
+            p.y >= b.top  && p.y <= b.bottom);
 }
 
 function debugCoords(p) {
     let spanX = document.getElementById("span-battleship-x");
     let spanY = document.getElementById("span-battleship-y");
 
-    spanX.innerText = p.X;
-    spanY.innerText = p.Y;
+    spanX.innerText = p.x;
+    spanY.innerText = p.y;
 }
 
 $(document).on("mousemove", function(event) {
-    let p = vec2(event.pageX, event.pageY);
+    let p = new Vector2(event.pageX, event.pageY);
     let mouseX = document.getElementById("span-battleship-mouse-x");
     let mouseY = document.getElementById("span-battleship-mouse-y");
 
-    mouseX.innerText = p.X;
-    mouseY.innerText = p.Y;
+    mouseX.innerText = p.x;
+    mouseY.innerText = p.y;
 });
 
 function isNumber(n) {
@@ -77,7 +73,6 @@ function makeDraggable(element) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     
     function dragMouseDown(e) {
-        console.log("bingus")
         clickDetails.startTime = new Date();
         clickDetails.startX = e.clientX;
         clickDetails.startY = e.clientY;
@@ -106,26 +101,36 @@ function makeDraggable(element) {
         pos3 = e.clientX;
         pos4 = e.clientY;
 
-        let pos = vec2((element.offsetLeft - pos1), (element.offsetTop - pos2));
+        let pos = new Vector2((element.offsetLeft - pos1), (element.offsetTop - pos2));
         
         debugCoords(pos);
 
-        element.style.top = pos.Y + "px";
-        element.style.left = pos.X + "px";
+        let scale = parseInt(getCSSVar("--scale"));
+        let shipOrigin = pos.add(scale/2, scale/2);
 
-        let predictedPlace = globalToGrid(pos);
-        setDragDetails(predictedPlace);
-        let piece = getTile(predictedPlace);
-        
-        if (piece != null) {
-            // Change the previous piece to 
-            // not be "selected"
-            if (dragDetails.lastPiece != null) {
-                dragDetails.lastPiece.style.background = getCSSVar("--water");
+        element.style.top = pos.y + "px";
+        element.style.left = pos.x + "px";
+
+        let predictedPlace = globalToGrid(shipOrigin);
+
+        // Move this into the ship class
+        // If the ship's grid changes then update
+        // the ship's tiles and select them using
+        // the below class
+        if (predictedPlace) {
+            setDragDetails(predictedPlace);
+            let piece = getTile(predictedPlace);
+            
+            if (piece != null) {
+                // Change the previous piece to 
+                // not be "selected"
+                if (dragDetails.lastPiece != null) {
+                    dragDetails.lastPiece.style.background = getCSSVar("--water");
+                }
+
+                piece.style.background = getCSSVar("--waterSelected");
+                dragDetails.lastPiece = piece;
             }
-
-            piece.style.background = getCSSVar("--waterSelected");
-            dragDetails.lastPiece = piece;
         }
     }
 
@@ -154,7 +159,6 @@ function makeDraggable(element) {
     
     element.onmousedown = dragMouseDown;
     element.style.cursor = "move";
-
 }
 
 // https://stackoverflow.com/a/2117523
@@ -176,10 +180,10 @@ class ship {
         
         this.len = len;
         this.height = 1;
-        this.pos = vec2(x, y);
+        this.pos = new Vector2(x, y);
         this.uuid = uuidv4();
         this.angle = 0;
-        this.tilePosition = vec2(0, 0);
+        this.tilePosition = new Vector2(0, 0);
 
         //console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
 
@@ -189,9 +193,15 @@ class ship {
         group.innerHTML += innerHTML;
         
         let element = this.element();
-        element.style.top = this.pos.Y + "px";
-        element.style.left = this.pos.X + "px";
+        element.style.top = this.pos.y + "px";
+        element.style.left = this.pos.x + "px";
         element.style.width = (parseInt(getCSSVar("--scale")) * this.len) + "px";
+    }
+
+    getOrigin() {
+        let output = new Vector2();
+
+        return output
     }
 
     element() {
@@ -209,8 +219,8 @@ class ship {
 function getTile(p) {
     // Find piece using co-ords
     let pieceClass = ".div-battleship-grid-piece";
-    pieceClass += ".grid-x-" + p.X;
-    pieceClass += ".grid-y-" + p.Y;
+    pieceClass += ".grid-x-" + p.x;
+    pieceClass += ".grid-y-" + p.y;
     return document.querySelector(pieceClass);
 }
 
@@ -221,8 +231,8 @@ function tileUnderPoint(p) {
 
 function globalToGrid(p) {
     if (!p) { return; }
-    if (!isNumber(p.X)) { return; }
-    if (!isNumber(p.Y)) { return; }
+    if (!isNumber(p.x)) { return; }
+    if (!isNumber(p.y)) { return; }
 
     let scale = parseInt(getCSSVar("--scale"));
 
@@ -230,8 +240,8 @@ function globalToGrid(p) {
     // centre of the draggable element
     // Then divide by the scale to get
     // the integer co-ordinate of the grid
-    return vec2(Math.round((p.X - gameOrigin.X) / scale),
-                Math.round((p.Y - gameOrigin.Y) / scale));
+    return new Vector2(Math.floor((p.x - gameOrigin.x) / scale),
+                       Math.floor((p.y - gameOrigin.y) / scale));
 }
 
 $(document).ready(function() {
@@ -249,12 +259,10 @@ $(document).ready(function() {
         innerHTML += "</div>\n";
     }
     
-    debugCoords(gameOrigin);
-
     $("#div-battleship-grid").html(innerHTML);
 
-    gameOrigin.X = $("#div-battleship-grid").offset().left;
-    gameOrigin.Y = $("#div-battleship-grid").offset().top;
+    gameOrigin = new Vector2($("#div-battleship-grid").offset().left, 
+                              $("#div-battleship-grid").offset().top);
 
     // Mark element as "draggable"
     //makeDraggable(document.getElementById("div-draggable-root"));
