@@ -260,7 +260,9 @@ $(document).ready(function() {
     for (let i = 0; i < 3; i++) {
         let h = 5 + i * (parseInt(getCSSVar("--scale")) + 5)
         ships[i] = new ship(2, 5, h)
-        
+    }
+
+    for (let i = 0; i < ships.length; i++) {
         // We have to add event handlers AFTER
         // the innerHTML is set
         makeDraggable(ships[i].element());
