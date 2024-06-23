@@ -77,8 +77,10 @@ function makeDraggable(element) {
     let header = document.getElementById(element.id + "-body")
     if (header) {
         header.onmousedown = dragMouseDown;
+        header.style.cursor = "move";
     } else {
         element.onmousedown = dragMouseDown;
+        element.style.cursor = "move";
     }
 
     function dragMouseDown(e) {
@@ -91,6 +93,8 @@ function makeDraggable(element) {
         
         e = e || window.event;
         e.preventDefault();
+
+        console.log("Started drag");
 
         pos3 = e.clientX;
         pos4 = e.clientY;
@@ -139,6 +143,9 @@ function makeDraggable(element) {
         document.onmouseup = null;
         document.onmousemove = null;
 
+        console.log("Stopped drag");
+
+        // If we didn't move the mouse then rotate
         if (clickDetails.startX === clickDetails.endX &&
             clickDetails.startY === clickDetails.endY) {
             for (let i = 0; i < ships.length; i++) {
@@ -185,7 +192,6 @@ class ship {
         let element = this.element();
         element.style.top = this.pos.Y + "px";
         element.style.left = this.pos.X + "px";
-        makeDraggable(element)
     }
 
     element() {
@@ -255,5 +261,9 @@ $(document).ready(function() {
     for (let i = 0; i < 3; i++) {
         let h = 5 + i * (parseInt(getCSSVar("--scale")) + 5)
         ships[i] = new ship(2, 5, h)
+        
+        // We have to add event handlers AFTER
+        // the innerHTML is set
+        makeDraggable(ships[i].element());
     }
 });
