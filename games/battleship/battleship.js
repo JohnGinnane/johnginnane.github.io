@@ -71,19 +71,13 @@ function isNumber(n) {
     return true;
 }
 
+// https://www.w3schools.com/howto/howto_js_draggable.asp
 function makeDraggable(element) {
     console.log("make drag: " + element.id);
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    let header = document.getElementById(element.id + "-body")
-    if (header) {
-        header.onmousedown = dragMouseDown;
-        header.style.cursor = "move";
-    } else {
-        element.onmousedown = dragMouseDown;
-        element.style.cursor = "move";
-    }
-
+    
     function dragMouseDown(e) {
+        console.log("bingus")
         clickDetails.startTime = new Date();
         clickDetails.startX = e.clientX;
         clickDetails.startY = e.clientY;
@@ -106,7 +100,7 @@ function makeDraggable(element) {
         e = e || window.event;
         e.preventDefault();
 
-        // Calculate new cursor position
+        // Calculate new cursorspot position
         pos1 = pos3 - e.clientX;
         pos2 = pos4 - e.clientY;
         pos3 = e.clientX;
@@ -157,6 +151,10 @@ function makeDraggable(element) {
             }
         }
     }
+    
+    element.onmousedown = dragMouseDown;
+    element.style.cursor = "move";
+
 }
 
 // https://stackoverflow.com/a/2117523
@@ -235,6 +233,7 @@ function globalToGrid(p) {
 }
 
 $(document).ready(function() {
+    console.log("Started: " + new Date())
     // Create grid
     innerHTML = "";
     
