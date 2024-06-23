@@ -173,8 +173,9 @@ class ship {
         }
         
         if (len < 0 || x < 0 || y < 0) { return; }
-    
+        
         this.len = len;
+        this.height = 1;
         this.pos = vec2(x, y);
         this.uuid = uuidv4();
         this.angle = 0;
@@ -184,12 +185,13 @@ class ship {
 
         // Add the HTML of the ship to the page
         let group = document.getElementById("div-ships-group");
-        let innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"></div>";
+        let innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"><div class=\"dot\"></div></div>";
         group.innerHTML += innerHTML;
         
         let element = this.element();
         element.style.top = this.pos.Y + "px";
         element.style.left = this.pos.X + "px";
+        element.style.width = (parseInt(getCSSVar("--scale")) * this.len) + "px";
     }
 
     element() {
@@ -259,7 +261,7 @@ $(document).ready(function() {
 
     for (let i = 0; i < 3; i++) {
         let h = 5 + i * (parseInt(getCSSVar("--scale")) + 5)
-        ships[i] = new ship(2, 5, h)
+        ships[i] = new ship(i+2, 5, h)
     }
 
     for (let i = 0; i < ships.length; i++) {

@@ -551,10 +551,16 @@
     width: auto;
 }
 
+.dot {
+    width: 4px;
+    height: 4px;
+    border: 1px solid red;
+}
+
 .div-ship {
     height: var(--scale);
     width: calc(var(--scale) * 2);
-    border-radius: 50%/100%;
+    border-radius: 100%/100%;
     display: inline;
     position: absolute;
     background-color: rgba(70, 200, 70, 0.5);
