@@ -1,3 +1,59 @@
+
+class ship {
+    constructor(len, x, y) {
+        if (!isNumber(len) ||
+            !isNumber(x)   ||
+            !isNumber(y)) {
+            return;
+        }
+        
+        if (len < 0 || x < 0 || y < 0) { return; }
+        
+        this.len = len;
+        this.height = 1;
+        this.pos = new Vector2(x, y);
+        this.uuid = uuidv4();
+        this.angle = 0;
+        this.tilePosition = new Vector2(0, 0);
+
+        //console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
+
+        // Add the HTML of the ship to the page
+        let group = document.getElementById("div-ships-group");
+        let innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"><div class=\"dot\"></div></div>";
+        group.innerHTML += innerHTML;
+        
+        let element = this.element();
+        element.style.top = this.pos.y + "px";
+        element.style.left = this.pos.x + "px";
+        element.style.width = (parseInt(getCSSVar("--scale")) * this.len) + "px";
+    }
+
+    getOrigin() {
+        let output = new Vector2();
+
+        return output
+    }
+
+    element() {
+        return document.getElementById(this.uuid);
+    }
+
+    rotate() {
+        this.angle = (this.angle + 90) % 360;
+        let e = this.element();
+        e.classList.toggle("div-rotate-90");
+        console.log("rotate");
+    }
+
+    setPosition(p) {
+        this.pos = p;
+        let e = this.element();
+        e.style.top = this.pos.y + "px";
+        e.style.left = this.pos.x + "px";
+    }
+}
+
 let clickDetails = {
     startTime: new Date(),
     endTime: null,
@@ -194,61 +250,6 @@ function uuidv4() {
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
       (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
     );
-}
-
-class ship {
-    constructor(len, x, y) {
-        if (!isNumber(len) ||
-            !isNumber(x)   ||
-            !isNumber(y)) {
-            return;
-        }
-        
-        if (len < 0 || x < 0 || y < 0) { return; }
-        
-        this.len = len;
-        this.height = 1;
-        this.pos = new Vector2(x, y);
-        this.uuid = uuidv4();
-        this.angle = 0;
-        this.tilePosition = new Vector2(0, 0);
-
-        //console.log("Created a ship " + len + " tiles long at [" + x + ", " + y + "]");
-
-        // Add the HTML of the ship to the page
-        let group = document.getElementById("div-ships-group");
-        let innerHTML = "<div id=\"" + this.uuid + "\" class=\"div-ship\"><div class=\"dot\"></div></div>";
-        group.innerHTML += innerHTML;
-        
-        let element = this.element();
-        element.style.top = this.pos.y + "px";
-        element.style.left = this.pos.x + "px";
-        element.style.width = (parseInt(getCSSVar("--scale")) * this.len) + "px";
-    }
-
-    getOrigin() {
-        let output = new Vector2();
-
-        return output
-    }
-
-    element() {
-        return document.getElementById(this.uuid);
-    }
-
-    rotate() {
-        this.angle = (this.angle + 90) % 360;
-        let e = this.element();
-        e.classList.toggle("div-rotate-90");
-        console.log("rotate");
-    }
-
-    setPosition(p) {
-        this.pos = p;
-        let e = this.element();
-        e.style.top = this.pos.y + "px";
-        e.style.left = this.pos.x + "px";
-    }
 }
 
 function getTile(p) {
