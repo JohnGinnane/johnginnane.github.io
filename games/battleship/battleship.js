@@ -67,6 +67,12 @@ function isNumber(n) {
     return true;
 }
 
+// https://stackoverflow.com/a/52477551
+function getElementPosition(el) {
+    return new Vector2(window.scrollX + el.getBoundingClientRect().left,
+                       window.scrollY + el.getBoundingClientRect().top)    
+}
+
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function makeDraggable(element) {
     console.log("make drag: " + element.id);
@@ -130,6 +136,10 @@ function makeDraggable(element) {
 
                 piece.style.background = getCSSVar("--waterSelected");
                 dragDetails.lastPiece = piece;
+            } else {
+                if (dragDetails.lastPiece != null) {
+                    dragDetails.lastPiece.style.background = getCSSVar("--water");
+                }
             }
         }
     }
@@ -142,17 +152,35 @@ function makeDraggable(element) {
         document.onmouseup = null;
         document.onmousemove = null;
 
-        console.log("Stopped drag");
+        let s = null;
+        for (let i = 0; i < ships.length; i++) {
+            if (ships[i].uuid == element.id) {
+                s = ships[i];
+                break;
+            }
+        }
+
+        if (s == null) { return; }
+        
+        console.log("Stopped dragging " + s.uuid);
 
         // If we didn't move the mouse then rotate
         if (clickDetails.startX === clickDetails.endX &&
             clickDetails.startY === clickDetails.endY) {
-            for (let i = 0; i < ships.length; i++) {
-                let s = ships[i];
-                
-                if (s.uuid == element.id) {
-                    s.rotate();
-                }
+                s.rotate();
+        } else {
+            // Snap to grid
+            let oldPos = getElementPosition(s.element());
+            let scale = parseInt(getCSSVar("--scale"));
+            oldPos = oldPos.add(new Vector2(scale/2, scale/2));
+
+            console.log("Snapping from: " + oldPos);
+            let tile = tileUnderPoint(oldPos);
+
+            if (tile) {
+                let newPos = getElementPosition(tile);
+                s.setPosition(newPos);
+                console.log("To: " + newPos);
             }
         }
     }
@@ -213,6 +241,13 @@ class ship {
         let e = this.element();
         e.classList.toggle("div-rotate-90");
         console.log("rotate");
+    }
+
+    setPosition(p) {
+        this.pos = p;
+        let e = this.element();
+        e.style.top = this.pos.y + "px";
+        e.style.left = this.pos.x + "px";
     }
 }
 
