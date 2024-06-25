@@ -1,4 +1,6 @@
 const imgBattleship = new Image();
+const WIDTH = 500;
+const HEIGHT = 500;
 
 class Ship {
     constructor(X, Y, Length) {
@@ -6,11 +8,26 @@ class Ship {
         this.Length = Length;
         this.GridPosition = new Vector2(0, 0);
         this.ImageType = "";
+        this.Velocity = new Vector2(Math.random(), Math.random());
+    }
+
+    update(delta) {
+        this.Position.x += this.Velocity.x * delta;
+        this.Position.y += this.Velocity.y * delta;
+
+        if (this.Position.x < 0 || this.Position.x > WIDTH) {
+            this.Velocity.x *= -1;
+        }
+
+        if (this.Position.y < 0 || this.Position.y > HEIGHT) {
+            this.Velocity.y *= -1;
+        }
     }
 
     draw(ctx) {
         ctx.save();
 
+        ctx.translate(this.Position.x, this.Position.y);
         ctx.drawImage(imgBattleship, 0, 0);
 
         ctx.restore();
@@ -25,13 +42,6 @@ $(document).ready(function() {
 
     imgBattleship.src = "img/Battleship/ShipBattleshipHull.png"
     window.requestAnimationFrame(draw);
-
-    ball = {
-        X: 0,
-        Y: 0,
-        velX: Math.random(),
-        velY: Math.random()
-    }
 
     let ships = [new Ship(5, 5, 5)];
 
@@ -51,11 +61,10 @@ $(document).ready(function() {
         delta = new Date() - lastTime;
         lastTime = new Date();
 
-        ball.X += ball.velX * delta;
-        ball.Y += ball.velY * delta;
-
-        if (ball.X < 0 || ball.X > canvas.width)  { ball.velX *= -1 }
-        if (ball.Y < 0 || ball.Y > canvas.height) { ball.velY *= -1; }
+        for (let i = 0; i < ships.length; i++) {
+            let ship = ships[i];
+            ship.update(delta);
+        }
     }
 
     setInterval(update, 1/60);
