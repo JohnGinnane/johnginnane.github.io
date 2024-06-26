@@ -155,6 +155,7 @@ class Destroyer extends Ship {
     }
 }
 
+// https://stackoverflow.com/a/18053642
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     MOUSE_POS = new Vector2(event.clientX - rect.left, event.clientY - rect.top);
@@ -170,13 +171,15 @@ $(document).ready(function() {
     canvas.addEventListener("mousemove", function(e) {
         getCursorPosition(canvas, e)
 
+        // https://www.w3schools.com/howto/howto_js_draggable.asp
+        // Using the above to implement dragging ships
         if (SelectedShip) {
             ClickDetails.pos1 = ClickDetails.pos3 - e.clientX;
             ClickDetails.pos2 = ClickDetails.pos4 - e.clientY;
             ClickDetails.pos3 = e.clientX;
             ClickDetails.pos4 = e.clientY;
             
-            SelectedShip.Position = new Vector2(ClickDetails.pos1, ClickDetails.pos2);
+            SelectedShip.Position = SelectedShip.Position.add(new Vector2(-ClickDetails.pos1, -ClickDetails.pos2));
         }
     });
 
