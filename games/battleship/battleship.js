@@ -1,6 +1,24 @@
 const imgBattleship = new Image();
-const WIDTH = 500;
-const HEIGHT = 500;
+const RENDER_TARGET = 1000/60;
+const UPDATE_TARGET = 1000/60;
+
+function pad(str, len, chr) {
+    if (chr == null || chr == "") {
+        chr = " ";
+    }
+
+    if (len == null || len <= 0) {
+        return str;
+    }
+
+    str = str.toString();
+
+    while (str.length < len) {
+        str = chr + str;
+    }
+
+    return str
+}
 
 class Ship {
     constructor(X, Y, Length) {
@@ -8,20 +26,10 @@ class Ship {
         this.Length = Length;
         this.GridPosition = new Vector2(0, 0);
         this.ImageType = "";
-        this.Velocity = new Vector2(Math.random(), Math.random());
     }
 
-    update(delta) {
-        this.Position.x += this.Velocity.x * delta;
-        this.Position.y += this.Velocity.y * delta;
-
-        if (this.Position.x < 0 || this.Position.x > WIDTH) {
-            this.Velocity.x *= -1;
-        }
-
-        if (this.Position.y < 0 || this.Position.y > HEIGHT) {
-            this.Velocity.y *= -1;
-        }
+    update(ctx, delta) {
+        
     }
 
     draw(ctx) {
@@ -41,11 +49,28 @@ $(document).ready(function() {
     var lastTime = new Date();
 
     imgBattleship.src = "img/Battleship/ShipBattleshipHull.png"
-    window.requestAnimationFrame(draw);
+    //window.requestAnimationFrame(draw);
 
     let ships = [new Ship(5, 5, 5)];
+    let updateTime = 0.0
+    let renderTime = 0.0
+
+    function update() {
+        let startUpdate = new Date();
+        delta = new Date() - lastTime;
+        lastTime = new Date();
+
+        for (let i = 0; i < ships.length; i++) {
+            let ship = ships[i];
+            ship.update(ctx, delta);
+        }
+
+        updateTime = (new Date() - startUpdate);
+    }
 
     function draw() {
+        let startRender = new Date();
+
         // Clear the canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "rgb(50, 150, 255)"
@@ -55,18 +80,29 @@ $(document).ready(function() {
             let ship = ships[i];
             ship.draw(ctx);
         }
-    }
+        
+        renderTime = Math.abs(new Date() - startRender);
 
-    function update() {
-        delta = new Date() - lastTime;
-        lastTime = new Date();
+        // Draw debug figures
+        ctx.font = "16px Consolas";
 
-        for (let i = 0; i < ships.length; i++) {
-            let ship = ships[i];
-            ship.update(delta);
+        if (updateTime > UPDATE_TARGET) {
+            ctx.fillStyle = "rgb(255, 0, 0)";
+        } else {
+            ctx.fillStyle = "rgb(0, 0, 0)";
         }
+
+        ctx.fillText("Update: " + pad(updateTime, 4) + "ms / " + Math.floor(UPDATE_TARGET).toFixed(0) + "ms", 4, 20);
+
+        if (renderTime > RENDER_TARGET) {
+            ctx.fillStyle = "rgb(255, 0, 0)";
+        } else {
+            ctx.fillStyle = "rgb(0, 0, 0)";
+        }
+
+        ctx.fillText("Render: " + pad(renderTime, 4) + "ms / " + Math.floor(RENDER_TARGET).toFixed(0) + "ms", 4, 40);
     }
 
-    setInterval(update, 1/60);
-    setInterval(draw, 1/60);
+    setInterval(update, UPDATE_TARGET);
+    setInterval(draw, RENDER_TARGET);
 });
