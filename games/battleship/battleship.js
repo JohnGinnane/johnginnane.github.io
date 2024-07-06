@@ -7,6 +7,8 @@ const imgDestroyer = new Image();
 const RENDER_TARGET = 1000/60;
 const UPDATE_TARGET = 1000/60;
 const GAME_SCALE = 1;
+const GRID_SIZE = 32;
+
 var MOUSE_POS = new Vector2();
 
 var ClickDetails = {
@@ -41,6 +43,24 @@ function pad(str, len, chr) {
     return str
 }
 
+function calcImageScale(ship) {
+    try {
+        let width = ship.Image.width;
+        let height = ship.Image.height;
+        
+        let diffWidth = GRID_SIZE / width;
+        let diffHeight = (GRID_SIZE * ship.Length) / height;
+
+        if (Math.abs(diffWidth) < Math.abs(diffHeight)) {
+            return diffWidth;
+        } else {
+            return diffHeight;
+        }
+    } catch (ex) {
+        return 1;
+    }
+}
+
 class Ship {
     constructor(X, Y, Length) {
         this.Position = new Vector2(X, Y);
@@ -60,11 +80,13 @@ class Ship {
         ctx.save();
         
         ctx.imageSmoothingEnabled = false;
-        let scaleWidth = this.Image.width * this.ImageScale * GAME_SCALE;
-        let scaleHeight = this.Image.height * this.ImageScale * GAME_SCALE;
+        let imageScale = calcImageScale(this);
+        let scaleWidth = this.Image.width * imageScale * GAME_SCALE;
+        let scaleHeight = this.Image.height * imageScale * GAME_SCALE;
+        let yOffset = this.Length % 2 == 0 ? GRID_SIZE / 2 : 0;
         
         ctx.translate(this.Position.x, this.Position.y);
-        ctx.drawImage(this.Image, -scaleWidth/2, -scaleHeight/2, scaleWidth, scaleHeight);
+        ctx.drawImage(this.Image, -scaleWidth/2, -scaleHeight/2 + yOffset, scaleWidth, scaleHeight);
         
         // Draw hitbox
         ctx.beginPath();
@@ -74,7 +96,24 @@ class Ship {
         } else {
             ctx.strokeStyle = "red";
         }
-        ctx.strokeRect(-scaleWidth/2, -scaleHeight/2, scaleWidth, scaleHeight);
+
+        ctx.strokeRect(-scaleWidth/2, -scaleHeight/2 + yOffset, scaleWidth, scaleHeight);
+
+        // Draw center of ship
+        ctx.beginPath();
+        ctx.fillStyle ="red";
+        ctx.arc(0, 0, 2, 0, Math.PI*2);
+        ctx.fill();
+
+        // Draw grid tiles the ship occupies
+        ctx.beginPath();
+        ctx.strokeStyle = "purple";
+
+        for (let i = 0; i < this.Length; i++) {
+            let k = Math.ceil(i / 2) * (i % 2 == 0 ? -1 : 1);
+            let y = GRID_SIZE/-2 + GRID_SIZE * k;
+            ctx.strokeRect(-GRID_SIZE/2, y, GRID_SIZE, GRID_SIZE);
+        }
 
         ctx.restore();
     }
@@ -82,11 +121,17 @@ class Ship {
     mouseOver() {
         let scaleWidth = this.Image.width * this.ImageScale * GAME_SCALE;
         let scaleHeight = this.Image.height * this.ImageScale * GAME_SCALE;
+        let yOffset = this.Length % 2 == 0 ? GRID_SIZE / 2 : 0;
 
-        if (MOUSE_POS.x >= this.Position.x - scaleWidth/2 && 
-            MOUSE_POS.x <= this.Position.x + scaleWidth/2 &&
-            MOUSE_POS.y >= this.Position.y - scaleHeight/2 && 
-            MOUSE_POS.y <= this.Position.y + scaleHeight/2) {
+        let topLeftX = this.Position.x - (GRID_SIZE / 2);
+        let topLeftY = this.Position.y - (GRID_SIZE / 2)  - (GRID_SIZE * Math.floor((this.Length - 1)/2));
+        let bottomRightX = this.Position.x + (GRID_SIZE / 2);
+        let bottomRightY = topLeftY + (GRID_SIZE * this.Length);
+
+        if (MOUSE_POS.x >= topLeftX  && 
+            MOUSE_POS.x <= bottomRightX  &&
+            MOUSE_POS.y >= topLeftY && 
+            MOUSE_POS.y <= bottomRightY) {
             return true;
         } else {
             return false;
@@ -95,8 +140,8 @@ class Ship {
 }
 
 class AircraftCarrier extends Ship {
-    constructor(X, Y, Length) {
-        super(X, Y, Length);
+    constructor(X, Y) {
+        super(X, Y, 5);
 
         if (imgCarrier.src == null || imgCarrier.src == "") {
             imgCarrier.src = "img/Carrier/ShipCarrierHull.png"
@@ -107,21 +152,20 @@ class AircraftCarrier extends Ship {
 }
 
 class Battleship extends Ship {
-    constructor(X, Y, Length) {
-        super(X, Y, Length);
+    constructor(X, Y) {
+        super(X, Y, 4);
 
         if (imgBattleship.src == null || imgBattleship.src == "") {
             imgBattleship.src = "img/Battleship/ShipBattleshipHull.png"
         }
 
         this.Image = imgBattleship;
-        this.ImageScale = 0.8;
     }
 }
 
 class Cruiser extends Ship {
-    constructor(X, Y, Length) {
-        super(X, Y, Length);
+    constructor(X, Y) {
+        super(X, Y, 3);
 
         if (imgCruiser.src == null || imgCruiser.src == "") {
             imgCruiser.src = "img/Cruiser/ShipCruiserHull.png";
@@ -132,8 +176,8 @@ class Cruiser extends Ship {
 }
 
 class Submarine extends Ship {
-    constructor(X, Y, Length) {
-        super(X, Y, Length);
+    constructor(X, Y) {
+        super(X, Y, 3);
 
         if (imgSubmarine.src == null || imgSubmarine.src == "") {
             imgSubmarine.src = "img/Submarine/ShipSubMarineHull.png";
@@ -144,8 +188,8 @@ class Submarine extends Ship {
 }
 
 class Destroyer extends Ship {
-    constructor(X, Y, Length) {
-        super(X, Y, Length);
+    constructor(X, Y) {
+        super(X, Y, 2);
 
         if (imgDestroyer.src == null || imgDestroyer.src == "") {
             imgDestroyer.src = "img/Destroyer/ShipDestroyerHull.png";
