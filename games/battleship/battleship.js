@@ -199,6 +199,32 @@ class Destroyer extends Ship {
     }
 }
 
+class PlayerGrid {
+    construction(Origin) {
+        this.Origin = Origin;
+        this.Columns = 10;
+        this.Rows = 10;
+    }
+
+    draw(ctx) {
+        ctx.save();
+
+        ctx.translate(this.Origin);
+
+        for (let col = 0; col < this.Columns; col++) {
+            for (let row = 0; row < this.Rows; row++) {
+                        
+                // Draw hitbox
+                ctx.beginPath();
+                ctx.fillStyle = row * this.Columns + col % 2 == 0 ? "rgb(50, 100, 255)" : "rgb(100, 100, 255)";
+                ctx.fillRect(-scaleWidth/2, -scaleHeight/2, scaleWidth, scaleHeight);
+            }
+        }
+
+        ctx.restore();
+    }
+}
+
 // https://stackoverflow.com/a/18053642
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
