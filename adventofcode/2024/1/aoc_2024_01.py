@@ -13,7 +13,7 @@ for line in lines:
     left_list.append(int(ids[0]))
     right_list.append(int(ids[1]))
 
-# Simply sort lists for now
+# Simply sort lists from smallest to largest
 left_list.sort()
 right_list.sort()
 
@@ -25,3 +25,20 @@ for i in range(0, len(left_list)):
 
 # 1765812
 print("Total Distance: " + str(total_dist))
+
+# Part 2
+# Iterate over left list
+# Find number of instances of that number in
+# right list and add to "similarity_score"
+similarity_score = 0
+
+for k in range(0, len(left_list)):
+    v = left_list[k]
+
+    # Use python's "count" function to find number of occurrences of "v" in "right_list"
+    occurs = right_list.count(v)
+    print(right("    " + str(k+1), 4) + "/" + str(len(left_list)) + " - Number " + str(v) + " appears " + str(occurs) + " times in right list")
+    similarity_score += (v * occurs);
+
+# 20520794
+print("Similarity Score: " + str(similarity_score))
