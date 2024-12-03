@@ -1,0 +1,60 @@
+<!--
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="private" lang="en-GB" dir="ltr" searchbannerinitialized="true" privatebrowsingrendercomplete="true"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src chrome: blob:; object-src 'none'">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="chrome://browser/skin/privatebrowsing/favicon.svg">
+    <link rel="stylesheet" href="chrome://browser/content/aboutPrivateBrowsing.css" media="all">
+    <link rel="stylesheet" href="chrome://browser/skin/privatebrowsing/aboutPrivateBrowsing.css" media="all">
+    <link rel="localization" href="branding/brand.ftl">
+    <link rel="localization" href="toolkit/branding/brandings.ftl">
+    <link rel="localization" href="browser/aboutPrivateBrowsing.ftl">
+    <script src="chrome://browser/content/aboutPrivateBrowsing.js"></script>
+    <script src="chrome://browser/content/contentSearchHandoffUI.js"></script>
+  </head>
+
+  <body style="--newtab-search-icon: url(blob:null/5d648cab-ab75-4649-a909-3a5522df04fb);">
+    <p class="showNormal" data-l10n-id="about-private-browsing-not-private">You are currently not in a private window.</p>
+    <button id="startPrivateBrowsing" class="showNormal" data-l10n-id="privatebrowsingpage-open-private-window-label">Open a Private Window</button>
+    <div id="search-banner" class="search-banner" hidden="true">
+      <button id="search-banner-close-button" class="search-banner-close-button" data-l10n-id="about-private-browsing-search-banner-close-button" aria-label="Close">
+        <img class="search-banner-close-image" src="chrome://global/skin/icons/close.svg">
+      </button>
+      <div class="banner-body">
+        <h1 id="about-private-browsing-search-banner-title" data-l10n-id="about-private-browsing-search-banner-title" data-l10n-args="{&quot;engineName&quot;: &quot;&quot;}"> is your default search engine in Private Windows</h1>
+        <p id="about-private-browsing-search-banner-description" data-l10n-id="about-private-browsing-search-banner-description">To select a different search engine go to <a href="" id="open-search-options-link" data-l10n-name="link-options">Options</a></p>
+      </div>
+    </div>
+    <div class="showPrivate showSearch container">
+      <div class="logo-and-wordmark">
+        <div id="about-private-browsing-logo" class="logo"></div>
+        <div class="wordmark"></div>
+      </div>
+      <div class="search-inner-wrapper">
+        <button id="search-handoff-button" class="search-handoff-button" tabindex="-1" aria-hidden="true" data-l10n-args="{&quot;engine&quot;:&quot;Google&quot;}" data-l10n-id="about-private-browsing-handoff" title="Search with Google or enter address">
+          <div class="fake-textbox" data-l10n-args="{&quot;engine&quot;:&quot;Google&quot;}" data-l10n-id="about-private-browsing-handoff-text">Search with Google or enter address</div>
+          <input id="fake-editable" class="fake-editable" tabindex="-1" aria-hidden="true">
+          <div class="fake-caret"></div>
+        </button>
+      </div>
+      <div class="info-border">
+        <div class="info">
+          <h1 id="info-title" hidden=""></h1>
+          <p id="info-body" data-l10n-id="about-private-browsing-info-description-private-window">Private
+ window: Firefox clears your search and browsing history when you close 
+all private windows. This doesn’t make you anonymous.</p>
+          <a id="private-browsing-myths" data-l10n-id="about-private-browsing-learn-more-link" target="_blank" href="https://support.mozilla.org/1/firefox/133.0/WINNT/en-GB/private-browsing-myths">Learn more</a>
+        </div>
+      </div>
+    </div>
+
+    
+  
+
+</body></html>
