@@ -11,15 +11,38 @@ def sign(n:int):
         return 1    
     return 0
 
+def determineSafety(levels):
+    direction = 0
+
+    if len(levels) == 0:
+        return True
+
+    if levels[0] < levels[-1]:
+        direction = 1
+    else:
+        direction = -1
+
+    for k in range(1, len(levels)):
+        v = levels[k]
+        diff = v - levels[k-1]
+
+        # Report is safe if all levels are increasing AND
+        # the difference is at least 1 and at most 3
+        at_least = 1
+        at_most = 3
+        if not(abs(diff) >= at_least and abs(diff) <= at_most and sign(diff) == sign(direction)):
+            return False
+    
+    return True
+
 class report:
     details = []
     safe = False
 
     def __init__(self, data_str:str):
-        self.details = list(map(int, data_str.split(" ")))
-        self.details_backup = self.details.copy()
+        self.details = list(map(int, data_str.split(" ")))        
+        self.safety_count = 1
         self.safe = True
-        self.dampened = False
 
         if len(self.details) <= 0:
             return
@@ -27,22 +50,27 @@ class report:
         if (len(self.details) == 1) :
             return 
         
-        self.unsafe_indices = self.determineSafety()
+        # Iterate up from 0 to n with i
+        # Check if details(0:i) is safe
+        # If unsafe more than once then unsafe
 
-        if len(self.unsafe_indices) == 1:
-            self.details.pop(self.unsafe_indices[0])
-            self.dampened = True
-        elif len(self.unsafe_indices) > 1:
+        i = 1
+        details_backup = self.details.copy()
+        while i <= len(self.details):
+            if determineSafety(self.details[0:i]):
+                i += 1
+            else:
+                self.details.pop(i-1)
+                self.safety_count -= 1
+
+        self.details = details_backup.copy()
+
+        if self.safety_count < 0:
             self.safe = False
 
-            #self.details.pop(self.unsafe_index)
-            # unsafe_index = self.determineSafety()
-            # self.safe = False
-
-            # # Determined safe after dampened once
-            # if unsafe_index < 0:
-            #     self.safe = True
-            #     self.dampened = True
+        # what if we checked both sides of a level to see which 
+        # number is best to delete?
+        # 9 13 16 17 20
 
 
     def __str__(self):
@@ -51,75 +79,13 @@ class report:
             result += pad("SAFE", 9)
         else:
             result += pad("NOT SAFE", 9)
-        
-        result += " -> ["
-        result += ", ".join(list(map(str, self.details_backup)))
-        result += "]"
 
-        result += " ("
-        result += self.getDiff()
-        result += ")"
+        result += " -> "
+        result += pad("[" + ", ".join(list(map(str, self.details))), 40) + "]"
 
-        # result += " ["
-        # for i in range(0, len(self.details_backup)):
-        #     result += str(self.details_backup[i])
-
-        #     if i > 0:
-        #         diff = self.details_backup[i] - self.details_backup[i-1]
-        #         if diff > 0:
-        #             result += " (+" + str(diff) + ")"
-        #         else:
-        #             result += " (" + str(diff) + ")"
-
-        #     if i < len(self.details_backup) - 1:
-        #         result += ", "
-        # result += "]"
-
-        if (self.dampened and self.safe):
-            result += " (Dampened: ["
-            result += ", ".join(list(map(str, self.details)))
-            result += "])"
+        result += " (safety: " + str(self.safety_count) + ")"
 
         return result
-    
-    def getDiff(self):
-        result = ""
-        for i in range(1, len(self.details_backup)):
-            if result != "":
-                result += ", "
-
-            diff = self.details_backup[i] - self.details_backup[i-1]
-            if diff > 0:
-                result += "+"
-        
-            result += str(diff)
-        return result
-
-    def determineSafety(self):
-        self.safe = True
-        last_num = self.details[0]
-        direction = 0
-        unsafe_indices = []
-
-        if self.details[0] < self.details[-1]:
-            direction = 1
-        else:
-            direction = -1
-
-        for k in range(1, len(self.details)):
-            v = self.details[k]
-            diff = v - last_num
-            last_num = v
-
-            # Report is safe if all levels are increasing AND
-            # the difference is at least 1 and at most 3
-            at_least = 1
-            at_most = 3
-            if not(abs(diff) >= at_least and abs(diff) <= at_most and sign(diff) == sign(direction)):
-                self.safe = False
-                unsafe_indices.append(k) # Unsafe index
-        
-        return unsafe_indices # All good :-)
 
 reports_raw = open("input_02.txt", "r").readlines()
 reports = []
@@ -132,13 +98,14 @@ i = 1
 
 for r in reports:
     #if r.dampened:
-    print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
+    #print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
 
-    # if r.dampened or not r.safe:
-    #     print(pad(i, 4) + " - " + str(r))
+    if r.safety_count <= 0:
+        print(pad(i, 4) + " - " + str(r))
     
     if (r.safe):
         safe_reports += 1
+    
     i += 1
 
 # 3
