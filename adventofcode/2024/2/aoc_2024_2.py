@@ -11,16 +11,9 @@ def sign(n:int):
         return 1    
     return 0
 
-def determineSafety(levels):
-    direction = 0
-
+def determineSafety(levels, direction):
     if len(levels) == 0:
         return True
-
-    if levels[0] < levels[-1]:
-        direction = 1
-    else:
-        direction = -1
 
     for k in range(1, len(levels)):
         v = levels[k]
@@ -43,27 +36,52 @@ class report:
         self.details = list(map(int, data_str.split(" ")))        
         self.safety_count = 1
         self.safe = True
+        self.direction = 0
 
         if len(self.details) <= 0:
             return
         
         if (len(self.details) == 1) :
             return 
-        
+                
+        for i in range(1, len(self.details)):
+            if self.details[i] - self.details[i-1] > 0:
+                self.direction += 1
+            else:
+                self.direction -= 1
+
+        self.direction = sign(self.direction)
+
         # Iterate up from 0 to n with i
         # Check if details(0:i) is safe
         # If unsafe more than once then unsafe
 
         i = 1
         details_backup = self.details.copy()
+        
+        print("start: " + str(self.details))
         while i <= len(self.details):
-            if determineSafety(self.details[0:i]):
+            print("review: " + str(self.details[0:i+1]))
+            if determineSafety(self.details[0:i+1], self.direction):
+                print("good")
                 i += 1
             else:
-                self.details.pop(i-1)
+                print("bad")
+                # Check which element is appropriate to delete
+                prev = self.details[i-1]
+                cur = self.details[i]
+                
+                if not(self.direction > 0 and cur < prev):
+                    self.details.pop(i-1)
+                else:
+                    self.details.pop(i)
+
+                print("new list: " + str(self.details))
+
                 self.safety_count -= 1
 
         self.details = details_backup.copy()
+        print("===================")
 
         if self.safety_count < 0:
             self.safe = False
@@ -71,6 +89,12 @@ class report:
         # what if we checked both sides of a level to see which 
         # number is best to delete?
         # 9 13 16 17 20
+        # for i in range(1, len(self.details) - 2, 1):
+        #     prev = self.details[i-1]
+        #     cur = self.details[i]
+        #     next = self.details[i+1]
+
+        #     if prev == cur
 
 
     def __str__(self):
@@ -83,25 +107,26 @@ class report:
         result += " -> "
         result += pad("[" + ", ".join(list(map(str, self.details))), 40) + "]"
 
-        result += " (safety: " + str(self.safety_count) + ")"
+        result += " (safety: " + pad(str(self.safety_count), 4) + ")"
 
         return result
 
-reports_raw = open("input_02.txt", "r").readlines()
+reports_raw = open("test_input_02.txt", "r").readlines()
 reports = []
 
 for report_raw in reports_raw:
     reports.append(report(report_raw))
+#reports.append(report(reports_raw[7]))
 
 safe_reports = 0
 i = 1
 
 for r in reports:
     #if r.dampened:
-    #print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
+    print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
 
-    if r.safety_count <= 0:
-        print(pad(i, 4) + " - " + str(r))
+    # if r.safety_count <= 0:
+    #     print(pad(i, 4) + " - " + str(r))
     
     if (r.safe):
         safe_reports += 1
