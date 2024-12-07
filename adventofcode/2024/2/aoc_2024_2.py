@@ -1,5 +1,3 @@
-print("bingus\n")
-
 def right(s, l):
     return str(s)[-l:]
 
@@ -85,6 +83,9 @@ class report:
 
         self.safe_permutations = []
 
+        # If the original report has issues then
+        # iterate over each element and simulate
+        # deleting it, then check issues again
         if getIssues(self.details) > 0:
             self.safe = False
             for i in range(0, len(self.details)):
@@ -92,25 +93,11 @@ class report:
                 details_backup.pop(i)
                 self.safe_permutations.append(getIssues(details_backup))
 
-        # Find a permutation with 0 issues after we remove that element
+        # Find a permutation with 0 issues after we remove any element
         for i in range(0, len(self.safe_permutations)):
             if self.safe_permutations[i] == 0:
                 self.safe = True
                 break
-
-        # Iterate up from 0 to n with i
-        # Check if details(0:i) is safe
-        # If unsafe more than once then unsafe
-
-        # what if we checked both sides of a level to see which 
-        # number is best to delete?
-        # 9 13 16 17 20
-        # for i in range(1, len(self.details) - 2, 1):
-        #     prev = self.details[i-1]
-        #     cur = self.details[i]
-        #     next = self.details[i+1]
-
-        #     if prev == cur
 
     def __str__(self):
         result = "Report: "
@@ -118,55 +105,24 @@ class report:
 
         return result
 
-
-
 reports_raw = open("input_02.txt", "r").readlines()
 reports = []
 
 for report_raw in reports_raw:
     if len(report_raw.strip()) > 0:
         reports.append(report(report_raw.strip()))
-#reports.append(report(reports_raw[7]))
 
 safe_reports = 0
 i = 1
 
 for r in reports:
-    #if r.dampened:
     print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
 
-    # if r.safety < 0:
-    #     print(pad(i, 4) + " - " + str(r))
-    
     if r.safe == True:
         safe_reports += 1
     
     i += 1
 
-# 3
-
-#test_report = report("1 3 2 4 5")
-#test_report = report("55 53 54 56 57 58")
-#print(test_report)
-#test_report.details = test_report.details_backup.copy()
-#test_unsafe = test_report.determineSafety()
-#print(test_unsafe)
-
-# Create report (1, 3, 2, 4, 5)
-# Get diff (+2, -1, +2, +1)
-# Count + and - 
-# Remove odd one out (if 1)
-# Get diff
-# Count abs(value) < 1 | > 3
-# Return true if <= 1
-
-# problem when report is [9, 1, 2, 3, 4, 5]
-# or [1, 2, 3, 4, 9, 6]
-
 # Part 1: 432
-# Part 2: 472 (too low) 460 (too low) 462 (wrong) 475 (wrong)
+# Part 2: 488
 print("Total Safe Report: " + str(safe_reports))
-
-# r = 1
-# getSafety(reports[r].details, True)
-# print(str(reports[r]))
