@@ -1,3 +1,5 @@
+print("bingus\n")
+
 def right(s, l):
     return str(s)[-l:]
 
@@ -11,45 +13,90 @@ def sign(n:int):
         return 1    
     return 0
 
-def determineSafety(levels, direction):
-    if len(levels) == 0:
-        return True
+def getDiff(list):
+    new_diff = []
+    for i in range(1, len(list)):
+        new_diff.append(list[i] - list[i-1])
+    return new_diff
 
-    for k in range(1, len(levels)):
-        v = levels[k]
-        diff = v - levels[k-1]
+def getDir(list):
+    # Iterate over the diff and see which direction it tends
+    inc = 0
+    dec = 0
 
-        # Report is safe if all levels are increasing AND
-        # the difference is at least 1 and at most 3
-        at_least = 1
-        at_most = 3
-        if not(abs(diff) >= at_least and abs(diff) <= at_most and sign(diff) == sign(direction)):
-            return False
-    
-    return True
+    for i in range(1, len(list)):
+        if list[i] - list[i-1] > 0:
+            inc += 1
+        else:
+            dec += 1
+
+    if inc > dec:
+        return 1
+    else:
+        return -1
+
+def getIssues(list, *debug):
+    issues = 0 # how many issues does this list have?
+    dir = getDir(list)
+    diff = getDiff(list)
+    k = 0
+
+    if debug:
+        print("Getting safety for " + str(list))
+        print("Diff: " + str(diff))
+        print("Dir: " + str(dir))
+        print("------------")
+
+    while k < len(diff):
+        if debug:
+            print(str(list) + ", d" + str(diff))
+            print("d[" + str(k) + "]: " + str(diff[k]))
+
+        if sign(diff[k]) != dir:
+            # Make sure all diffs are in the right direction
+            if debug:
+                print("\td[" + str(k) + "] does not align with direction!")
+            issues += 1
+        elif not (abs(diff[k]) >= 1 and abs(diff[k]) <= 3):
+            # Check if diff is within range
+            if debug:
+                print("\td[" + str(k) + "] is outside safe limits!")
+            issues += 1
+
+        k += 1
+
+    return issues
 
 class report:
     effective_details = []
     details = []
     diff = []
     direction = 0
+    safe_permutations = []
     safe = False
 
     def __init__(self, data_str:str):
         self.details = list(map(int, data_str.split(" ")))        
-        self.safety = 1
         self.safe = True
         self.direction = 0
 
-        if len(self.details) <= 0:
+        if len(self.details) <= 1:
             return
-        
-        if len(self.details) == 1:
-            return 
-                
-        self.getDiff()
-        self.getDir()
-        self.getSafety()
+
+        self.safe_permutations = []
+
+        if getIssues(self.details) > 0:
+            self.safe = False
+            for i in range(0, len(self.details)):
+                details_backup = self.details.copy()
+                details_backup.pop(i)
+                self.safe_permutations.append(getIssues(details_backup))
+
+        # Find a permutation with 0 issues after we remove that element
+        for i in range(0, len(self.safe_permutations)):
+            if self.safe_permutations[i] == 0:
+                self.safe = True
+                break
 
         # Iterate up from 0 to n with i
         # Check if details(0:i) is safe
@@ -67,96 +114,13 @@ class report:
 
     def __str__(self):
         result = "Report: "
-        result += pad("[" + ", ".join(list(map(str, self.details))), 35) + "]"
-
-        result += ", Dir: " + pad(str(self.direction), 2)
-        result += ", Safety: " + str(self.safety)
-
-        result += pad("[" + ", ".join(list(map(str, self.diff))), 35) + "]"
-
-        result += ", Effective: " 
-        result += pad("[" + ", ".join(list(map(str, self.effective_details))), 35) + "]"
+        result += pad(str(self.details), 25) + ", Safe: " + pad(str(self.safe), 5) + ", Perm: " + str(self.safe_permutations)
 
         return result
 
-    def getDiff(self):
-        new_diff = []
-        for i in range(1, len(self.details)):
-            new_diff.append(self.details[i] - self.details[i-1])
-        self.diff = new_diff.copy()
-
-    def getDir(self):
-        # Iterate over the diff and see which direction it tends
-        inc = 0
-        dec = 0
-
-        for d in self.diff:
-            if d > 0:
-                inc += 1
-            else:
-                dec += 1
-
-        if inc > dec:
-            self.direction = 1
-        else:
-            self.direction = -1
-
-    def getSafety(self, *debug):
-        self.safety = 1 # how many mistakes can we make?
-        details_backup = self.details.copy()
-        k = 0
-
-        if debug:
-            print("Getting safety for " + str(self.details))
-            print("Diff: " + str(self.diff))
-            print("Dir: " + str(self.direction))
-            print("------------")
-
-        while k < len(self.details) - 1:
-            if debug:
-                print(str(self.details) + ", d" + str(self.diff))
-                print("[" + str(k) + "]: " + str(self.details[k]))
-
-            # Make sure all diffs are in the right direction
-            if sign(self.diff[k]) != self.direction:
-                if debug:
-                    print("\tDiff not in same direction as report!")
-                
-                self.safety -= 1
-
-                self.details.pop(k+1)
-                # try delete k 
-                # if it still broke then try delete k+1
-
-                self.getDiff()
-                k = 0
-                continue
-
-            # Check if diff is within range
-            if not (abs(self.diff[k]) >= 1 and abs(self.diff[k]) <= 3):
-                if debug:
-                    print("\tDiff at unsafe level!")
-                    print("\t" + str(self.details))
-                    print("\tDiff: " + str(self.diff))
-                    print("\t[" + str(k) + "]: " + str(self.details[k]))
-                
-                self.safety -= 1
-                if k == 0:
-                    self.details.pop(k)
-                else:
-                    self.details.pop(k+1)
-                self.getDiff()
-                k = 0
-                continue
-
-            k += 1
-        
-        self.effective_details = self.details.copy()
-        self.details = details_backup.copy()
-        self.getDiff()
 
 
-reports_raw = open("test_input_02.txt", "r").readlines()
+reports_raw = open("input_02.txt", "r").readlines()
 reports = []
 
 for report_raw in reports_raw:
@@ -167,7 +131,6 @@ for report_raw in reports_raw:
 safe_reports = 0
 i = 1
 
-print("bingus\n")
 for r in reports:
     #if r.dampened:
     print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
@@ -175,7 +138,7 @@ for r in reports:
     # if r.safety < 0:
     #     print(pad(i, 4) + " - " + str(r))
     
-    if r.safety >= 0:
+    if r.safe == True:
         safe_reports += 1
     
     i += 1
@@ -204,6 +167,6 @@ for r in reports:
 # Part 2: 472 (too low) 460 (too low) 462 (wrong) 475 (wrong)
 print("Total Safe Report: " + str(safe_reports))
 
-r = -1
-reports[r].getSafety(True)
-print(str(reports[r]))
+# r = 1
+# getSafety(reports[r].details, True)
+# print(str(reports[r]))
