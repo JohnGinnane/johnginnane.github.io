@@ -117,6 +117,21 @@ class report:
                 print(str(self.details) + ", d" + str(self.diff))
                 print("[" + str(k) + "]: " + str(self.details[k]))
 
+            # Make sure all diffs are in the right direction
+            if sign(self.diff[k]) != self.direction:
+                if debug:
+                    print("\tDiff not in same direction as report!")
+                
+                self.safety -= 1
+
+                self.details.pop(k+1)
+                # try delete k 
+                # if it still broke then try delete k+1
+
+                self.getDiff()
+                k = 0
+                continue
+
             # Check if diff is within range
             if not (abs(self.diff[k]) >= 1 and abs(self.diff[k]) <= 3):
                 if debug:
@@ -130,21 +145,6 @@ class report:
                     self.details.pop(k)
                 else:
                     self.details.pop(k+1)
-                self.getDiff()
-                k = 0
-                continue
-
-            # Make sure all diffs are in the right direction
-            if sign(self.diff[k]) != self.direction:
-                if debug:
-                    print("\tDiff not in same direction as report!")
-                
-                self.safety -= 1
-
-                self.details.pop(k)
-                # try delete k 
-                # if it still broke then try delete k+1
-
                 self.getDiff()
                 k = 0
                 continue
@@ -179,8 +179,6 @@ for r in reports:
         safe_reports += 1
     
     i += 1
-    if i > 7:
-        break
 
 # 3
 
@@ -206,6 +204,6 @@ for r in reports:
 # Part 2: 472 (too low) 460 (too low) 462 (wrong) 475 (wrong)
 print("Total Safe Report: " + str(safe_reports))
 
-# r = 13
-# reports[r].getSafety(True)
-# print(str(reports[r]))
+r = -1
+reports[r].getSafety(True)
+print(str(reports[r]))
