@@ -29,6 +29,7 @@ def determineSafety(levels, direction):
     return True
 
 class report:
+    effective_details = []
     details = []
     diff = []
     direction = 0
@@ -64,15 +65,17 @@ class report:
 
         #     if prev == cur
 
-
     def __str__(self):
         result = "Report: "
-        result += pad("[" + ", ".join(list(map(str, self.details))), 40) + "]"
+        result += pad("[" + ", ".join(list(map(str, self.details))), 35) + "]"
 
         result += ", Dir: " + pad(str(self.direction), 2)
         result += ", Safety: " + str(self.safety)
 
-        result += pad("[" + ", ".join(list(map(str, self.diff))), 20) + "]"
+        result += pad("[" + ", ".join(list(map(str, self.diff))), 35) + "]"
+
+        result += ", Effective: " 
+        result += pad("[" + ", ".join(list(map(str, self.effective_details))), 35) + "]"
 
         return result
 
@@ -109,40 +112,46 @@ class report:
             print("Dir: " + str(self.direction))
             print("------------")
 
-        while k < len(self.diff) and len(self.details) > 0:
-
+        while k < len(self.details) - 1:
             if debug:
                 print(str(self.details) + ", d" + str(self.diff))
-                print("Diff[" + str(k) + "]: " + str(self.diff[k]))
+                print("[" + str(k) + "]: " + str(self.details[k]))
+
+            # Check if diff is within range
+            if not (abs(self.diff[k]) >= 1 and abs(self.diff[k]) <= 3):
+                if debug:
+                    print("\tDiff at unsafe level!")
+                    print("\t" + str(self.details))
+                    print("\tDiff: " + str(self.diff))
+                    print("\t[" + str(k) + "]: " + str(self.details[k]))
+                
+                self.safety -= 1
+                if k == 0:
+                    self.details.pop(k)
+                else:
+                    self.details.pop(k+1)
+                self.getDiff()
+                k = 0
+                continue
 
             # Make sure all diffs are in the right direction
             if sign(self.diff[k]) != self.direction:
                 if debug:
                     print("\tDiff not in same direction as report!")
+                
                 self.safety -= 1
-                if self.direction > 0:
-                    self.details.pop(k+1)
-                else:
-                    self.details.pop(k)
-                self.getDiff()
-                k = 0
-                continue
 
-            # Check if diff is within range
-            if not (abs(self.diff[k]) >= 1 and abs(self.diff[k]) <= 3):
-                self.safety -= 1
                 self.details.pop(k)
+                # try delete k 
+                # if it still broke then try delete k+1
+
                 self.getDiff()
                 k = 0
-                if debug:
-                    print("\tDiff at unsafe level!")
-                    print("\t" + str(self.details))
-                    print("\tDiff: " + str(self.diff))
-                    print("\tDiff[" + str(k) + "]: " + str(self.diff[k]))
                 continue
 
             k += 1
         
+        self.effective_details = self.details.copy()
         self.details = details_backup.copy()
         self.getDiff()
 
@@ -151,7 +160,8 @@ reports_raw = open("test_input_02.txt", "r").readlines()
 reports = []
 
 for report_raw in reports_raw:
-    reports.append(report(report_raw))
+    if len(report_raw.strip()) > 0:
+        reports.append(report(report_raw.strip()))
 #reports.append(report(reports_raw[7]))
 
 safe_reports = 0
@@ -162,13 +172,15 @@ for r in reports:
     #if r.dampened:
     print(pad(i, 4) + "/" + str(len(reports)) + " - " + str(r))
 
-    # if r.safety_count <= 0:
+    # if r.safety < 0:
     #     print(pad(i, 4) + " - " + str(r))
     
     if r.safety >= 0:
         safe_reports += 1
     
     i += 1
+    if i > 7:
+        break
 
 # 3
 
@@ -187,10 +199,13 @@ for r in reports:
 # Count abs(value) < 1 | > 3
 # Return true if <= 1
 
+# problem when report is [9, 1, 2, 3, 4, 5]
+# or [1, 2, 3, 4, 9, 6]
+
 # Part 1: 432
 # Part 2: 472 (too low) 460 (too low) 462 (wrong) 475 (wrong)
 print("Total Safe Report: " + str(safe_reports))
 
-# r = 2
+# r = 13
 # reports[r].getSafety(True)
 # print(str(reports[r]))
