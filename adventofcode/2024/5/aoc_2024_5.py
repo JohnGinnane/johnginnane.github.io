@@ -14,7 +14,7 @@ print("test")
 
 rules = {}
 updates = []
-mid_page_total = 0
+good_updates = []
 bad_updates = []
 
 def checkReport(update):
@@ -54,7 +54,16 @@ def checkReport(update):
             j += 1        
         i += 1
 
-with open("test_input_05.txt", "r") as f:
+def sumMidPages(target):
+    result = 0
+
+    for i in target:
+        update = updates[i]
+        result += update[int(len(update)/2)]
+
+    return result
+
+with open("input_05.txt", "r") as f:
     lines = f.readlines()
 
     for line in lines:
@@ -83,14 +92,10 @@ for k in range(0, len(updates)):
     #print("Checking " + str(update) + " is in order:")
     bad_pages = checkReport(update)
 
-    if not bad_pages:
-        mid_page_total += update[int(len(update)/2)]
+    if bad_pages:
+        bad_updates.append(k)
     else:
-        print("Bad pages " + str(bad_pages))
-        bad_updates.append((k))
-
-# Part 1: 5248
-print("Mid page total: " + str(mid_page_total) + "\n")
+        good_updates.append(k)
 
 for k in range(0, len(bad_updates)):
     watch = 0
@@ -111,8 +116,15 @@ for k in range(0, len(bad_updates)):
             break
 
         watch += 1
-        if watch >= 100:
+        if watch >= 500:
             print("Watchdog met!")
             break
 
-    print("Fixed report: " + str(updates[bad_updates[k]]))
+    #print("Fixed report: " + str(updates[bad_updates[k]]))
+
+good_mid_pages = sumMidPages(good_updates)
+bad_mid_pages = sumMidPages(bad_updates)
+
+# Part 1: 5248
+print("Good page total: " + str(good_mid_pages))
+print("Bad-but-fixed page total: " + str(bad_mid_pages))
