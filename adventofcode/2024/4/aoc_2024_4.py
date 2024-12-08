@@ -12,7 +12,7 @@ def pad_with(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]]  = ' '
     vector[-pad_width[1]:] = ' '
 
-with open("test_input_04b.txt", "r") as f:
+with open("input_04.txt", "r") as f:
     data_raw = [list(line.strip()) for line in f]
 
 data = np.array(data_raw)
@@ -63,8 +63,9 @@ data = np.array(data_raw)
 #     print(r)
 
 def rotate(arr, deg):
+    scale = 4
     size = len(data)
-    arr_pad = np.pad(arr, ((0, size * 3), (0, size * 3)), mode="constant", constant_values=' ')
+    arr_pad = np.pad(arr, ((0, size * (scale-1)), (0, size * (scale-1))), mode="constant", constant_values=' ')
 
     # x' = cos(45°) * x - sin(45°) * y
     # y' = sin(45°) * x + cos(45°) * y
@@ -72,8 +73,8 @@ def rotate(arr, deg):
     centerX = len(arr_pad[0]) / 2
     centerY = len(arr_pad) / 2
 
-    arr_expl = np.full((size * 4, size * 4), ' ', dtype=str)
-    arr_rota = np.full((size * 4, size * 4), ' ', dtype=str)
+    arr_expl = np.full((size * scale, size * scale), ' ', dtype=str)
+    arr_rota = np.full((size * scale, size * scale), ' ', dtype=str)
 
     for y, row in enumerate(arr_pad):
         for x, char in enumerate(row):
@@ -92,9 +93,39 @@ def rotate(arr, deg):
             if char != ' ':
                 arr_rota[round(newY)][round(newX)] = char
         
+    # Now crop the array to remove blank rows/columns
+    # Rows first
+    y = 0
+    while y < len(arr_rota):
+        row_clear = True
+
+        for char in arr_rota[y]:
+            if char != ' ':
+                row_clear = False
+                break
+        
+        if row_clear:
+            arr_rota = np.delete(arr_rota, (y), axis=0)
+        else:
+            y += 1
+
+    x = 0
+    while x < len(arr_rota[0]):
+        col_clear = True
+
+        for y in range(0, len(arr_rota)):
+            if arr_rota[y][x] != ' ':
+                col_clear = False
+                break
+
+        if col_clear:
+            arr_rota = np.delete(arr_rota, (x), axis=1)
+        else:
+            x += 1
+
     return arr_rota
 
-rotated = rotate(data, math.pi / 2)
+rotated = rotate(data, math.pi / 4)
 
 result = ""
 for y, row in enumerate(rotated):
@@ -103,5 +134,4 @@ for y, row in enumerate(rotated):
     result += "\n"
 print(result)
 
-
-# #print(test)
+#print(rotated)
