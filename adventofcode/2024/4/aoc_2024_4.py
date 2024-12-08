@@ -1,5 +1,12 @@
 import numpy as np
 from scipy.ndimage import rotate
+import math
+
+def right(s, l):
+    return str(s)[-l:]
+
+def pad(s, l):
+    return right(" " * l + str(s), l)
 
 def pad_with(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]]  = ' '
@@ -55,12 +62,54 @@ data = np.array(data_raw)
 # for r in data:
 #     print(r)
 
+
 print(data)
-data = np.pad(data, 2, pad_with)
+#data = np.pad(data, 6, pad_with)
+data = np.pad(data, ((0, 12), (0, 12)), mode="constant", constant_values=' ')
 print(data)
+
+# x' = cos(45°) * x - sin(45°) * y
+# y' = sin(45°) * x + cos(45°) * y
 
 centerX = len(data[0]) / 2
 centerY = len(data) / 2
-print("Center: [" + str(centerX) + ", " + str(centerY) + "]")
+
+test = ""
+newTest = ""
+deg = math.pi / 4
+exploded = np.full((16, 16), ' ', dtype=str)
+rotated = np.full((16, 16), ' ', dtype=str)
+pad_amt = 5
+
+for y, row in enumerate(data):
+    for x, char in enumerate(row):
+        if char == ' ':
+            continue
+        exploded[y*2+4][x*2+4] = char
+
+#print(exploded)
+
+for y, row in enumerate(exploded):
+    for x, char in enumerate(row):
+        relX = x - centerX
+        relY = y - centerY
+
+        newX = (math.cos(deg) * relX - math.sin(deg) * relY) + centerX
+        newY = (math.sin(deg) * relX + math.cos(deg) * relY) + centerY
+        test += "[" + pad(str(x), pad_amt) + ", " + pad(str(y), pad_amt) + "](" + char + ") "
+        round_amt = 3
+        newTest += "[" + pad(str(round(newX, round_amt)), pad_amt) + ", " + pad(str(round(newY, round_amt)), pad_amt) + "](" + char + ") "
+
+        if char != ' ':
+            rotated[round(newY)][round(newX)] = char
+        
+    test += "\n"
+    newTest += "\n"
+
+print(test)
+print(newTest)
+
+print(rotated)
+
 
 # #print(test)
