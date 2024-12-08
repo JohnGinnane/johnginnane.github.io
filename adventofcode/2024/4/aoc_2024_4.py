@@ -3,6 +3,8 @@ import numpy as np
 from scipy.ndimage import rotate
 import math
 
+print("test")
+
 def right(s, l):
     return str(s)[-l:]
 
@@ -135,18 +137,13 @@ def condense_arr(arr):
         result += "\n"
     return result.strip()
 
-# rotated = rotate(data, (math.pi / 4) * 0)
-
-# result = ""
-# for y, row in enumerate(rotated):
-#     for x, char in enumerate(row):
-#         result += char
-#     result += "\n"
-# print(result)
-
-# print(condense_arr(rotated))
-
-#print(rotated)
+def char_arr_str(arr):
+    result = ""
+    for row in arr:
+        for char in row:
+            result += char
+        result += "\n"
+    return result
 
 # Now use regex to check for XMAS or SAMX
 # rotate 45 degrees, do it again
@@ -158,12 +155,49 @@ total_xmas = 0
 for i in range(0, 4):
     a = math.pi / 4 * i
 
-    rotated = condense_arr(rotate(data, a))
-    # print(str(i) + ":\n")
-    # print(rotated)
-    xmas_count = len(re.findall(regex_xmas, rotated))
+    rotated = rotate(data, a)
+
+    xmas_count = len(re.findall(regex_xmas, condense_arr(rotated)))
     total_xmas += xmas_count
-    #print("Count: " + str(xmas_count) + "\n")
+
+    # print(str(i) + ":\n")
+    # print(char_arr_str(rotated))
+    # print("Count: " + str(xmas_count) + "\n")
+
+    # with open("rotate_" + str(i) + ".txt", "w") as f:
+    #     f.write(char_arr_str(rotated))
+
+# Part 2:
+# Look for "MAS" or "SAM" that cross one another on "A" and make
+# the shape of an "X", e.g.:
+# S . M
+# . A .
+# S . M
+
+# Iterate from rows 1 to n-1 and cols 1 to n-1
+total_xmas_2 = 0
+
+for y, row in enumerate(data):
+    if y <= 0 or y >= len(data) - 1:
+        continue
+
+    for x, char in enumerate(row):
+        if x <= 0 or x >= len(row) - 1:
+            continue
+
+        # Look for A
+        if char == 'A':
+            # Check for top left
+            if (((data[y-1][x-1] == 'M' and data[y+1][x+1] == 'S') or
+                 (data[y-1][x-1] == 'S' and data[y+1][x+1] == 'M')) and
+
+                ((data[y+1][x-1] == 'M' and data[y-1][x+1] == 'S') or
+                 (data[y+1][x-1] == 'S' and data[y-1][x+1] == 'M'))
+               ):
+                #print("'A' at [" + str(x) + "," + str(y) + "]")
+                total_xmas_2 += 1
 
 # Part 1: 2483
+# Part 2: 1925
 print("Total Xmas: " + str(total_xmas))
+print("Total X-MAS: " + str(total_xmas_2))
