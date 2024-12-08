@@ -13,7 +13,7 @@ def pad_with(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]]  = ' '
     vector[-pad_width[1]:] = ' '
 
-with open("test_input_04.txt", "r") as f:
+with open("input_04.txt", "r") as f:
     data_raw = [list(line.strip()) for line in f]
 
 data = np.array(data_raw)
@@ -159,10 +159,11 @@ for i in range(0, 4):
     a = math.pi / 4 * i
 
     rotated = condense_arr(rotate(data, a))
-    print(str(i) + ":\n")
-    print(rotated)
+    # print(str(i) + ":\n")
+    # print(rotated)
     xmas_count = len(re.findall(regex_xmas, rotated))
     total_xmas += xmas_count
-    print("Count: " + str(xmas_count) + "\n")
+    #print("Count: " + str(xmas_count) + "\n")
 
+# Part 1: 2483
 print("Total Xmas: " + str(total_xmas))
