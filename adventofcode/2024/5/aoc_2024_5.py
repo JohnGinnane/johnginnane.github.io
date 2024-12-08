@@ -18,10 +18,10 @@ mid_page_total = 0
 bad_updates = []
 
 def checkReport(update):
-    result = True
+    bad_page = -1
     
     i = 0
-    while i < len(update) - 1 and result:
+    while i < len(update) - 1 and bad_page < 0:
         this_page = update[i]
 
         # if this_page in rule_before:
@@ -43,20 +43,16 @@ def checkReport(update):
             if this_page in rules:
                 if that_page in rules[this_page]:
                     if i >= j:
-                        result = False
-                        break
+                        return i, j
 
             # Is that page supposed to be before this page?
             if that_page in rules:
                 if this_page in rules[that_page]:
                     if j >= i:
-                        result = False
-                        break
+                        return i, j
             
             j += 1        
         i += 1
-
-    return result
 
 with open("test_input_05.txt", "r") as f:
     lines = f.readlines()
@@ -85,26 +81,38 @@ for k in range(0, len(updates)):
     update = updates[k]
 
     #print("Checking " + str(update) + " is in order:")
-    update_good = checkReport(update)
+    bad_pages = checkReport(update)
 
-    if update_good:
+    if not bad_pages:
         mid_page_total += update[int(len(update)/2)]
     else:
-        bad_updates.append(k)
+        print("Bad pages " + str(bad_pages))
+        bad_updates.append((k))
 
 # Part 1: 5248
 print("Mid page total: " + str(mid_page_total) + "\n")
 
 for k in range(0, len(bad_updates)):
-    bad_update = updates[bad_updates[k]]
+    watch = 0
 
-    print(bad_update)
+    while True:
+        update = updates[bad_updates[k]]
 
-    for p in range(0, len(bad_update)):
-        this_page = bad_update[p]
+        bad_pages = checkReport(update)
 
-        print(str(p+1) + "/" + str(len(bad_update)) + " - " + str(this_page))
+        if bad_pages:
+            idx_this = bad_pages[0]
+            idx_that = bad_pages[1]
 
-        if this_page in rules:
-            print("\t" + str(this_page) + " rules: " + str(rules[this_page]))
-    print("\n")
+            tmp = update[idx_this]
+            update[idx_this] = update[idx_that]
+            update[idx_that] = tmp
+        else:
+            break
+
+        watch += 1
+        if watch >= 100:
+            print("Watchdog met!")
+            break
+
+    print("Fixed report: " + str(updates[bad_updates[k]]))
