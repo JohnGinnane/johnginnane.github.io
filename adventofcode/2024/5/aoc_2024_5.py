@@ -17,6 +17,47 @@ updates = []
 mid_page_total = 0
 bad_updates = []
 
+def checkReport(update):
+    result = True
+    
+    i = 0
+    while i < len(update) - 1 and result:
+        this_page = update[i]
+
+        # if this_page in rule_before:
+        #     print("Rules for " + str(this_page) + ": " + str(rule_before[this_page]))
+        # else:
+        #     print("No before rules for " + str(this_page))
+
+        j = 0
+        while j < len(update):
+            # Ignore checking this page against itself
+            if j == i:
+                j += 1
+                continue
+            
+            #print("\t" + str(j+1) + "/" + str(len(update)))
+            that_page = update[j]
+
+            # Should this page be before that page?
+            if this_page in rules:
+                if that_page in rules[this_page]:
+                    if i >= j:
+                        result = False
+                        break
+
+            # Is that page supposed to be before this page?
+            if that_page in rules:
+                if this_page in rules[that_page]:
+                    if j >= i:
+                        result = False
+                        break
+            
+            j += 1        
+        i += 1
+
+    return result
+
 with open("test_input_05.txt", "r") as f:
     lines = f.readlines()
 
@@ -44,50 +85,12 @@ for k in range(0, len(updates)):
     update = updates[k]
 
     #print("Checking " + str(update) + " is in order:")
-    update_good = True
-
-    i = 0
-    while i < len(update) - 1 and update_good:
-        this_page = update[i]
-
-        # if this_page in rule_before:
-        #     print("Rules for " + str(this_page) + ": " + str(rule_before[this_page]))
-        # else:
-        #     print("No before rules for " + str(this_page))
-
-        j = 0
-        while j < len(update):
-            # Ignore checking this page against itself
-            if j == i:
-                j += 1
-                continue
-            
-            #print("\t" + str(j+1) + "/" + str(len(update)))
-            that_page = update[j]
-
-            # Should this page be before that page?
-            if this_page in rules:
-                if that_page in rules[this_page]:
-                    if i >= j:
-                        update_good = False
-                        break
-
-            # Is that page supposed to be before this page?
-            if that_page in rules:
-                if this_page in rules[that_page]:
-                    if j >= i:
-                        update_good = False
-                        break
-            
-            j += 1        
-        i += 1
+    update_good = checkReport(update)
 
     if update_good:
-        print("Update " + str(update) + " is in order")
         mid_page_total += update[int(len(update)/2)]
     else:
         bad_updates.append(k)
-        print("Update " + str(update) + " is NOT in order")
 
 # Part 1: 5248
 print("Mid page total: " + str(mid_page_total) + "\n")
