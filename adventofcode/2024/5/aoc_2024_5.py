@@ -12,12 +12,12 @@ print("test")
 #    If no rule present check the opposite page
 #    and make sure it shouldn't precede this num
 
-rule_after = {}
-rule_before = {}
+rules = {}
 updates = []
 mid_page_total = 0
+bad_updates = []
 
-with open("input_05.txt", "r") as f:
+with open("test_input_05.txt", "r") as f:
     lines = f.readlines()
 
     for line in lines:
@@ -31,23 +31,14 @@ with open("input_05.txt", "r") as f:
             before = rules_raw[0]
             after = rules_raw[1]
             
-            if not before in rule_before:
-                rule_before[before] = list()
+            if not before in rules:
+                rules[before] = list()
             
-            rule_before[before].append(after)
-            #print(str(before) + ": " + str(rule_before[before]))
-
-            if not after in rule_after:
-                rule_after[after] = list()
-            
-            rule_after[after].append(before)
+            rules[before].append(after)
 
             continue
         
         updates.append(list(map(int, line.split(","))))
-
-# for before in rule_before:
-#     print("[" + str(before) + "] = " + str(rule_before[before]))
 
 for k in range(0, len(updates)):
     update = updates[k]
@@ -75,21 +66,18 @@ for k in range(0, len(updates)):
             that_page = update[j]
 
             # Should this page be before that page?
-            if this_page in rule_before:
-                if that_page in rule_before[this_page]:
+            if this_page in rules:
+                if that_page in rules[this_page]:
                     if i >= j:
                         update_good = False
-                        #print("Page " + str(this_page) + " should precede " + str(that_page))
                         break
 
             # Is that page supposed to be before this page?
-            if that_page in rule_before:
-                if this_page in rule_before[that_page]:
+            if that_page in rules:
+                if this_page in rules[that_page]:
                     if j >= i:
                         update_good = False
                         break
-            
-            #print("\tNo rules for " + str(this_page) + " and " + str(that_page))
             
             j += 1        
         i += 1
@@ -98,7 +86,22 @@ for k in range(0, len(updates)):
         print("Update " + str(update) + " is in order")
         mid_page_total += update[int(len(update)/2)]
     else:
+        bad_updates.append(k)
         print("Update " + str(update) + " is NOT in order")
 
 # Part 1: 5248
-print("Mid page total: " + str(mid_page_total))
+print("Mid page total: " + str(mid_page_total) + "\n")
+
+for k in range(0, len(bad_updates)):
+    bad_update = updates[bad_updates[k]]
+
+    print(bad_update)
+
+    for p in range(0, len(bad_update)):
+        this_page = bad_update[p]
+
+        print(str(p+1) + "/" + str(len(bad_update)) + " - " + str(this_page))
+
+        if this_page in rules:
+            print("\t" + str(this_page) + " rules: " + str(rules[this_page]))
+    print("\n")
