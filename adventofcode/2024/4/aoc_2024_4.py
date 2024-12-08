@@ -1,3 +1,4 @@
+import re
 import numpy as np
 from scipy.ndimage import rotate
 import math
@@ -12,7 +13,7 @@ def pad_with(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]]  = ' '
     vector[-pad_width[1]:] = ' '
 
-with open("input_04.txt", "r") as f:
+with open("test_input_04.txt", "r") as f:
     data_raw = [list(line.strip()) for line in f]
 
 data = np.array(data_raw)
@@ -125,13 +126,43 @@ def rotate(arr, deg):
 
     return arr_rota
 
-rotated = rotate(data, math.pi / 4)
+def condense_arr(arr):
+    result = ""
+    for row in arr:
+        for char in row:
+            if char != ' ':
+                result += char
+        result += "\n"
+    return result.strip()
 
-result = ""
-for y, row in enumerate(rotated):
-    for x, char in enumerate(row):
-        result += char
-    result += "\n"
-print(result)
+# rotated = rotate(data, (math.pi / 4) * 0)
+
+# result = ""
+# for y, row in enumerate(rotated):
+#     for x, char in enumerate(row):
+#         result += char
+#     result += "\n"
+# print(result)
+
+# print(condense_arr(rotated))
 
 #print(rotated)
+
+# Now use regex to check for XMAS or SAMX
+# rotate 45 degrees, do it again
+# Do this 4 times
+
+regex_xmas = re.compile(r"(?=(XMAS|SAMX))")
+total_xmas = 0
+
+for i in range(0, 4):
+    a = math.pi / 4 * i
+
+    rotated = condense_arr(rotate(data, a))
+    print(str(i) + ":\n")
+    print(rotated)
+    xmas_count = len(re.findall(regex_xmas, rotated))
+    total_xmas += xmas_count
+    print("Count: " + str(xmas_count) + "\n")
+
+print("Total Xmas: " + str(total_xmas))
