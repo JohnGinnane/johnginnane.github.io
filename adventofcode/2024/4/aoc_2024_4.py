@@ -12,7 +12,7 @@ def pad_with(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]]  = ' '
     vector[-pad_width[1]:] = ' '
 
-with open("test_input_04b.txt", "r") as f:
+with open("test_input_04.txt", "r") as f:
     data_raw = [list(line.strip()) for line in f]
 
 data = np.array(data_raw)
@@ -63,10 +63,11 @@ data = np.array(data_raw)
 #     print(r)
 
 
-print(data)
+#print(data)
 #data = np.pad(data, 6, pad_with)
-data = np.pad(data, ((0, 12), (0, 12)), mode="constant", constant_values=' ')
-print(data)
+size = len(data)
+data = np.pad(data, ((0, size * 3), (0, size * 3)), mode="constant", constant_values=' ')
+#print(data)
 
 # x' = cos(45°) * x - sin(45°) * y
 # y' = sin(45°) * x + cos(45°) * y
@@ -77,15 +78,15 @@ centerY = len(data) / 2
 test = ""
 newTest = ""
 deg = math.pi / 4
-exploded = np.full((16, 16), ' ', dtype=str)
-rotated = np.full((16, 16), ' ', dtype=str)
+exploded = np.full((size * 4, size * 4), ' ', dtype=str)
+rotated = np.full((size * 4, size * 4), ' ', dtype=str)
 pad_amt = 5
 
 for y, row in enumerate(data):
     for x, char in enumerate(row):
         if char == ' ':
             continue
-        exploded[y*2+4][x*2+4] = char
+        exploded[y*2+size][x*2+size] = char
 
 #print(exploded)
 
@@ -106,10 +107,17 @@ for y, row in enumerate(exploded):
     test += "\n"
     newTest += "\n"
 
-print(test)
-print(newTest)
+# print(test)
+# print(newTest)
 
-print(rotated)
+# print(rotated)
+
+result = ""
+for y, row in enumerate(rotated):
+    for x, char in enumerate(row):
+        result += char
+    result += "\n"
+print(result)
 
 
 # #print(test)
