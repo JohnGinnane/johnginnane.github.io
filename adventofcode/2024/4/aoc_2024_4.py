@@ -197,6 +197,9 @@ for y, row in enumerate(data):
                 #print("'A' at [" + str(x) + "," + str(y) + "]")
                 total_xmas_2 += 1
 
+# What if we rotated the array around the instances of 'A', both
+# -45 and +45 and then checked for "S" and "M"?
+
 # Part 1: 2483
 # Part 2: 1925
 print("Total Xmas: " + str(total_xmas))
