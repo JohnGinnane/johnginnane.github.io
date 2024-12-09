@@ -14,7 +14,7 @@ height = 0
 y = 0
 x = 0
 
-with open("test_input_06.txt", "r") as f:
+with open("input_06.txt", "r") as f:
     lines = f.readlines()
 
     for line in lines:
@@ -89,4 +89,5 @@ while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
         guard_pos["x"] += guard_vel["x"]
         guard_pos["y"] += guard_vel["y"]
 
+# Part 1: 5404
 print("Distinct locations: " + str(len(visited)))
