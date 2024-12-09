@@ -91,3 +91,13 @@ while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
 
 # Part 1: 5404
 print("Distinct locations: " + str(len(visited)))
+
+# For part 2 what I think I should do is
+# iterate over the grid as usual, emulating
+# the guard's movements. However keep a 
+# list of the last 3 obstacle's positions
+# Each time we move to check if turning to
+# the right here would lead me to the 3rd 
+# last obstacle, i.e. creating a loop
+# Make a note of the potential new obstacle
+# location and then continue as usual
