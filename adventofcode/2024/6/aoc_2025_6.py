@@ -1,4 +1,32 @@
+import math
+
 print("test")
+
+class vec2:
+    x = 0
+    y = 0
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return "(" + str(self.x) + ", " + str(self.y) + ")"
+
+    def rot(self, rad):
+        if rad == -math.pi/4:
+            temp = self.x
+            self.x = -self.y
+            self.y = temp
+            return
+        elif rad == math.pi/4:
+            temp = self.x
+            self.x = self.y
+            self.y = -temp
+            return
+
+        self.x = self.x * math.cos(rad) - self.y * math.sin(rad)
+        self.y = self.x * math.sin(rad) + self.y * math.cos(rad)
 
 def GridToString(grid):
     result = ""
@@ -14,7 +42,7 @@ height = 0
 y = 0
 x = 0
 
-with open("input_06.txt", "r") as f:
+with open("test_input_06.txt", "r") as f:
     lines = f.readlines()
 
     for line in lines:
@@ -63,6 +91,12 @@ for y, row in enumerate(grid):
 
 visited = []
 
+# This is a reverse queue
+# The first element is the
+# oldest obstacle visited
+previous_obstacles = []
+potential_obstacles = []
+
 while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
        guard_pos["y"] >= 0 and guard_pos["y"] < height):
     # More guard in the direction they are facing until they hit an object
@@ -81,6 +115,15 @@ while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
         break
 
     if next == '#':
+        if len(previous_obstacles) >= 3:
+            previous_obstacles.pop(0)
+            previous_obstacles.append((guard_pos["x"], guard_pos["y"]))
+
+        #if len(previous_obstacles) == 0:
+            # If we were to turn right here would we hit
+            # the 3rd last obstacle?
+
+        
         # Rotate vel 90 degrees to the right
         temp = guard_vel["x"]
         guard_vel["x"] = -guard_vel["y"]
