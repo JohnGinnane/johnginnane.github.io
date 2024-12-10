@@ -13,13 +13,22 @@ class vec2:
     def __str__(self):
         return "(" + str(self.x) + ", " + str(self.y) + ")"
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+    
+    def __add__(self, other):
+        return vec2(self.x + other.x, self.y + other.y)
+
+    def copy(self):
+        return vec2(self.x, self.y)
+
     def rot(self, rad):
-        if rad == -math.pi/4:
+        if rad == math.pi/4:
             temp = self.x
             self.x = -self.y
             self.y = temp
             return
-        elif rad == math.pi/4:
+        elif rad == -math.pi/4:
             temp = self.x
             self.x = self.y
             self.y = -temp
@@ -61,8 +70,8 @@ with open("test_input_06.txt", "r") as f:
         if y > height:
             height = y
 
-guard_pos = dict(x=0, y=0)
-guard_vel = dict(x=0, y=0)
+guard_pos = vec2(0, 0)
+guard_vel = vec2(0, 0)
 
 print("Width:  " + str(width))
 print("Height: " + str(height))
@@ -72,20 +81,20 @@ for y, row in enumerate(grid):
     for x, char in enumerate(row):
 
         if char == '^' or char.lower() == 'v' or char == '<' or char == '>':
-            guard_pos["x"] = x
-            guard_pos["y"] = y
+            guard_pos.x = x
+            guard_pos.y = y
 
-            guard_vel["x"] = 0
-            guard_vel["y"] = 0
+            guard_vel.x = 0
+            guard_vel.y = 0
 
             if   char == '^':
-                guard_vel["y"] = -1
+                guard_vel.y = -1
             elif char == '>':
-                guard_vel["x"] =  1
+                guard_vel.x =  1
             elif char.lower() == 'v':
-                guard_vel["y"] =  1
+                guard_vel.y =  1
             elif char == '<':
-                guard_vel["x"] = -1
+                guard_vel.x = -1
             
             break
 
@@ -97,27 +106,28 @@ visited = []
 previous_obstacles = []
 potential_obstacles = []
 
-while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
-       guard_pos["y"] >= 0 and guard_pos["y"] < height):
+while (guard_pos.x >= 0 and guard_pos.x < width and
+       guard_pos.y >= 0 and guard_pos.y < height):
+    
     # More guard in the direction they are facing until they hit an object
-    if not (guard_pos["x"], guard_pos["y"]) in visited:
-        visited.append((guard_pos["x"], guard_pos["y"]))
+    if not guard_pos in visited:
+        visited.append(guard_pos.copy())
 
     # Check object in front is an obstacle
     try:
-        next = grid[guard_pos["y"] + guard_vel["y"]][guard_pos["x"] + guard_vel["x"]]
+        next = grid[guard_pos.y + guard_vel.y][guard_pos.x + guard_vel.x]
     except:
         # Out of bounds means the guard will leave the area
         print("Guard has left the area, last seen at:")
-        print("Pos: [" + str(guard_pos["x"]) + ", " + str(guard_pos["y"]) + "]")
+        print("Pos: " + str(guard_pos))
         print("Heading in direction:")
-        print("Vel: [" + str(guard_vel["x"]) + ", " + str(guard_vel["y"]) + "]")
+        print("Vel: " + str(guard_vel))
         break
 
     if next == '#':
         if len(previous_obstacles) >= 3:
             previous_obstacles.pop(0)
-            previous_obstacles.append((guard_pos["x"], guard_pos["y"]))
+            previous_obstacles.append(guard_pos.copy())
 
         #if len(previous_obstacles) == 0:
             # If we were to turn right here would we hit
@@ -125,12 +135,9 @@ while (guard_pos["x"] >= 0 and guard_pos["x"] < width and
 
         
         # Rotate vel 90 degrees to the right
-        temp = guard_vel["x"]
-        guard_vel["x"] = -guard_vel["y"]
-        guard_vel["y"] =  temp
+        guard_vel.rot(math.pi/4)
     else:
-        guard_pos["x"] += guard_vel["x"]
-        guard_pos["y"] += guard_vel["y"]
+        guard_pos += guard_vel
 
 # Part 1: 5404
 print("Distinct locations: " + str(len(visited)))
