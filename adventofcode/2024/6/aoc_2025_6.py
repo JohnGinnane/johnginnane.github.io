@@ -72,11 +72,13 @@ with open("test_input_06.txt", "r") as f:
 
 guard_pos = vec2(0, 0)
 guard_vel = vec2(0, 0)
+next_vel = vec2(0, 0)
+obstacles = []
 
 print("Width:  " + str(width))
 print("Height: " + str(height))
 
-# find guard
+# Find guard and obstacles
 for y, row in enumerate(grid):
     for x, char in enumerate(row):
 
@@ -95,20 +97,24 @@ for y, row in enumerate(grid):
                 guard_vel.y =  1
             elif char == '<':
                 guard_vel.x = -1
-            
-            break
+
+            next_vel = guard_vel.copy()
+            next_vel.rot(math.pi/4)
+        elif char == '#':
+            obstacles.append(vec2(x, y))
 
 visited = []
+previous_obstacles = []
 
 # This is a reverse queue
 # The first element is the
 # oldest obstacle visited
-previous_obstacles = []
 potential_obstacles = []
 
 while (guard_pos.x >= 0 and guard_pos.x < width and
        guard_pos.y >= 0 and guard_pos.y < height):
     
+    print("Guard: " + str(guard_pos))
     # More guard in the direction they are facing until they hit an object
     if not guard_pos in visited:
         visited.append(guard_pos.copy())
@@ -124,23 +130,28 @@ while (guard_pos.x >= 0 and guard_pos.x < width and
         print("Vel: " + str(guard_vel))
         break
 
-    if next == '#':
-        if len(previous_obstacles) >= 3:
-            previous_obstacles.pop(0)
-            previous_obstacles.append(guard_pos.copy())
+    if (guard_pos + guard_vel) in obstacles:
+        previous_obstacles.append(guard_pos + guard_pos)
 
-        #if len(previous_obstacles) == 0:
-            # If we were to turn right here would we hit
-            # the 3rd last obstacle?
-
-        
         # Rotate vel 90 degrees to the right
-        guard_vel.rot(math.pi/4)
+        guard_vel = next_vel.copy()
+        next_vel.rot(math.pi/4)
     else:
         guard_pos += guard_vel
 
+        # Check if a previous obstacle is to our right
+        # Run backwards 3x from right side obstacle and 
+        # check if we land in the same spot?
+        for po in previous_obstacles:
+            if ((guard_pos.x - po.x) * next_vel.y -
+                (guard_pos.y - po.y) * next_vel.x) == 0:
+                potential_obstacles.append(guard_pos + guard_vel)
+                print("Pot Obs: " + str(potential_obstacles[-1]))
+                break
+
 # Part 1: 5404
-print("Distinct locations: " + str(len(visited)))
+print("Distinct locations: "  + str(len(visited)))
+print("Potential obstacles: " + str(len(potential_obstacles)))
 
 # For part 2 what I think I should do is
 # iterate over the grid as usual, emulating
