@@ -1,4 +1,5 @@
 import math
+from copy import copy, deepcopy
 
 print("test")
 
@@ -50,28 +51,33 @@ class grid:
         y = 0
         x = 0
 
-        if str is not None:
-            lines = str[0].split("\n")
+        if str is None:
+            return
+    
+        if len(str) <= 0:
+            return
 
-            for line in list(lines):
-                if len(self.grid) <= y:
-                    self.grid.append([])
+        lines = str[0].split("\n")
 
-                for char in line:
-                    self.grid[y].append(char)
+        for line in list(lines):
+            if len(self.grid) <= y:
+                self.grid.append([])
 
-                    if char == '#':
-                        self.obstacles.append(vec2(x, y))
+            for char in line:
+                self.grid[y].append(char)
 
-                    x += 1
-                    if x > self.width:
-                        self.width = x
+                if char == '#':
+                    self.obstacles.append(vec2(x, y))
 
-                x = 0
-                y += 1
+                x += 1
+                if x > self.width:
+                    self.width = x
 
-                if y > self.height:
-                    self.height = y
+            x = 0
+            y += 1
+
+            if y > self.height:
+                self.height = y
 
     def __str__(self):
         result = ""
@@ -93,6 +99,27 @@ class grid:
             return None
         
         return self.grid[vec.y][vec.x]
+    
+    def inBounds(self, pos):
+        return (pos.x >= 0 and 
+                pos.x < self.width and
+                pos.y >= 0 and
+                pos.y < self.height)
+
+    # def copy(self):
+    #     result = grid()
+    #     result.grid = deepcopy(self.grid)
+    #     result.width = self.width
+    #     result.height = self.height
+    #     result.obstacles = self.obstacles.copy()
+    #     return result
+
+    def addObstacle(self, pos):
+        if not self.inBounds(pos):
+            return
+        
+        self.grid[pos.y][pos.x] = '#'
+        self.obstacles.append(pos)
 
 def getVel(char:chr):
     if char == '^':
@@ -128,9 +155,9 @@ print("Width:  " + str(the_grid.width))
 print("Height: " + str(the_grid.height))
 
 visited = []
+potential_obstacles = []
 
-while (guard_pos.x >= 0 and guard_pos.x < the_grid.width and
-       guard_pos.y >= 0 and guard_pos.y < the_grid.height):
+while the_grid.inBounds(guard_pos):
 
     # More guard in the direction they are facing until they hit an object
     if not guard_pos in visited:
@@ -140,21 +167,37 @@ while (guard_pos.x >= 0 and guard_pos.x < the_grid.width and
         # Rotate vel 90 degrees to the right
         guard_vel.rot(math.pi/4)
     else:
-        guard_pos += guard_vel
+        # Simulate if there was an obstacle right in front of us
+        grid_clone = deepcopy(the_grid)
+        guard_pos_clone = guard_pos.copy()
+        guard_vel_clone = guard_vel.copy()
+        grid_clone.addObstacle(guard_pos_clone + guard_vel_clone)
 
-        # # Check if a previous obstacle is to our right
-        # # Run backwards 3x from right side obstacle and 
-        # # check if we land in the same spot?
-        # for po in previous_obstacles:
-        #     if ((guard_pos.x - po.x) * next_vel.y -
-        #         (guard_pos.y - po.y) * next_vel.x) == 0:
-        #         potential_obstacles.append(guard_pos + guard_vel)
-        #         print("Pot Obs: " + str(potential_obstacles[-1]))
-        #         break
+        visited_clone = []
+        loop = False
+
+        while grid_clone.inBounds(guard_pos_clone):
+            if grid_clone.at(guard_pos_clone+guard_vel_clone) == '#':
+                # Check if we already hit this obstacle
+                if (guard_pos_clone+guard_vel_clone) in visited_clone:
+                    loop = True
+                    break
+                else:
+                    visited_clone.append(guard_pos_clone+guard_vel_clone)
+
+                guard_vel_clone.rot(math.pi/4)
+            else:
+                guard_pos_clone += guard_vel_clone
+
+        if loop:
+            potential_obstacles.append(guard_pos+guard_vel)
+            print("Found potential obstacle: " + str(potential_obstacles[-1]))
+
+        guard_pos += guard_vel
 
 # Part 1: 5404
 print("Distinct locations: "  + str(len(visited)))
-#print("Potential obstacles: " + str(len(potential_obstacles)))
+print("Potential obstacles: " + str(len(potential_obstacles)))
 
 # For part 2 what I think I should do is
 # iterate over the grid as usual, emulating
