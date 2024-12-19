@@ -1,7 +1,11 @@
 import math
 from copy import copy, deepcopy
 
-print("test")
+def right(s, l):
+    return str(s)[-l:]
+
+def pad(s, l):
+    return right(" " * l + str(s), l)
 
 class vec2:
     x = 0
@@ -60,6 +64,9 @@ class grid:
         lines = str[0].split("\n")
 
         for line in list(lines):
+            if len(line.strip()) <= 0:
+                continue
+            
             if len(self.grid) <= y:
                 self.grid.append([])
 
@@ -135,7 +142,7 @@ def getVel(char:chr):
 
 the_grid = None
 
-with open("test_input_06.txt", "r") as f:
+with open("input_06.txt", "r") as f:
     the_grid = grid(f.read())
 
 #guard_pos = the_grid.find()
@@ -172,17 +179,19 @@ while the_grid.inBounds(guard_pos):
         guard_vel_clone = guard_vel.copy()
         grid_clone.addObstacle(guard_pos_clone + guard_vel_clone)
 
-        visited_clone = []
+        hit_obstacles = []
         loop = False
 
         while grid_clone.inBounds(guard_pos_clone):
             if grid_clone.at(guard_pos_clone+guard_vel_clone) == '#':
+                pos_and_vel = (guard_pos_clone + guard_vel_clone, guard_vel_clone)
+
                 # Check if we already hit this obstacle
-                if (guard_pos_clone+guard_vel_clone) in visited_clone:
+                if pos_and_vel in hit_obstacles:
                     loop = True
                     break
                 else:
-                    visited_clone.append(guard_pos_clone+guard_vel_clone)
+                    hit_obstacles.append(pos_and_vel)
 
                 guard_vel_clone.rot(math.pi/4)
             else:
@@ -190,10 +199,12 @@ while the_grid.inBounds(guard_pos):
 
         if loop:
             potential_obstacles.append(guard_pos+guard_vel)
-            print("Found potential obstacle: " + str(potential_obstacles[-1]))
+            print("v: " + pad(len(visited), 5) + ". Found potential obstacle: " + str(potential_obstacles[-1]))
 
         guard_pos += guard_vel
 
 # Part 1: 5404
 print("Distinct locations: "  + str(len(visited)))
+
+# Part 2: 2920 -- Too high!
 print("Potential obstacles: " + str(len(potential_obstacles)))
