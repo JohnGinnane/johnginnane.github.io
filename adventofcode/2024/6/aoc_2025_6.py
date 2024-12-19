@@ -173,33 +173,34 @@ while the_grid.inBounds(guard_pos):
         # Rotate vel 90 degrees to the right
         guard_vel.rot(math.pi/4)
     else:
-        # Simulate if there was an obstacle right in front of us
-        grid_clone = deepcopy(the_grid)
-        guard_pos_clone = guard_pos.copy()
-        guard_vel_clone = guard_vel.copy()
-        grid_clone.addObstacle(guard_pos_clone + guard_vel_clone)
+        if len(visited) > 1:
+            # Simulate if there was an obstacle right in front of us
+            grid_clone = deepcopy(the_grid)
+            guard_pos_clone = guard_pos.copy()
+            guard_vel_clone = guard_vel.copy()
+            grid_clone.addObstacle(guard_pos_clone + guard_vel_clone)
 
-        hit_obstacles = []
-        loop = False
+            hit_obstacles = []
+            loop = False
 
-        while grid_clone.inBounds(guard_pos_clone):
-            if grid_clone.at(guard_pos_clone+guard_vel_clone) == '#':
-                pos_and_vel = (guard_pos_clone + guard_vel_clone, guard_vel_clone)
+            while grid_clone.inBounds(guard_pos_clone):
+                if grid_clone.at(guard_pos_clone+guard_vel_clone) == '#':
+                    pos_and_vel = (guard_pos_clone + guard_vel_clone, guard_vel_clone)
 
-                # Check if we already hit this obstacle
-                if pos_and_vel in hit_obstacles:
-                    loop = True
-                    break
+                    # Check if we already hit this obstacle
+                    if pos_and_vel in hit_obstacles:
+                        loop = True
+                        break
+                    else:
+                        hit_obstacles.append(pos_and_vel)
+
+                    guard_vel_clone.rot(math.pi/4)
                 else:
-                    hit_obstacles.append(pos_and_vel)
+                    guard_pos_clone += guard_vel_clone
 
-                guard_vel_clone.rot(math.pi/4)
-            else:
-                guard_pos_clone += guard_vel_clone
-
-        if loop:
-            potential_obstacles.append(guard_pos+guard_vel)
-            print("v: " + pad(len(visited), 5) + ". Found potential obstacle: " + str(potential_obstacles[-1]))
+            if loop:
+                potential_obstacles.append(guard_pos+guard_vel)
+                print("v: " + pad(len(visited), 5) + ". Found potential obstacle: " + str(potential_obstacles[-1]))
 
         guard_pos += guard_vel
 
