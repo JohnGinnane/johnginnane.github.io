@@ -145,9 +145,8 @@ for c in ['^', '>', 'v', 'V', '<']:
     res = the_grid.find(c)
     if res is not None:
         guard_pos = res
+        guard_vel = getVel(the_grid.grid[res.y][res.x])
         break
-
-guard_vel = getVel(the_grid.grid[guard_pos.y][guard_pos.x])
 
 print("Guard pos: " + str(guard_pos))
 print("Guard vel: " + str(guard_vel))
@@ -198,13 +197,3 @@ while the_grid.inBounds(guard_pos):
 # Part 1: 5404
 print("Distinct locations: "  + str(len(visited)))
 print("Potential obstacles: " + str(len(potential_obstacles)))
-
-# For part 2 what I think I should do is
-# iterate over the grid as usual, emulating
-# the guard's movements. However keep a 
-# list of the last 3 obstacle's positions
-# Each time we move to check if turning to
-# the right here would lead me to the 3rd 
-# last obstacle, i.e. creating a loop
-# Make a note of the potential new obstacle
-# location and then continue as usual
