@@ -109,15 +109,20 @@ def method1(total, numbers, debug=False):
     # 7: ["*", "*", "*"]
     
     len_ops = len(GLO_OPERATORS)
-    perms = pow(len_ops, 1 + len(numberToBase(len(numbers), len_ops)))
-    if debug: print("Permutations: " + str(perms))
+    #op_count = pow(len_ops, 1 + len(numberToBase(len(numbers), len_ops)))
+    op_count = pow(len(GLO_OPERATORS), len(numbers)-1)
+    if debug: print("Permutations: " + str(op_count))
     operators = []
 
-    for i in range(0, perms):
+    for i in range(0, op_count):
         operators.append(Dec2Op(i, len(numbers)-1))
     if debug: 
         for o in operators:
             print(o)
+
+    correct = False
+    correct_perm = 0
+    perms = []
 
     for o in operators:
         sum = numbers[0]
@@ -133,10 +138,13 @@ def method1(total, numbers, debug=False):
                     string += " * " + str(numbers[i])
 
         # End once we find the total
-        if sum == total:
-            return (sum, string)
+        perms.append((sum, string))
 
-    return None
+        if sum == total:
+            correct_perm = len(perms)-1
+            correct = True
+
+    return (correct, correct_perm, perms)
 
 # results = method1(data[0][0], data[0][1], True)
 # for r in results:
@@ -147,11 +155,12 @@ incorrects = []
 
 for k,v in enumerate(data):
     result = method1(v[0], v[1])
+    correct_perm_idx = result[1]
     
     printout = pad(k+1, len(str(len(data)))) + "/" + str(len(data)) + " "
-    if result != None:
-        printout += str(result[0]) + " = "  + result[1]
-        total_correct += result[0]
+    if result[0]:
+        printout += str(result[2][correct_perm_idx][0]) + " = " + result[2][correct_perm_idx][1]
+        total_correct += result[2][correct_perm_idx][0]
     else:
         printout += "Unable to find sum for " + str(v[0]) + " with " + str(v[1])
         incorrects.append((k, v))
@@ -161,21 +170,29 @@ for k,v in enumerate(data):
 # 2840782 -- too low??
 # 2607489241 -- still too low
 # 1537595512443 -- STILL TOO LOW????
+# 3312271365652 -- Part 1!
 print("Total Correct: " + str(total_correct))
 
+# Debugging issue
 # Sort by smallest total asc
-incorrects.sort(key=lambda n: n[1][0])
+#incorrects.sort(key=lambda n: n[1][0])
 # Sort by number of elements asc
 #incorrects.sort(key=lambda n: len(n[1][1]))
 
-for i in range(0, 20):
-    print(incorrects[i])
+# for i in range(20, 40):
+#     print(incorrects[i])
 
-# n = 334
+# n = 440
 # result = method1(data[n][0], data[n][1], True)
-# print(result)
+# print("Looking for " + str(data[n][0]))
+# for p in result[2]:
+#     printout = str(p)
+#     if p[0] == data[n][0]:
+#         printout += "   <--------"
+#     print(printout)
 
-# print(data[115][1])
-# print(len(data[115][1]))
-# print(numberToBase(len(data[115][1]), 2))
-# print(pow(len(GLO_OPERATORS),len(numberToBase(len(data[115][1]), 2))))
+# print(data[n][1])
+# print(len(data[n][1]))
+# print(numberToBase(len(data[n][1]), 2))
+# print(pow(len(GLO_OPERATORS),len(numberToBase(len(data[n][1]), 2))))
+# print(pow(len(GLO_OPERATORS), len(data[n][1])-1))
