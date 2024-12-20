@@ -65,7 +65,7 @@ for line in data:
 print("test")
 
 # Least significant bit to most
-GLO_OPERATORS = ["+", "*"]
+GLO_OPERATORS = ["+", "*", "||"]
 
 # Taken from https://stackoverflow.com/a/28666223
 def numberToBase(n, b):
@@ -136,6 +136,9 @@ def method1(total, numbers, debug=False):
                 case "*":
                     sum *= numbers[i]
                     string += " * " + str(numbers[i])
+                case "||":
+                    sum = int(str(sum) + str(numbers[i]))
+                    string += " || " + str(numbers[i])
 
         # End once we find the total
         perms.append((sum, string))
@@ -165,12 +168,13 @@ for k,v in enumerate(data):
         printout += "Unable to find sum for " + str(v[0]) + " with " + str(v[1])
         incorrects.append((k, v))
     
-    #print(printout)
+    print(printout)
 
 # 2840782 -- too low??
 # 2607489241 -- still too low
 # 1537595512443 -- STILL TOO LOW????
 # 3312271365652 -- Part 1!
+# 509463489296712 -- First try qB-)
 print("Total Correct: " + str(total_correct))
 
 # Debugging issue
