@@ -95,7 +95,22 @@ def Dec2Op(dec, pad=0):
 
 def method1(total, numbers, debug=False):
     if debug: print(str(total) + " ?= " + str(numbers))
-    perms = len(numberToBase(len(numbers), 2))
+    #perms = len(numberToBase(len(numbers), 2))
+    # GLO_OPERATORS = ["+", "*"] => len() = 2
+    # numbers = [900, 4, 8] => len() = 3
+    # 2^3 = 8
+    # 0: ["+", "+", "+"]
+    # 1: ["+", "+", "*"]
+    # 2: ["+", "*", "+"]
+    # 3: ["+", "*", "*"]
+    # 4: ["*", "+", "+"]
+    # 5: ["*", "+", "*"]
+    # 6: ["*", "*", "+"]
+    # 7: ["*", "*", "*"]
+    
+    len_ops = len(GLO_OPERATORS)
+    perms = pow(len_ops, len(numberToBase(len(numbers), len_ops)))
+    if debug: print("Permutations: " + str(perms))
     operators = []
 
     for i in range(0, perms):
@@ -126,6 +141,8 @@ def method1(total, numbers, debug=False):
 #     print(r)
 
 total_correct = 0
+incorrects = []
+
 for k,v in enumerate(data):
     result = method1(v[0], v[1])
     
@@ -135,8 +152,26 @@ for k,v in enumerate(data):
         total_correct += result[0]
     else:
         printout += "Unable to find sum for " + str(v[0]) + " with " + str(v[1])
+        incorrects.append((k, v))
     
-    print(printout)
+    #print(printout)
 
 # 2840782 -- too low??
+# 2607489241 -- still too low
 print("Total Correct: " + str(total_correct))
+
+# # Sort by smallest total asc
+# incorrects.sort(key=lambda n: n[1][0])
+# # Sort by number of elements asc
+# incorrects.sort(key=lambda n: len(n[1][1]))
+
+# for i in range(0, 10):
+#     print(incorrects[i])
+
+result = method1(data[115][0], data[115][1], True)
+print(result)
+
+print(data[115][1])
+print(len(data[115][1]))
+print(numberToBase(len(data[115][1]), 2))
+print(pow(len(GLO_OPERATORS),len(numberToBase(len(data[115][1]), 2))))
