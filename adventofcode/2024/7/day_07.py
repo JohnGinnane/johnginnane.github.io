@@ -109,13 +109,15 @@ def method1(total, numbers, debug=False):
     # 7: ["*", "*", "*"]
     
     len_ops = len(GLO_OPERATORS)
-    perms = pow(len_ops, len(numberToBase(len(numbers), len_ops)))
+    perms = pow(len_ops, 1 + len(numberToBase(len(numbers), len_ops)))
     if debug: print("Permutations: " + str(perms))
     operators = []
 
     for i in range(0, perms):
         operators.append(Dec2Op(i, len(numbers)-1))
-    if debug: print(operators)
+    if debug: 
+        for o in operators:
+            print(o)
 
     for o in operators:
         sum = numbers[0]
@@ -158,20 +160,22 @@ for k,v in enumerate(data):
 
 # 2840782 -- too low??
 # 2607489241 -- still too low
+# 1537595512443 -- STILL TOO LOW????
 print("Total Correct: " + str(total_correct))
 
-# # Sort by smallest total asc
-# incorrects.sort(key=lambda n: n[1][0])
-# # Sort by number of elements asc
-# incorrects.sort(key=lambda n: len(n[1][1]))
+# Sort by smallest total asc
+incorrects.sort(key=lambda n: n[1][0])
+# Sort by number of elements asc
+#incorrects.sort(key=lambda n: len(n[1][1]))
 
-# for i in range(0, 10):
-#     print(incorrects[i])
+for i in range(0, 20):
+    print(incorrects[i])
 
-result = method1(data[115][0], data[115][1], True)
-print(result)
+# n = 334
+# result = method1(data[n][0], data[n][1], True)
+# print(result)
 
-print(data[115][1])
-print(len(data[115][1]))
-print(numberToBase(len(data[115][1]), 2))
-print(pow(len(GLO_OPERATORS),len(numberToBase(len(data[115][1]), 2))))
+# print(data[115][1])
+# print(len(data[115][1]))
+# print(numberToBase(len(data[115][1]), 2))
+# print(pow(len(GLO_OPERATORS),len(numberToBase(len(data[115][1]), 2))))
