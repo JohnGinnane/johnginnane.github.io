@@ -87,7 +87,7 @@ antennae = {}
 width = 0
 height = 0
 
-with open("test_input_08.txt", "r") as freq:
+with open("input_08.txt", "r") as freq:
     for y, line in enumerate(freq.readlines()):
         if line.isspace(): continue
         height += 1
@@ -153,4 +153,5 @@ for freq in antinodes:
         #result += str(an) + ", "
     #result += "\n"
 
+# Part 1: 293
 print("Unique antinode locations: " + str(len(unique)))
