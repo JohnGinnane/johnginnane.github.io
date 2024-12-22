@@ -59,11 +59,17 @@ class antenna:
     def __eq__(self, other):
         return self.pos == other.pos and self.freq == other.freq
 
-def findAntinodes(A:vec2, B:vec2, limit=100, max:vec2=None, min:vec2=vec2(0, 0)):
-    if A is None or B is None:
+def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = False):
+    if A is None or B is None or max is None:
+        return None
+    
+    if A == B:
         return None
     
     results = []
+
+    if min is None:
+        min = vec2()
 
     # A    =  1, 1
     # B    = -1, 0
@@ -75,7 +81,7 @@ def findAntinodes(A:vec2, B:vec2, limit=100, max:vec2=None, min:vec2=vec2(0, 0))
     # Diff to go from B to A
     diff = A - B
 
-    if max == None:
+    if not part2:
         # If we add this diff to B again
         # we get B to A antinode
         results.append(A + diff)
@@ -83,29 +89,28 @@ def findAntinodes(A:vec2, B:vec2, limit=100, max:vec2=None, min:vec2=vec2(0, 0))
         # If we subtract this from B
         # we get from A to B antinode
         results.append(B - diff)
+
+        for i in range(len(results)-1, -1, -1):
+            if (results[i].x < min.x or results[i].x > max.x or
+                results[i].y < min.y or results[i].y > max.y):
+                results.pop(i)
     else:        
         # Dimensions were specified
         # so keep adding the diff until
         # we go outside the limits
-        working = A + diff
-        limit_start = limit
+        working = A
 
         while (working.x >= min.x and working.x <= max.x and
-               working.y >= min.y and working.y <= max.y and
-               limit > 0):
+               working.y >= min.y and working.y <= max.y):
             results.append(working)
-            limit -= 1
             working += diff
 
         # Do same but other direction
-        working = B - diff
-        limit = limit_start
+        working = B
 
         while (working.x >= min.x and working.x <= max.x and
-               working.y >= min.y and working.y <= max.y and
-               limit > 0):
+               working.y >= min.y and working.y <= max.y):
             results.append(working)
-            limit -= 1
             working -= diff
 
     return results
@@ -113,6 +118,7 @@ def findAntinodes(A:vec2, B:vec2, limit=100, max:vec2=None, min:vec2=vec2(0, 0))
 antennae = {}
 dimensions = vec2(-1, -1)
 
+# Read in the grid data
 with open("test_input_08.txt", "r") as freq:
     for y, line in enumerate(freq.readlines()):
         if line.isspace(): continue
@@ -143,7 +149,7 @@ for freq in antennae:
 
             print("Antinodes for " + str(ant) + " and " + str(other_ant))
             # Simulate antinodes
-            results = findAntinodes(ant.pos, other_ant.pos, 1, dimensions)
+            results = findAntinodes(ant.pos, other_ant.pos, dimensions)
 
             if results is None:
                 continue
@@ -153,19 +159,26 @@ for freq in antennae:
 
             antinodes[freq] += results
 
+# Sort each frequency's antinode list to help read
+for freq in antinodes:
+    antinodes[freq].sort(key=lambda an: an.y * dimensions.x + an.x)
+
 # Count distinct antinode locations
 unique = []
+result = ""
 for freq in antinodes:
-    #result += str(freq) + ": " 
+    result += str(freq) + ": " 
 
     for an in antinodes[freq]:
         if an not in unique:
             unique.append(an)
-        #result += str(an) + ", "
-    #result += "\n"
+        result += str(an) + ", "
+    result += "\n"
+print(result)
 
 # Part 1: 293
 print("Unique antinode locations: " + str(len(unique)))
+quit()
 
 # Do it all again for part 2, but increase limit of antinodes
 antinodes = {}
