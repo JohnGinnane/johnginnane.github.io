@@ -72,7 +72,7 @@ def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = Fa
     if A == B:
         return None
     
-    results = []
+    result = []
 
     if min is None:
         min = vec2()
@@ -90,43 +90,43 @@ def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = Fa
     if not part2:
         # If we add this diff to B again
         # we get B to A antinode
-        results.append(A + diff)
+        result.append(A + diff)
         
         # If we subtract this from B
         # we get from A to B antinode
-        results.append(B - diff)
+        result.append(B - diff)
 
         # Check if the the anti nodes are in bounds
-        for i in range(len(results)-1, -1, -1):
-            if (results[i].x < min.x or results[i].x > max.x or
-                results[i].y < min.y or results[i].y > max.y):
-                results.pop(i)
+        for i in range(len(result)-1, -1, -1):
+            if (result[i].x < min.x or result[i].x > max.x or
+                result[i].y < min.y or result[i].y > max.y):
+                result.pop(i)
     else:        
         # Start at antenna, which is
         # also considered an antinode
-        working = A
+        working = A.copy()
 
         # Keep shifting the vector until out of bounds
         while (working.x >= min.x and working.x <= max.x and
                working.y >= min.y and working.y <= max.y):
-            results.append(working)
+            result.append(working)
             working += diff
 
         # Do same but other direction
-        working = B
+        working = B.copy()
 
         while (working.x >= min.x and working.x <= max.x and
                working.y >= min.y and working.y <= max.y):
-            results.append(working)
+            result.append(working)
             working -= diff
 
-    return results
+    return result
 
 antennae = {}
 dimensions = vec2(-1, -1) # Start at -1, -1 so len(line) = 12 -> index 11 is last
 
 # Read in the grid data
-with open("test_input_08.txt", "r") as freq:
+with open("input_08.txt", "r") as freq:
     for y, line in enumerate(freq.readlines()):
         if line.isspace(): continue
         dimensions.y += 1
@@ -190,9 +190,8 @@ for freq in antinodes:
 
 # Part 1: 293
 print("Unique antinode locations: " + str(len(unique)))
-quit()
 
-# Do it all again for part 2, but increase limit of antinodes
+# Do it all again for part 2, but specify part 2 in findAntinodes()
 antinodes = {}
 
 for freq in antennae:
@@ -200,9 +199,10 @@ for freq in antennae:
         for j in range(i+1, len(antennae[freq])):
             other_ant = antennae[freq][j]
 
-            print("Antinodes for " + str(ant) + " and " + str(other_ant))
+            #print("Antinodes for " + str(ant) + " and " + str(other_ant))
             # Simulate antinodes
-            results = findAntinodes(ant.pos, other_ant.pos, 100, dimensions)
+            results = findAntinodes(ant.pos, other_ant.pos, dimensions, part2=True)
+            #print("\t" + ", ".join(map(str, results)))
 
             if results is None:
                 continue
@@ -212,14 +212,18 @@ for freq in antennae:
 
             antinodes[freq] += results
 
+# Sort each frequency's antinode list to help read
+for freq in antinodes:
+    antinodes[freq].sort(key=lambda an: an.y * dimensions.x + an.x)
+
 # Count distinct antinode locations
 unique = []
 for freq in antinodes:
-    print("Harmonic antinodes for '" + str(freq) + "'")
+    #print("Harmonic antinodes for '" + str(freq) + "'")
     for an in antinodes[freq]:
-        print("\t" + str(an))
+        #print("\t" + str(an))
         if an not in unique:
             unique.append(an)
 
-# Part 1: 293
+# Part 2: 934 (also first try!)
 print("Unique harmonic antinode locations: " + str(len(unique)))
