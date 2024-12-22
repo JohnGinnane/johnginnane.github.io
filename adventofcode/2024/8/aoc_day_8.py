@@ -14,6 +14,8 @@ class vec2:
         return "(" + str(self.x) + ", " + str(self.y) + ")"
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.x == other.x and self.y == other.y
     
     def __add__(self, other):
@@ -57,7 +59,7 @@ class antenna:
     def __eq__(self, other):
         return self.pos == other.pos and self.freq == other.freq
 
-def findAntinodes(A:vec2, B:vec2):
+def findAntinodes(A:vec2, B:vec2, limit=100, max:vec2=None, min:vec2=vec2(0, 0)):
     if A is None or B is None:
         return None
     
@@ -73,25 +75,49 @@ def findAntinodes(A:vec2, B:vec2):
     # Diff to go from B to A
     diff = A - B
 
-    # If we add this diff to B again
-    # we get B to A antinode
-    results.append(A + diff)
-    
-    # If we subtract this from B
-    # we get from A to B antinode
-    results.append(B - diff)
+    if max == None:
+        # If we add this diff to B again
+        # we get B to A antinode
+        results.append(A + diff)
+        
+        # If we subtract this from B
+        # we get from A to B antinode
+        results.append(B - diff)
+    else:        
+        # Dimensions were specified
+        # so keep adding the diff until
+        # we go outside the limits
+        working = A + diff
+        limit_start = limit
+
+        while (working.x >= min.x and working.x <= max.x and
+               working.y >= min.y and working.y <= max.y and
+               limit > 0):
+            results.append(working)
+            limit -= 1
+            working += diff
+
+        # Do same but other direction
+        working = B - diff
+        limit = limit_start
+
+        while (working.x >= min.x and working.x <= max.x and
+               working.y >= min.y and working.y <= max.y and
+               limit > 0):
+            results.append(working)
+            limit -= 1
+            working -= diff
 
     return results
 
 antennae = {}
-width = 0
-height = 0
+dimensions = vec2(-1, -1)
 
-with open("input_08.txt", "r") as freq:
+with open("test_input_08.txt", "r") as freq:
     for y, line in enumerate(freq.readlines()):
         if line.isspace(): continue
-        height += 1
-        tmp_width = 0
+        dimensions.y += 1
+        tmp_width = -1
 
         for x, char in enumerate(line):
             if char.isspace(): continue
@@ -104,20 +130,8 @@ with open("input_08.txt", "r") as freq:
             
             antennae[char].append(antenna(vec2(x, y), char))
 
-        if tmp_width > width:
-            width = tmp_width
-
-# print("Dimensions: " + str(width) + "w " + str(height) + "h")
-
-# result = ""
-# for f in antennae:
-#     result += str(f) + ": " 
-
-#     for a in antennae[f]:
-#         result += str(a.pos) + ", "
-#     result += "\n"
-
-# print(result)
+        if tmp_width > dimensions.x:
+            dimensions.x = tmp_width
 
 # Iterate over dictionary and look for antinodes
 antinodes = {}
@@ -129,18 +143,15 @@ for freq in antennae:
 
             print("Antinodes for " + str(ant) + " and " + str(other_ant))
             # Simulate antinodes
-            results = findAntinodes(ant.pos, other_ant.pos)
+            results = findAntinodes(ant.pos, other_ant.pos, 1, dimensions)
 
             if results is None:
                 continue
             
-            for an in results:
-                if (an.x >= 0 and an.x < width and
-                    an.y >= 0 and an.y < height):
-                    if freq not in antinodes:
-                        antinodes[freq] = []
-                    
-                    antinodes[freq].append(an)
+            if freq not in antinodes:
+                antinodes[freq] = []
+
+            antinodes[freq] += results
 
 # Count distinct antinode locations
 unique = []
@@ -155,3 +166,35 @@ for freq in antinodes:
 
 # Part 1: 293
 print("Unique antinode locations: " + str(len(unique)))
+
+# Do it all again for part 2, but increase limit of antinodes
+antinodes = {}
+
+for freq in antennae:
+    for i, ant in enumerate(antennae[freq]):
+        for j in range(i+1, len(antennae[freq])):
+            other_ant = antennae[freq][j]
+
+            print("Antinodes for " + str(ant) + " and " + str(other_ant))
+            # Simulate antinodes
+            results = findAntinodes(ant.pos, other_ant.pos, 100, dimensions)
+
+            if results is None:
+                continue
+            
+            if freq not in antinodes:
+                antinodes[freq] = []
+
+            antinodes[freq] += results
+
+# Count distinct antinode locations
+unique = []
+for freq in antinodes:
+    print("Harmonic antinodes for '" + str(freq) + "'")
+    for an in antinodes[freq]:
+        print("\t" + str(an))
+        if an not in unique:
+            unique.append(an)
+
+# Part 1: 293
+print("Unique harmonic antinode locations: " + str(len(unique)))
