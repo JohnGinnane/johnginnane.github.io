@@ -1,5 +1,11 @@
 print("Day 9:")
 
+def right(s, l):
+    return str(s)[-l:]
+
+def pad(s, l):
+    return right(" " * l + str(s), l)
+
 def mapToString(map:str):
     # Converts the map "12345" to "0..111....22222"
     reading_file = True
@@ -22,7 +28,9 @@ def mapToList(map:str):
     result = []
     id = 0
 
-    for char in map:
+    for i, char in enumerate(map):
+        print(pad(i, 6) + "/" + str(len(map)))
+
         if reading_file:
             for i in range(0, int(char)):
                 result.append(id)
@@ -50,6 +58,8 @@ def condenseList(L:list):
     # of the condensed data, so we don't need to search
     # to the left of this index
     for i in range(len(result)-1, end, -1):
+        print("i: " + str(i) + ", end: " + str(end))
+
         # Look for free space starting at the right
         # most side of condensed data and ending at 
         # index we're trying to move out from
@@ -61,7 +71,7 @@ def condenseList(L:list):
                 continue
 
             if result[j] is None and result[i] is not None:
-                print("Moving " + str(i) + " into " + str(j))
+                #print("Moving " + str(i) + " into " + str(j))
                 end = j
                 result[j] = result[i]
                 result[i] = None
@@ -69,8 +79,37 @@ def condenseList(L:list):
 
     return result   
 
-print(mapToString("12345"))
-print(mapToString("2333133121414131402"))
+def checksum(L:list):
+    checksum = 0
 
-print(", ".join(map(str, mapToList("12345"))))
-print(", ".join(map(str, condenseList(mapToList("12345")))))
+    for k, v in enumerate(L):
+        if v is None:
+            continue
+        
+        #print(str(k) + "*" + str(v) + "=" + str(k*v))
+        checksum += k*v
+
+    return checksum
+
+# print(mapToString("12345"))
+# print(mapToString("2333133121414131402"))
+
+# print(", ".join(map(str, mapToList("12345"))))
+# print(", ".join(map(str, mapToList("2333133121414131402"))))
+# print(", ".join(map(str, condenseList(mapToList("12345")))))
+# print(", ".join(map(str, condenseList(mapToList("2333133121414131402")))))
+
+disk_str = ""
+
+with open("input_09.txt", "r") as f:
+    disk_str = f.readline().strip()
+
+# example = mapToList("2333133121414131402")
+# example = condenseList(example)
+# print("Example checksum: " + str(checksum(example)))
+
+disk = mapToList(disk_str)
+disk = condenseList(disk)
+
+# Part 1: 6258319840548 (amazing, first go!)
+print("Checksum: " + str(checksum(disk)))
