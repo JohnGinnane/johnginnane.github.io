@@ -57,7 +57,8 @@ def condenseList(L:list):
     # This element's new position is the right most side
     # of the condensed data, so we don't need to search
     # to the left of this index
-    for i in range(len(result)-1, end, -1):
+    i = len(result) - 1
+    while i > end:
         print("i: " + str(i) + ", end: " + str(end))
 
         # Look for free space starting at the right
@@ -77,6 +78,8 @@ def condenseList(L:list):
                 result[i] = None
                 break
 
+        i -= 1
+
     return result   
 
 def checksum(L:list):
@@ -91,25 +94,27 @@ def checksum(L:list):
 
     return checksum
 
-# print(mapToString("12345"))
-# print(mapToString("2333133121414131402"))
+print(mapToString("12345"))
+print(mapToString("2333133121414131402"))
 
-# print(", ".join(map(str, mapToList("12345"))))
-# print(", ".join(map(str, mapToList("2333133121414131402"))))
-# print(", ".join(map(str, condenseList(mapToList("12345")))))
-# print(", ".join(map(str, condenseList(mapToList("2333133121414131402")))))
+print(", ".join(map(str, mapToList("12345"))))
+print(", ".join(map(str, mapToList("2333133121414131402"))))
+print(", ".join(map(str, condenseList(mapToList("12345")))))
+print(", ".join(map(str, condenseList(mapToList("2333133121414131402")))))
 
-disk_str = ""
+# disk_str = ""
 
-with open("input_09.txt", "r") as f:
-    disk_str = f.readline().strip()
+# with open("input_09.txt", "r") as f:
+#     disk_str = f.readline().strip()
 
 # example = mapToList("2333133121414131402")
 # example = condenseList(example)
 # print("Example checksum: " + str(checksum(example)))
 
-disk = mapToList(disk_str)
-disk = condenseList(disk)
+# disk = mapToList(disk_str)
+# This takes a long time to run
+# Not sure how to speed it up (yet)
+# disk = condenseList(disk)
 
 # Part 1: 6258319840548 (amazing, first go!)
-print("Checksum: " + str(checksum(disk)))
+#print("Checksum: " + str(checksum(disk)))
