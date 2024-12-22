@@ -1,6 +1,8 @@
 import math
 
-print("test") # Visual studio code terminal seems to mess up print()
+# Visual studio code terminal seems 
+# to mess up the first print()
+print("test")
 
 class vec2:
     x = 0
@@ -59,6 +61,10 @@ class antenna:
     def __eq__(self, other):
         return self.pos == other.pos and self.freq == other.freq
 
+# Given two different vectors try to find the antinodes
+# by extrapolating in the direction between the two
+# If part2 = false then just get the first two either
+# side of the input vectors
 def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = False):
     if A is None or B is None or max is None:
         return None
@@ -90,16 +96,17 @@ def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = Fa
         # we get from A to B antinode
         results.append(B - diff)
 
+        # Check if the the anti nodes are in bounds
         for i in range(len(results)-1, -1, -1):
             if (results[i].x < min.x or results[i].x > max.x or
                 results[i].y < min.y or results[i].y > max.y):
                 results.pop(i)
     else:        
-        # Dimensions were specified
-        # so keep adding the diff until
-        # we go outside the limits
+        # Start at antenna, which is
+        # also considered an antinode
         working = A
 
+        # Keep shifting the vector until out of bounds
         while (working.x >= min.x and working.x <= max.x and
                working.y >= min.y and working.y <= max.y):
             results.append(working)
@@ -116,14 +123,14 @@ def findAntinodes(A:vec2, B:vec2, max:vec2, min:vec2=vec2(0, 0), part2:bool = Fa
     return results
 
 antennae = {}
-dimensions = vec2(-1, -1)
+dimensions = vec2(-1, -1) # Start at -1, -1 so len(line) = 12 -> index 11 is last
 
 # Read in the grid data
 with open("test_input_08.txt", "r") as freq:
     for y, line in enumerate(freq.readlines()):
         if line.isspace(): continue
         dimensions.y += 1
-        tmp_width = -1
+        tmp_width = -1 # In effect, only the last row's length is used for width
 
         for x, char in enumerate(line):
             if char.isspace(): continue
@@ -142,12 +149,17 @@ with open("test_input_08.txt", "r") as freq:
 # Iterate over dictionary and look for antinodes
 antinodes = {}
 
+# Iterate over each frequency 
 for freq in antennae:
+    # Then iterate over each antenna in that frequency
     for i, ant in enumerate(antennae[freq]):
+        # Finally iterate over the subsequent antennae for the same frequency
+        # i.e. we only need to check A against B, and not B against A
+        # because our findAntinodes() function checks both directions
         for j in range(i+1, len(antennae[freq])):
             other_ant = antennae[freq][j]
 
-            print("Antinodes for " + str(ant) + " and " + str(other_ant))
+            #print("Antinodes for " + str(ant) + " and " + str(other_ant))
             # Simulate antinodes
             results = findAntinodes(ant.pos, other_ant.pos, dimensions)
 
@@ -165,16 +177,16 @@ for freq in antinodes:
 
 # Count distinct antinode locations
 unique = []
-result = ""
+#result = ""
 for freq in antinodes:
-    result += str(freq) + ": " 
+#    result += str(freq) + ": " 
 
     for an in antinodes[freq]:
         if an not in unique:
             unique.append(an)
-        result += str(an) + ", "
-    result += "\n"
-print(result)
+#         result += str(an) + ", "
+#     result += "\n"
+# print(result)
 
 # Part 1: 293
 print("Unique antinode locations: " + str(len(unique)))
