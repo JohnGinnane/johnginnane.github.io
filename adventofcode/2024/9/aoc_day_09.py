@@ -203,8 +203,8 @@ def checksum(L:list):
 
 disk_str = "2333133121414131402"
 
-with open("input_09.txt", "r") as f:
-    disk_str = f.readline().strip()
+# with open("input_09.txt", "r") as f:
+#     disk_str = f.readline().strip()
 
 disk = mapToList(disk_str)
 # # This takes a long time to run
