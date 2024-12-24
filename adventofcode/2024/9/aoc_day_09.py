@@ -115,16 +115,20 @@ def condenseListContiguous(L:list):
             size += 1
 
         if last_id != id and last_id is not None and i < len(result) - 1:
-            # if lowest_move_id is not None:
-            #     if last_id > lowest_move_id:
-            #         continue
+            # If we've already checked this ID 
+            # then go next
+            if lowest_move_id is not None:
+                if last_id > lowest_move_id:
+                    size = 1
+                    continue
             
-            print("Looking to move " + str(last_id))
-            #print("Looking for " + str(size) + " spaces for " + str(last_id))
+            lowest_move_id = last_id
+
+            print("Looking for " + pad(size, 3) + " spaces for '" + str(last_id) + "'")
             # We just finished iterating over a file
             # Look for spaces starting from the left
             space = findSpace(result, size)
-            #print("Found " + str(space))
+            #print("Found at " + str(space))
 
             # Couldn't find enough space for this file
             # go next
@@ -144,9 +148,6 @@ def condenseListContiguous(L:list):
             del result[i+1:i+1+size]
             result[i+1:i+1] = [None] * size
             #print("\t" + listToString(result))
-
-            # Make note of this ID so we don't try to move it in the future
-            lowest_move_id = last_id
             
             size = 1
 
@@ -189,32 +190,29 @@ def checksum(L:list):
 # print(mapToString("12345"))
 # print(mapToString())
 
-example_str = "2333133121414131402"
-example = mapToList(example_str)
+# example_str = "2333133121414131402"
+# example = mapToList(example_str)
 
-# # print(", ".join(map(str, mapToList("12345"))))
-# print("Start:\t" + listToString(example))
-# # print(", ".join(map(str, condenseList(mapToList("12345")))))
-# #print(", ".join(map(str, condenseList(example))))
-example = condenseListContiguous(example)
-# print("End:\t" + listToString(example))
-print("Checksum: " + str(checksum(example)))
-# disk_str = ""
+# # # print(", ".join(map(str, mapToList("12345"))))
+# # print("Start:\t" + listToString(example))
+# # # print(", ".join(map(str, condenseList(mapToList("12345")))))
+# # #print(", ".join(map(str, condenseList(example))))
+# example = condenseListContiguous(example)
+# # print("End:\t" + listToString(example))
+# print("Checksum: " + str(checksum(example)))
+
+disk_str = "2333133121414131402"
 
 with open("input_09.txt", "r") as f:
     disk_str = f.readline().strip()
 
-# example = mapToList("2333133121414131402")
-# example = condenseList(example)
-# print("Example checksum: " + str(checksum(example)))
-
-# disk = mapToList(disk_str)
+disk = mapToList(disk_str)
 # # This takes a long time to run
 # # Not sure how to speed it up (yet)
-# # disk = condenseList(disk)
-# disk = condenseListContiguous(disk)
+# disk = condenseList(disk)
+disk = condenseListContiguous(disk)
 
 # Part 1: 6258319840548 (amazing, first go!)
 # 11696163753804 is too high!
 # 11654871070704 is still too high
-#print("Checksum: " + str(checksum(disk)))
+print("Checksum: " + str(checksum(disk)))
