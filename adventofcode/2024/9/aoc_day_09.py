@@ -57,40 +57,37 @@ class disk:
         return result
 
     def compress(self):
-        # Index at which we stop looking for 
-        # free space. As we condense items 
-        # to the left we can move the end 
-        # forward (i.e. closer) to the right
-        end = 0
+        # Compress data by moving files on the right side
+        # to free space on the left. The result of this
+        # function will mean all the data is on the left
+        # as one contiguous space, and then all of the
+        # free space is on the rest of the disk
 
-        # Iterate back from end of list toward the front
-        # As we condense data the "end" will move up from
-        # 0 to the last element moved to condense the list
-        # This element's new position is the right most side
-        # of the condensed data, so we don't need to search
-        # to the left of this index
-        i = len(self.data) - 1
-        while i > end:
-            #print("i: " + str(i) + ", end: " + str(end))
+        # Two indices:
+        #   1. Right to Left - File Data
+        #   2. Left to Right - Free Space
+        file_index = len(self.data) - 1
+        space_index = 0
+        
+        while file_index > space_index:
+            # If there is no data at this place,
+            # decrement file index and go next
+            if self.data[file_index] is None:
+                file_index -= 1
+                continue
 
-            # Look for free space starting at the left
-            # most side of condensed data and ending at 
-            # index we're trying to move out from
-            for j in range(end, i):
-                if i == j:
-                    continue
+            # If there WAS data at that place,
+            # check if there is space at the
+            # space index, if there is no space
+            # then increment space, go next
+            if self.data[space_index] is not None:
+                space_index += 1
+                continue
 
-                if self.data[i] is None:
-                    continue
-
-                if self.data[j] is None and self.data[i] is not None:
-                    #print("Moving " + str(i) + " into " + str(j))
-                    end = j
-                    self.data[j] = self.data[i]
-                    self.data[i] = None
-                    break
-
-            i -= 1
+            # At this point there is space at 
+            # space index, and data at file
+            # index so just swap
+            self.swap(file_index, space_index)
 
     def mapToList(map:str):
         reading_file = True
