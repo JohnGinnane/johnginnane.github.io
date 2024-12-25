@@ -41,9 +41,9 @@ class disk:
 
     def swap(self, a_idx:int, b_idx:int, size:int = 1):
         for i in range(0, size):
-            tmp = self.data[a_idx]
-            self.data[a_idx] = self.data[b_idx]
-            self.data[b_idx] = tmp
+            tmp = self.data[a_idx+i]
+            self.data[a_idx+i] = self.data[b_idx+i]
+            self.data[b_idx+i] = tmp
 
     def __str__(self):
         result = ""
@@ -89,6 +89,39 @@ class disk:
             # index so just swap
             self.swap(file_index, space_index)
 
+    def compressKeepWhole(self):
+        # Compress data by moving files on the right side
+        # to free space on the left. The result of this
+        # function will mean all the data on the right 
+        # that can fit into spaces on the left will be
+        # moved over, so more data is left-sided, but still
+        # leave many small spaces
+
+        # This time we will refer to our disk indexes to
+        # help find spare space. However this means we'll
+        # have to rebuild the indexes every time we do a 
+        # swap
+        
+        lowest_id = None
+        for file in self.file_index:
+            print(file.index)
+
+            for space in self.space_index:
+                if space.index >= file.index:
+                    continue
+                
+                if space.size >= file.size:
+                    if lowest_id is None:
+                        file.id
+                    else:
+                        if file.id < lowest_id:
+                            lowest_id = file.id
+                    
+                    #print("Swapping " + str(file.size) + " file data at " + str(file.index) + " (" + str(self.data[file.index:file.index+file.size]) + ") with space at " + str(space.index))
+                    self.swap(file.index, space.index, file.size)
+                    self.buildIndex()
+                    break
+
     def mapToList(map:str):
         reading_file = True
         result = []
@@ -130,8 +163,10 @@ class disk:
             # If the id changes then we need to 
             # denote that last block as either
             # a file or space block
-            if last_id != id:
-                ptr = pointer(start_idx, last_id, i - start_idx)
+            last = i == len(self.data)-1
+
+            if last_id != id or last:
+                ptr = pointer(start_idx, last_id, i - start_idx + (1 if last else 0))
 
                 if last_id is None:
                     self.space_index.append(ptr)
@@ -249,16 +284,12 @@ with open("input_09.txt", "r") as f:
     disk_str = f.readline().strip()
 
 my_disk = disk(disk_str)
-my_disk.compress()
+
+print(my_disk)
+#my_disk.compress()
+my_disk.compressKeepWhole()
 print(my_disk)
 
-#my_disk.compress()
-# # This takes a long time to run
-# # Not sure how to speed it up (yet)
-# disk = condenseList(disk)
-#my_disk = condenseListContiguous(disk)
-
 # Part 1: 6258319840548 (amazing, first go!)
-# 11696163753804 is too high!
-# 11654871070704 is still too high
+# Part 2: 6286182965311
 print("Checksum: " + str(my_disk.checksum()))
