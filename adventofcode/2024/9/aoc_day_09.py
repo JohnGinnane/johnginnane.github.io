@@ -6,95 +6,165 @@ def right(s, l):
 def pad(s, l):
     return right(" " * l + str(s), l)
 
-def mapToString(map:str):
-    # Converts the map "12345" to "0..111....22222"
-    reading_file = True
-    disk = ""
-    id = 0
+class pointer:
+    index:int = 0
+    id:int = None # None means blank space
+    size:int = 0
 
-    for char in map:
-        if reading_file:
-            disk += str(id) * int(char)
-            id += 1
+    def __init__(self, index:int, id:int = None, size:int = 1):
+        self.index = index
+        self.id = id
+        self.size = size
+
+    def __str__(self):
+        result = "@" + pad(self.index, 5) + ", id: "
+        if self.id is None:
+            result += "."
         else:
-            disk += "." * int(char)
+            result += str(self.id)
+        result += ", len: " + str(self.size)
 
-        reading_file = not reading_file
+        return "[" + result + "]"
 
-    return disk
+class disk:
+    data:list
+    space_index:list
+    file_index:list
 
-def mapToList(map:str):
-    reading_file = True
-    result = []
-    id = 0
+    def __init__(self, map:str=None):
+        self.data = []
 
-    for i, char in enumerate(map):
-        #print(pad(i, 6) + "/" + str(len(map)))
+        if map is not None:
+            self.data = disk.mapToList(map)
 
-        if reading_file:
-            for i in range(0, int(char)):
-                result.append(id)
-            id += 1
-        else:
-            for i in range(0, int(char)):
-                result.append(None)
-        
-        reading_file = not reading_file
+        self.buildIndex()
 
-    return result
+    def swap(self, a_idx:int, b_idx:int, size:int = 1):
+        for i in range(0, size):
+            tmp = self.data[a_idx]
+            self.data[a_idx] = self.data[b_idx]
+            self.data[b_idx] = tmp
 
-def condenseList(L:list):
-    result = L.copy()
-    # Index at which we stop looking for 
-    # free space. As we condense items 
-    # to the left we can move the end 
-    # forward (i.e. closer) to the right
-    end = 0
+    def __str__(self):
+        result = ""
 
-    # Iterate back from end of list toward the front
-    # As we condense data the "end" will move up from
-    # 0 to the last element moved to condense the list
-    # This element's new position is the right most side
-    # of the condensed data, so we don't need to search
-    # to the left of this index
-    i = len(result) - 1
-    while i > end:
-        #print("i: " + str(i) + ", end: " + str(end))
+        for d in self.data:
+            if d is None:
+                result += "."
+            else:
+                result += str(d)
 
-        # Look for free space starting at the right
-        # most side of condensed data and ending at 
-        # index we're trying to move out from
-        for j in range(end, i):
-            if i == j:
+        return result
+
+    def compress(self):
+        # Index at which we stop looking for 
+        # free space. As we condense items 
+        # to the left we can move the end 
+        # forward (i.e. closer) to the right
+        end = 0
+
+        # Iterate back from end of list toward the front
+        # As we condense data the "end" will move up from
+        # 0 to the last element moved to condense the list
+        # This element's new position is the right most side
+        # of the condensed data, so we don't need to search
+        # to the left of this index
+        i = len(self.data) - 1
+        while i > end:
+            #print("i: " + str(i) + ", end: " + str(end))
+
+            # Look for free space starting at the left
+            # most side of condensed data and ending at 
+            # index we're trying to move out from
+            for j in range(end, i):
+                if i == j:
+                    continue
+
+                if self.data[i] is None:
+                    continue
+
+                if self.data[j] is None and self.data[i] is not None:
+                    #print("Moving " + str(i) + " into " + str(j))
+                    end = j
+                    self.data[j] = self.data[i]
+                    self.data[i] = None
+                    break
+
+            i -= 1
+
+    def mapToList(map:str):
+        reading_file = True
+        result = []
+        id = 0
+
+        for i, char in enumerate(map):
+            #print(pad(i, 6) + "/" + str(len(map)))
+
+            if reading_file:
+                for i in range(0, int(char)):
+                    result.append(id)
+                id += 1
+            else:
+                for i in range(0, int(char)):
+                    result.append(None)
+            
+            reading_file = not reading_file
+
+        return result
+
+    def buildIndex(self):
+        # Iterate over the entire data set
+        # and create a list of files and
+        # spaces, represented by a pointer
+        self.space_index = []
+        self.file_index = []
+
+        id = None
+        last_id = None
+        start_idx = 0
+
+        if len(self.data) <= 1:
+            return
+
+        for i in range(1, len(self.data)):
+            last_id = self.data[i-1]
+            id = self.data[i]
+
+            # If the id changes then we need to 
+            # denote that last block as either
+            # a file or space block
+            if last_id != id:
+                ptr = pointer(start_idx, last_id, i - start_idx)
+
+                if last_id is None:
+                    self.space_index.append(ptr)
+                else:
+                    self.file_index.append(ptr)
+                
+                # Reset the start index, for
+                # this new block
+                start_idx = i
+
+        # Sort space index from closest to
+        # start of disk to further (L -> R)
+        self.space_index.sort(key=lambda p: p.index)
+
+        # Sort file index backwards from
+        # furthest from start of disk to
+        # closest (R -> L)
+        self.file_index.sort(key=lambda p: p.index, reverse=True)
+
+    def checksum(self):
+        checksum = 0
+
+        for k, v in enumerate(self.data):
+            if v is None:
                 continue
+            
+            #print(str(k) + "*" + str(v) + "=" + str(k*v))
+            checksum += k*v
 
-            if result[i] is None:
-                continue
-
-            if result[j] is None and result[i] is not None:
-                #print("Moving " + str(i) + " into " + str(j))
-                end = j
-                result[j] = result[i]
-                result[i] = None
-                break
-
-        i -= 1
-
-    return result
-
-def listToString(L:list):
-    if L is None: 
-        return ""
-    
-    result = "(" + str(len(L)) + ") "
-
-    for k, v in enumerate(L):
-        if v is None:
-            result += "-"
-        else:
-            result += str(v)
-
-    return result
+        return checksum
 
 def condenseListContiguous(L:list):
     result = L.copy()
@@ -175,44 +245,23 @@ def findSpace(L:list, size:int = 1):
         
     return None
 
-def checksum(L:list):
-    checksum = 0
-
-    for k, v in enumerate(L):
-        if v is None:
-            continue
-        
-        #print(str(k) + "*" + str(v) + "=" + str(k*v))
-        checksum += k*v
-
-    return checksum
-
-# print(mapToString("12345"))
-# print(mapToString())
-
-# example_str = "2333133121414131402"
-# example = mapToList(example_str)
-
-# # # print(", ".join(map(str, mapToList("12345"))))
-# # print("Start:\t" + listToString(example))
-# # # print(", ".join(map(str, condenseList(mapToList("12345")))))
-# # #print(", ".join(map(str, condenseList(example))))
-# example = condenseListContiguous(example)
-# # print("End:\t" + listToString(example))
-# print("Checksum: " + str(checksum(example)))
-
 disk_str = "2333133121414131402"
+#disk_str = "12345"
 
-# with open("input_09.txt", "r") as f:
-#     disk_str = f.readline().strip()
+with open("input_09.txt", "r") as f:
+    disk_str = f.readline().strip()
 
-disk = mapToList(disk_str)
+my_disk = disk(disk_str)
+my_disk.compress()
+print(my_disk)
+
+#my_disk.compress()
 # # This takes a long time to run
 # # Not sure how to speed it up (yet)
 # disk = condenseList(disk)
-disk = condenseListContiguous(disk)
+#my_disk = condenseListContiguous(disk)
 
 # Part 1: 6258319840548 (amazing, first go!)
 # 11696163753804 is too high!
 # 11654871070704 is still too high
-print("Checksum: " + str(checksum(disk)))
+print("Checksum: " + str(my_disk.checksum()))
