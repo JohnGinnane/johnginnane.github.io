@@ -139,14 +139,11 @@ class topmap:
         return result
 
 map = None
-with open("test_input_10.txt", "r") as f:
+with open("input_10.txt", "r") as f:
     map = topmap(f.read())
     
 print(map)
 map.findTrailheads()
-print("Found paths: " + str(map.findPaths()))
 
-# Iterate over all trailheads
-# For each one, look for next numbers
-# Iterate over these neighbours and do
-# it again and again until we hit 9
+# Part 1: 472
+print("Found paths: " + str(map.findPaths()))
