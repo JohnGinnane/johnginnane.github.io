@@ -8,11 +8,13 @@ def right(s, l):
 def pad(s, l):
     return right(" " * l + str(s), l)
 
+# Iterates over a list and returns a tuple of
+# key, value, and key formatted like "xx/yy"
 def foreach(L:list):
     length = int(math.log10(len(L)))+1
 
     for i in range(0, len(L)):
-        idx = pad(i, length) + "/" + str(len(L))
+        idx = pad(i+1, length) + "/" + str(len(L))
         key = i
         value = L[i]
 
@@ -159,18 +161,12 @@ class topmap:
         result = 0
 
         for th in self.trailheads:
-            result += self.__findPathsAt(th)
+            result += self.__findPathsAt(th, th.origin, [])
 
         return result
 
-    def __findPathsAt(self, trail:trail, pos:vec2=None, history:list=None):
+    def __findPathsAt(self, trail:trail, pos:vec2, history:list):
         if trail is None: return
-        
-        if pos is None:
-            pos = trail.origin
-
-        if history is None:
-            history = []
 
         result = 0
 
@@ -179,9 +175,16 @@ class topmap:
 
         if this_value == 9:
             trail.score += 1
-            trail.dest = pos
+            
+            if trail.dest is None:
+                trail.dest = pos
+                return 1
+            
+            return 0
         elif this_value < 9:
             for r in self.findValueAround(this_value+1, pos):
+                #if r in history: continue
+
                 result += self.__findPathsAt(trail, r, history)
 
         return result
@@ -191,13 +194,15 @@ with open("input_10.txt", "r") as f:
     map = topmap(f.read())
     
 print(map)
-map.findTrailheads()
 
 # Part 1: 472
 print("Found paths: " + str(map.findPaths()))
 
-# for k,v in enumerate(map.trailheads):
-#     print(pad(k+1, 3) + "/" + str(len(map.trailheads)) + " - " + str(v))
+# for k, v, kstr in foreach(map.trailheads):
+#     print(kstr + " - " + str(v))
 
-for k, v, kstr in foreach(map.trailheads):
-    print(kstr + " - " + str(v))
+print("Trailheads: " + str(len(map.trailheads)))
+sum_rating = 0
+for th in map.trailheads:
+    sum_rating += th.score
+print("Sum rating: " + str(sum_rating))
