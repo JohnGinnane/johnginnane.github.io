@@ -2,6 +2,22 @@ print("Day 10:\n")
 
 import math
 
+def right(s, l):
+    return str(s)[-l:]
+
+def pad(s, l):
+    return right(" " * l + str(s), l)
+
+def foreach(L:list):
+    length = int(math.log10(len(L)))+1
+
+    for i in range(0, len(L)):
+        idx = pad(i, length) + "/" + str(len(L))
+        key = i
+        value = L[i]
+
+        yield key, value, idx
+
 class vec2:
     x = 0
     y = 0
@@ -45,6 +61,26 @@ class vec2:
         self.x = self.x * math.cos(rad) - self.y * math.sin(rad)
         self.y = self.x * math.sin(rad) + self.y * math.cos(rad)
 
+class trail:
+    origin:vec2
+    dest:vec2
+    score:int
+
+    def __init__(self, origin:vec2 = None, dest:vec2 = None):
+        self.origin = origin
+        self.dest = dest
+        self.score = 0
+
+    def __eq__(self, other):
+        return self.origin == other.origin and self.dest == other.dest
+    
+    def __str__(self):
+        result  = "Origin: "  + str(self.origin)
+        result += ", Dest: "  + str(self.dest)
+        result += ", Score: " + str(self.score)
+
+        return "[" + result + "]"
+
 class topmap:
     raw_data:str = ""
     grid:list = []
@@ -72,6 +108,8 @@ class topmap:
                 else:
                     self.grid[y].append(-1)
 
+        self.findTrailheads()
+
     def __str__(self):
         result = ""
         for y in range(0, len(self.grid)):
@@ -84,6 +122,9 @@ class topmap:
         return result
     
     def at(self, pos:vec2):
+        if pos is None: 
+            return
+
         x = pos.x
         y = pos.y
 
@@ -98,7 +139,7 @@ class topmap:
         for y in range(0, len(self.grid)):
             for x in range(0, len(self.grid[y])):
                 if self.grid[y][x] == 0:
-                    self.trailheads.append(vec2(x, y))
+                    self.trailheads.append(trail(vec2(x, y)))
         
     def findValueAround(self, value, pos:vec2):
         result = []
@@ -118,23 +159,30 @@ class topmap:
         result = 0
 
         for th in self.trailheads:
-            result += self.__findPathsAt(th, [])
+            result += self.__findPathsAt(th)
 
         return result
 
-    def __findPathsAt(self, pos:vec2, history:list):
+    def __findPathsAt(self, trail:trail, pos:vec2=None, history:list=None):
+        if trail is None: return
+        
+        if pos is None:
+            pos = trail.origin
+
+        if history is None:
+            history = []
+
         result = 0
 
         this_value = self.at(pos)
         history.append(pos)
 
         if this_value == 9:
-            return 1
+            trail.score += 1
+            trail.dest = pos
         elif this_value < 9:
             for r in self.findValueAround(this_value+1, pos):
-                if r in history: continue
-
-                result += self.__findPathsAt(r, history)
+                result += self.__findPathsAt(trail, r, history)
 
         return result
 
@@ -147,3 +195,9 @@ map.findTrailheads()
 
 # Part 1: 472
 print("Found paths: " + str(map.findPaths()))
+
+# for k,v in enumerate(map.trailheads):
+#     print(pad(k+1, 3) + "/" + str(len(map.trailheads)) + " - " + str(v))
+
+for k, v, kstr in foreach(map.trailheads):
+    print(kstr + " - " + str(v))
