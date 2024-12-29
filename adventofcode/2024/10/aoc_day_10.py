@@ -63,6 +63,9 @@ class vec2:
         self.x = self.x * math.cos(rad) - self.y * math.sin(rad)
         self.y = self.x * math.sin(rad) + self.y * math.cos(rad)
 
+    def __hash__(self):
+        return hash((hash(self.x), hash(self.y)))
+
 class trail:
     origin:vec2
     dest:vec2
@@ -111,6 +114,26 @@ class topmap:
                     self.grid[y].append(-1)
 
         self.findTrailheads()
+
+        # Once we find all trailheads then
+        # iterate over them and find all
+        # destinations for them
+        while True:
+            # Find first trail with no destination
+            th:trail = None
+
+            for t in self.trailheads:
+                if t.dest is None:
+                    th=t
+                    break
+
+            if th is None:
+                break
+
+            self.__navigatePath(th, th.origin)
+
+        self.__scorePath()
+
 
     def __str__(self):
         result = ""
@@ -165,8 +188,42 @@ class topmap:
 
         return result
 
-    def __findPathsAt(self, trail:trail, pos:vec2, history:list):
-        if trail is None: return
+    def __navigatePath(self, th:trail, pos:vec2):
+        if th is None: return
+        this_value = self.at(pos)
+
+        # When we hit the peak
+        if this_value == 9:
+            # If this trail doesn't already have 
+            # a destination then set it
+            if th.dest is None:
+                th.dest = pos
+            else:
+                # If it does have a destination
+                # then create a new trail
+                pot_new = trail(th.origin, pos)
+                if pot_new not in self.trailheads:
+                    self.trailheads.append(pot_new)
+        else:
+            # Find neighbours with next value
+            for r in self.findValueAround(this_value+1, pos):
+                self.__navigatePath(th, r)
+
+    def __scorePath(self, th:trail=None, pos:vec2=None):
+        if th is None:
+            for th in self.trailheads:
+                self.__scorePath(th, th.origin)
+            return
+        
+        this_value = self.at(pos)
+        if this_value == 9:
+            th.score += 1
+        else:
+            for r in self.findValueAround(this_value+1, pos):
+                self.__scorePath(th, r)
+
+    def __findPathsAt(self, th:trail, pos:vec2, history:list):
+        if th is None: return
 
         result = 0
 
@@ -174,10 +231,10 @@ class topmap:
         history.append(pos)
 
         if this_value == 9:
-            trail.score += 1
+            th.score += 1
             
-            if trail.dest is None:
-                trail.dest = pos
+            if th.dest is None:
+                th.dest = pos
                 return 1
             
             return 0
@@ -185,7 +242,7 @@ class topmap:
             for r in self.findValueAround(this_value+1, pos):
                 #if r in history: continue
 
-                result += self.__findPathsAt(trail, r, history)
+                result += self.__findPathsAt(th, r, history)
 
         return result
 
@@ -195,14 +252,23 @@ with open("input_10.txt", "r") as f:
     
 print(map)
 
-# Part 1: 472
-print("Found paths: " + str(map.findPaths()))
-
-# for k, v, kstr in foreach(map.trailheads):
-#     print(kstr + " - " + str(v))
-
-print("Trailheads: " + str(len(map.trailheads)))
-sum_rating = 0
+origins = {}
 for th in map.trailheads:
-    sum_rating += th.score
-print("Sum rating: " + str(sum_rating))
+    if th.origin not in origins:
+        origins[th.origin] = (0, th.score)
+
+    origins[th.origin] = (origins[th.origin][0]+1, th.score) # How many dests for this origin?
+
+print("Trailheads: " + str(len(origins)))
+
+total_score = 0
+total_rating = 0
+for k, v in enumerate(origins):
+    print(str(k+1) + ") Origin: " + str(v) + " - Score: " + str(origins[v][0]) + ", Rating: " + str(origins[v][1]))
+    total_score += origins[v][0]
+    total_rating += origins[v][1]
+
+# Part 1: 472
+print("Total Score: " + str(total_score)) # Number of destinations for each origin
+# Part 2: 969
+print("Total Rating: " + str(total_rating)) # Number of different routes from origin to same destination
