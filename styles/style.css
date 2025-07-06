@@ -654,23 +654,25 @@
     transform: translate(-50%, -58%);
     font-weight: 600;
     font-size: 20px;
+    pointer-events: none;
 }
 
-.da-node {
+.da-node-header {
     width: 40px;
     height: 40px;
     border: 2px black solid;
     border-radius: 100%;
     background-color: lavenderblush;
     
+    position: absolute; /* Needed for draggable */
+    
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
 }
 
-.da-node:hover {
+.da-node-header:hover {
     border: 2px blue solid;
     background-color: lavender;
     cursor: grab;

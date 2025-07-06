@@ -58,6 +58,50 @@ function numberToExcel(n) {
     return result;
 }
 
+// https://www.w3schools.com/howto/howto_js_draggable.asp
+function dragElement(el) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    // If this is the header bit then add handler
+    if (el.getAttribute("header") == "true") {
+        el.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        document.onmouseup = closeDragElement;
+        document.onmousedown = elementDrag;
+        console.log("dragMouseDown");
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        
+        // Calculate new positions
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // Set element top and left position
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+        console.log("elementDrag");
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousedown = null;
+        console.log("closeDragElement");
+    }
+}
+    
 window.addEventListener("load", (event) => {
     const daWorkArea = document.getElementById("da-workarea");
     
@@ -70,76 +114,29 @@ window.addEventListener("load", (event) => {
     
         if (!isNumber(x)) { x = 0; }
         if (!isNumber(y)) { y = 0; }
-    
-        let radius = 0;
-    
+        
         let newNode = document.createElement("div");
-        newNode.classList.add("da-node");
-        newNode.classList.add("position-container");
-
-        if (isNumber(radius) && radius > 0) {
-            newNode.style.width = radius + "px";
-            newNode.style.height = radius + "px";
-        }
+        newNode.classList.add("da-node-header");
+        newNode.setAttribute("header", "true");
 
         newNode.style.left = x + "px";
         newNode.style.top = y + "px";
 
         // Add the node letter inside the
         // node, centered perfectly
+        // let divInner = document.createElement("div");
+        // divInner.classList.add("da-node-inner");
+        
         let pNode = document.createElement("p");
         pNode.classList.add("da-node-p");
         pNode.innerHTML = numberToExcel(nextNodeLetter++);
+                
         newNode.append(pNode);
-        
         daWorkArea.append(newNode);
 
         dragElement(newNode);
     }
 
-    // https://www.w3schools.com/howto/howto_js_draggable.asp
-    function dragElement(el) {
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-
-        if (document.getElementById(el.id + "header")) {
-            document.getElementById(el.id + "header").onmousedown = dragMouseDown;
-        } else {
-            el.onmousedown = dragMouseDown;
-        }
-
-        function dragMouseDown(e) {
-            e = e || window.event;
-            e.preventDefault();
-
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-
-            document.onmouseup = closeDragElement();
-            document.onmousedown = elementDrag();
-
-        }
-
-        function elementDrag(e) {
-            e = e || window.event;
-            e.preventDefault();
-            
-            // Calculate new positions
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-
-            // Set element top and left position
-            el.style.top = (el.offsetTop - pos2) + "px";
-            el.style.left = (el.offsetLeft - pos1) + "px";
-        }
-
-        function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousedown = null;
-        }
-    }
-    
     createNode();
     createNode(20, 50);
 });
