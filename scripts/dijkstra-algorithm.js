@@ -75,8 +75,7 @@ function dragElement(el) {
         pos4 = e.clientY;
 
         document.onmouseup = closeDragElement;
-        document.onmousedown = elementDrag;
-        console.log("dragMouseDown");
+        document.onmousemove = elementDrag;
     }
 
     function elementDrag(e) {
@@ -92,13 +91,11 @@ function dragElement(el) {
         // Set element top and left position
         el.style.top = (el.offsetTop - pos2) + "px";
         el.style.left = (el.offsetLeft - pos1) + "px";
-        console.log("elementDrag");
     }
 
     function closeDragElement() {
         document.onmouseup = null;
-        document.onmousedown = null;
-        console.log("closeDragElement");
+        document.onmousemove = null;
     }
 }
     
