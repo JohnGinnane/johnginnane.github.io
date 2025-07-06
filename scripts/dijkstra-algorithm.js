@@ -68,8 +68,18 @@ function dragElement(el) {
     }
 
     function dragMouseDown(e) {
+        // Make sure we're hovering
+        // over the node and not the
+        // linking ring
+        console.log(e);
+
         e = e || window.event;
         e.preventDefault();
+
+        if (e == null) { return; }
+        if (e.target == null) { return; }
+
+        console.log(e.target);
 
         pos3 = e.clientX;
         pos4 = e.clientY;
@@ -111,28 +121,33 @@ window.addEventListener("load", (event) => {
     
         if (!isNumber(x)) { x = 0; }
         if (!isNumber(y)) { y = 0; }
+
+        let nodeBase = document.createElement("div");
+        nodeBase.classList.add("da-node-header");
+        nodeBase.setAttribute("header", "true");
+
+        nodeBase.style.left = x + "px";
+        nodeBase.style.top = y + "px";
+
+        // Ring used to attach links 
+        // between nodes
+        let nodeRing = document.createElement("div");
+        nodeRing.classList.add("da-node-ring");
         
-        let newNode = document.createElement("div");
-        newNode.classList.add("da-node-header");
-        newNode.setAttribute("header", "true");
-
-        newNode.style.left = x + "px";
-        newNode.style.top = y + "px";
-
         // Add the node letter inside the
         // node, centered perfectly
-        // let divInner = document.createElement("div");
-        // divInner.classList.add("da-node-inner");
+        let nodeText = document.createElement("p");
+        nodeText.classList.add("da-node-p");
+        nodeText.innerHTML = numberToExcel(nextNodeLetter++);
         
-        let pNode = document.createElement("p");
-        pNode.classList.add("da-node-p");
-        pNode.innerHTML = numberToExcel(nextNodeLetter++);
-                
-        newNode.append(pNode);
-        daWorkArea.append(newNode);
+        nodeBase.append(nodeText);
+        nodeBase.append(nodeRing);
+        daWorkArea.append(nodeBase);
 
-        dragElement(newNode);
+        dragElement(nodeBase);
     }
+
+    $("#da-btn-add-node").on("click", createNode);
 
     createNode();
     createNode(20, 50);
