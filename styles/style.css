@@ -644,3 +644,34 @@
 #da-workarea {
     background-color: #FFEEDD;
 }
+
+.da-node-p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* This makes the text look close
+       to perfectly vertically aligned */
+    transform: translate(-50%, -58%);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.da-node {
+    width: 40px;
+    height: 40px;
+    border: 2px black solid;
+    border-radius: 100%;
+    background-color: lavenderblush;
+    
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.da-node:hover {
+    border: 2px blue solid;
+    background-color: lavender;
+    cursor: grab;
+}

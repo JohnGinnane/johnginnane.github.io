@@ -2,19 +2,11 @@
 // Handy JS function to check if value is a number
 function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
 
-// Imagine base 27
 var nextNodeLetter = 1;
 
-function getNodeLetter() {
-    let result = nextNodeLetter;
-
-    nextNodeLetter = String.fromCodePoint(nextNodeLetter);
-
-    // Explode 
-
-    return result;
-}
-
+// Takes in a positive non-zero integer
+// returns the Excel column equivalent
+// eg. 1 -> A
 function numberToExcel(n) {
     if (!isNumber(n)) { return ""; }
     if (n == 0) { return ""; }
@@ -68,26 +60,43 @@ function numberToExcel(n) {
 
 window.addEventListener("load", (event) => {
     const daWorkArea = document.getElementById("da-workarea");
+    
+    // Must define this function here when the page 
+    // has finished loading
+    function createNode(x, y) {
+        // Create div
+        // Assign class
+        // Assign event handlers
+    
+        if (!isNumber(x)) { x = 0; }
+        if (!isNumber(y)) { y = 0; }
+    
+        let radius = 0;
+    
+        let newNode = document.createElement("div");
+        newNode.classList.add("da-node");
+        newNode.classList.add("position-container");
 
-    for (let i = 1; i <= 300; i++) {
-        console.log(i + " -> " + numberToExcel(i));
+        if (isNumber(radius) && radius > 0) {
+            newNode.style.width = radius + "px";
+            newNode.style.height = radius + "px";
+        }
+
+        let pNode = document.createElement("p");
+        pNode.classList.add("da-node-p");
+        pNode.innerHTML = numberToExcel(nextNodeLetter++);
+        newNode.append(pNode);
+        
+        daWorkArea.append(newNode);
     }
+
+    createNode();
 });
 
-function createNode(x, y) {
-    // Create div
-    // Assign class
-    // Assign event handlers
+function grabStart() {
+    
+}
 
-    if (!isNumber(x)) { x = 0; }
-    if (!isNumber(y)) { y = 0; }
+function grabStop() {
 
-    let radius = 10;
-
-    let newNode = document.createElement("div");
-    newNode.classList.add("da-node");
-    newNode.setAttribute("width", radius + "px");
-    newNode.setAttribute("height", radius + "px");
-
-    daWorkArea.append(newNode);
 }
