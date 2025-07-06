@@ -82,21 +82,64 @@ window.addEventListener("load", (event) => {
             newNode.style.height = radius + "px";
         }
 
+        newNode.style.left = x + "px";
+        newNode.style.top = y + "px";
+
+        // Add the node letter inside the
+        // node, centered perfectly
         let pNode = document.createElement("p");
         pNode.classList.add("da-node-p");
         pNode.innerHTML = numberToExcel(nextNodeLetter++);
         newNode.append(pNode);
         
         daWorkArea.append(newNode);
+
+        dragElement(newNode);
     }
 
-    createNode();
-});
+    // https://www.w3schools.com/howto/howto_js_draggable.asp
+    function dragElement(el) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-function grabStart() {
+        if (document.getElementById(el.id + "header")) {
+            document.getElementById(el.id + "header").onmousedown = dragMouseDown;
+        } else {
+            el.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            document.onmouseup = closeDragElement();
+            document.onmousedown = elementDrag();
+
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            
+            // Calculate new positions
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            // Set element top and left position
+            el.style.top = (el.offsetTop - pos2) + "px";
+            el.style.left = (el.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousedown = null;
+        }
+    }
     
-}
-
-function grabStop() {
-
-}
+    createNode();
+    createNode(20, 50);
+});
