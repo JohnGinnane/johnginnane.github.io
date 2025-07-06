@@ -28,19 +28,39 @@ function numberToExcel(n) {
     //      27 -> AA
     //      28 -> AB etc.
 
-    // Start at 26^1 and then increment
-    // the power and divide by this value
-    // until we consumes the entire input
+    // Start at 26 and then multiply by 26
+    // each iteration. Get the remainder
+    // of n/26^x and turn into a letter
     let base = 26;
     let divisor = base;
     let result = "";
 
     do {
+        // Get remainder of base
+        // Because n mod n = 0 
+        // I need to do || base
+        // to return 26 when
+        // n = 26
         remainder = n % base || base;
+
+        // Convert to letter
         result = String.fromCodePoint(64 + remainder) + result;
         
+        // Divide the parameter value 
+        // to "consume it"
         n = Math.floor(n / divisor);
+        // Multiply our base to power
+        // it up
         divisor *= base;
+
+        // Continue so long as input
+        // is > 0 AND the remainder
+        // is not the highest value
+        // i.e. 26 (Z)
+        // This stops us doing one
+        // more iteration when the 
+        // input number happens to
+        // be divisible by 26
     } while (n > 0 && remainder != base);
 
     return result;
