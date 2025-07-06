@@ -628,3 +628,19 @@
 #roman-body {
     background-color: hsl(50, 100%, 86%);
 }
+
+/*
+    Djikstra's Algorithm
+*/
+
+#djikstra-body {
+    
+}
+
+#da-control {
+    background-color: #DDEEFF;
+}
+
+#da-workarea {
+    background-color: #FFEEDD;
+}
