@@ -62,10 +62,7 @@ function numberToExcel(n) {
 function dragElement(el) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    // If this is the header bit then add handler
-    if (el.getAttribute("header") == "true") {
-        el.onmousedown = dragMouseDown;
-    }
+    el.onmousedown = dragMouseDown;
 
     function dragMouseDown(e) {
         // Make sure we're hovering
@@ -78,6 +75,10 @@ function dragElement(el) {
 
         if (e == null) { return; }
         if (e.target == null) { return; }
+
+        if (!e.target.classList.contains("da-node")) {
+            return;
+        }
 
         console.log(e.target);
 
@@ -122,29 +123,29 @@ window.addEventListener("load", (event) => {
         if (!isNumber(x)) { x = 0; }
         if (!isNumber(y)) { y = 0; }
 
-        let nodeBase = document.createElement("div");
-        nodeBase.classList.add("da-node-header");
-        nodeBase.setAttribute("header", "true");
-
-        nodeBase.style.left = x + "px";
-        nodeBase.style.top = y + "px";
-
         // Ring used to attach links 
         // between nodes
         let nodeRing = document.createElement("div");
         nodeRing.classList.add("da-node-ring");
         
+        nodeRing.style.left = x + "px";
+        nodeRing.style.top = y + "px";
+
+        let node = document.createElement("div");
+        node.classList.add("da-node");
+        node.setAttribute("header", "true");
+
         // Add the node letter inside the
         // node, centered perfectly
         let nodeText = document.createElement("p");
         nodeText.classList.add("da-node-p");
         nodeText.innerHTML = numberToExcel(nextNodeLetter++);
         
-        nodeBase.append(nodeText);
-        nodeBase.append(nodeRing);
-        daWorkArea.append(nodeBase);
+        nodeRing.append(node);
+        nodeRing.append(nodeText);
+        daWorkArea.append(nodeRing);
 
-        dragElement(nodeBase);
+        dragElement(nodeRing);
     }
 
     $("#da-btn-add-node").on("click", createNode);
