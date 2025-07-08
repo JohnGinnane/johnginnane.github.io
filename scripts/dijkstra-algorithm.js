@@ -62,13 +62,14 @@ function numberToExcel(n) {
 function dragElement(el) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    el.onmousedown = dragMouseDown;
+    el.onmousedown = nodeMouseDown;
 
-    function dragMouseDown(e) {
+    function nodeMouseDown(e) {
+        
         // Make sure we're hovering
-        // over the node and not the
-        // linking ring
-        console.log(e);
+        // over the node ring and 
+        // not the node itself
+        console.log("nodeMouseDown", e);
 
         e = e || window.event;
         e.preventDefault();
@@ -76,17 +77,41 @@ function dragElement(el) {
         if (e == null) { return; }
         if (e.target == null) { return; }
 
-        if (!e.target.classList.contains("da-node")) {
-            return;
+        let sender = e.target;
+
+        if (sender.classList.contains("da-node-ring")) {
+            // Do linking
+            pos1 = e.clientX;
+            pos2 = e.clientY;
+
+            document.onmouseup = closeLinkElement;
+            document.onmousemove = elementLink;
+
+            // Find existing link and delete it
+            let divLink = document.getElementById("link-div");
+
+            if (divLink) {
+                divLink.parentElement.removeChild(divLink);
+            }
+        
+            // // Create a line from this node
+            var divNewLink = document.createElement("div");
+            divNewLink.id = "link-div";
+            sender.parentElement.append(divNewLink);
+
+            return
         }
 
-        console.log(e.target);
+        if (e.target.classList.contains("da-node")) {
+            // Do dragging
+            pos3 = e.clientX;
+            pos4 = e.clientY;
 
-        pos3 = e.clientX;
-        pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
 
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
+            return;
+        }
     }
 
     function elementDrag(e) {
@@ -108,8 +133,39 @@ function dragElement(el) {
         document.onmouseup = null;
         document.onmousemove = null;
     }
-}
+
+    function elementLink(e) {
+        // Calculate new positions
+        // Use this to draw a line
+        // from the first node to
+        // the cursor
+        
+        e = e || window.event;
+        e.preventDefault();
+        
+        // Calculate new positions
+        // pos1 = pos3 - e.clientX;
+        // pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        // Place the div between original 
+        // node and cursor?
+        let linkDiv = document.getElementById("link-div");
+        linkDiv.style.left = (pos3 + pos1) / 2 + "px";
+        linkDiv.style.top = (pos4 + pos2) / 2 + "px";
+    }
     
+    function closeLinkElement(e) {
+        // Somehow check if we're hovering over
+        // another node or node ring
+
+        document.onmouseup = null;
+        document.onmousemove = null;
+        console.log(e);
+    }
+}
+
 window.addEventListener("load", (event) => {
     const daWorkArea = document.getElementById("da-workarea");
     
