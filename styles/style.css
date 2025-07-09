@@ -628,3 +628,78 @@
 #roman-body {
     background-color: hsl(50, 100%, 86%);
 }
+
+/*
+    Djikstra's Algorithm
+*/
+
+#djikstra-body {
+    
+}
+
+#da-control {
+    background-color: #DDEEFF;
+}
+
+#da-workarea {
+    background-color: #FFEEDD;
+}
+
+.da-node {
+    width: 40px;
+    height: 40px;
+    border: 2px black solid;
+    border-radius: 100%;
+    background-color: lavenderblush;
+    overflow: visible;
+    
+    position: absolute; /* Needed for draggable */
+    
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.da-node:hover {
+    border: 2px blue solid;
+    background-color: lavender;
+    cursor: grab;
+}
+
+.da-node-ring {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0);
+    border: 20px solid rgba(0, 0, 0, 0);
+}
+
+.da-node-ring:hover {
+    background-color: rgba(255, 0, 0, 0.5);
+    border: 20px solid rgb(255, 230, 0, 1);
+    cursor: crosshair;
+}
+
+.da-node-p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* This makes the text look close
+       to perfectly vertically aligned */
+    transform: translate(-50%, -58%);
+    font-weight: 600;
+    font-size: 20px;
+    pointer-events: none;
+}
+
+#link-div {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    border: 4px solid red;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
