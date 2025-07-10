@@ -60,7 +60,7 @@ function numberToExcel(n) {
 
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function dragElement(el) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    var originX = 0, originY = 0, currentX = 0, currentY = 0;
 
     el.onmousedown = nodeMouseDown;
 
@@ -81,8 +81,10 @@ function dragElement(el) {
 
         if (sender.classList.contains("da-node-ring")) {
             // Do linking
-            pos1 = e.clientX;
-            pos2 = e.clientY;
+            originX = e.clientX;
+            originY = e.clientY;
+            currentX = e.clientX;
+            currentY = e.clientY;            
 
             document.onmouseup = closeLinkElement;
             document.onmousemove = elementLink;
@@ -94,9 +96,12 @@ function dragElement(el) {
                 divLink.parentElement.removeChild(divLink);
             }
         
-            // // Create a line from this node
+            // Create a line from this node
             var divNewLink = document.createElement("div");
             divNewLink.id = "link-div";
+            divNewLink.style.left = (currentX + originX) / 2 + "px";
+            divNewLink.style.top = (currentY + originY) / 2 + "px";
+
             sender.parentElement.append(divNewLink);
 
             return
@@ -104,8 +109,8 @@ function dragElement(el) {
 
         if (e.target.classList.contains("da-node")) {
             // Do dragging
-            pos3 = e.clientX;
-            pos4 = e.clientY;
+            currentX = e.clientX;
+            currentY = e.clientY;
 
             document.onmouseup = closeDragElement;
             document.onmousemove = elementDrag;
@@ -119,14 +124,14 @@ function dragElement(el) {
         e.preventDefault();
         
         // Calculate new positions
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
+        originX = currentX - e.clientX;
+        originY = currentY - e.clientY;
+        currentX = e.clientX;
+        currentY = e.clientY;
 
         // Set element top and left position
-        el.style.top = (el.offsetTop - pos2) + "px";
-        el.style.left = (el.offsetLeft - pos1) + "px";
+        el.style.top = (el.offsetTop - originY) + "px";
+        el.style.left = (el.offsetLeft - originX) + "px";
     }
 
     function closeDragElement() {
@@ -144,16 +149,26 @@ function dragElement(el) {
         e.preventDefault();
         
         // Calculate new positions
-        // pos1 = pos3 - e.clientX;
-        // pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
+        currentX = e.clientX;
+        currentY = e.clientY;
 
         // Place the div between original 
         // node and cursor?
-        let linkDiv = document.getElementById("link-div");
-        linkDiv.style.left = (pos3 + pos1) / 2 + "px";
-        linkDiv.style.top = (pos4 + pos2) / 2 + "px";
+        let divLink = document.getElementById("link-div");
+        divLink.style.left = originX + "px";
+        divLink.style.top = originY + "px";
+        
+        // Calculate angle
+        // https://stackoverflow.com/a/15994225
+        let dX = currentX - originX;
+        let dY = currentY - originY;
+        let ang = Math.atan2(dY, dX);
+
+        // Elongate
+        divLink.style.width = "1px";
+        divLink.style.height = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
+        
+        divLink.style.rotate = ang + "rad";
     }
     
     function closeLinkElement(e) {
