@@ -81,8 +81,13 @@ function dragElement(el) {
 
         if (sender.classList.contains("da-node-ring")) {
             // Do linking
-            originX = e.clientX;
-            originY = e.clientY;
+            // Set the origin of the line on the node pls
+            // originX = e.clientX;
+            // originY = e.clientY;
+            let offsets = sender.getBoundingClientRect();
+            originX = offsets.left + offsets.width / 2;
+            originY = offsets.top  + offsets.height / 2;
+
             currentX = e.clientX;
             currentY = e.clientY;            
 
@@ -97,12 +102,12 @@ function dragElement(el) {
             }
         
             // Create a line from this node
-            var divNewLink = document.createElement("div");
-            divNewLink.id = "link-div";
-            divNewLink.style.left = (currentX + originX) / 2 + "px";
-            divNewLink.style.top = (currentY + originY) / 2 + "px";
+            divLink = document.createElement("div");
+            divLink.id = "link-div";
+            divLink.style.left = (currentX + originX) / 2 + "px";
+            divLink.style.top = (currentY + originY) / 2 + "px";
 
-            sender.parentElement.append(divNewLink);
+            sender.parentElement.append(divLink);
 
             return
         }
@@ -165,8 +170,8 @@ function dragElement(el) {
         let ang = Math.atan2(dY, dX);
 
         // Elongate
-        divLink.style.width = "1px";
-        divLink.style.height = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
+        divLink.style.width = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
+        divLink.style.height = "1px"
         
         divLink.style.rotate = ang + "rad";
     }
