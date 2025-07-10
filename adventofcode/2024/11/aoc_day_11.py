@@ -104,6 +104,24 @@ ts = datetime.now()
 
 # Part 1: 189167 stones
 for i in range(0, 28):
+    # Iterate over the stones in blocks of 8
+    # Create a thread for each block and run it
+    # Only start thread #9 when any previous
+    # thread has finished. I.e. We have 8
+    # concurrent threads running, operating 
+    # on blocks of 8
+
+    pool_free = 8
+    threads = 0
+    pool = ThreadPool(processes=pool_free)
+    block_index = 0
+    block_size = 8
+
+    while block_index < len(stones) and threads < pool_free:
+        subset = stones[block_index:block_index+block_size]
+        threads += 1
+        pool.apply_async(applyRules, (subset, ))
+
     from_index = 0
     to_index = int(len(stones)/2)-1
     ##print("From: " + str(from_index) + " to: " + str(to_index))
