@@ -659,6 +659,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9;
 }
 
 .da-node:hover {
@@ -674,6 +675,7 @@
     border-radius: 50%;
     background-color: rgba(0, 0, 0, 0);
     border: 20px solid rgba(0, 0, 0, 0);
+    z-index: 8;
 }
 
 .da-node-ring:hover {
@@ -692,6 +694,7 @@
     font-weight: 600;
     font-size: 20px;
     pointer-events: none;
+    z-index: 10;
 }
 
 #link-div {
@@ -703,4 +706,5 @@
     top: 0px;
     left: 0px;
     transform-origin: 0px 1px;
+    z-index: 1;
 }

@@ -58,6 +58,24 @@ function numberToExcel(n) {
     return result;
 }
 
+// Structure of NODE object
+var nodeTemplate = {
+    x: 0,
+    y: 0,
+    name: "",
+    divNodeBase: null
+}
+
+// Structure of LINK object
+var linkTemplate = {
+    nodeA: null,
+    nodeB: null,
+    divLink: null
+}
+
+var nodes = [];
+var links = []
+
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function dragElement(el) {
     var originX = 0, originY = 0, currentX = 0, currentY = 0;
@@ -179,7 +197,36 @@ function dragElement(el) {
     function closeLinkElement(e) {
         // Somehow check if we're hovering over
         // another node or node ring
+        if (!e) { return; }
+        if (!e.target) { return; }
 
+        // Try to find the node we're attaching to (if any)
+        let node;
+
+        if (e.target.classList.contains("da-node")) {
+            node = e.target.parentElement;
+        } else if (e.target.classList.contains("da-node-ring")) {
+            node = e.target;
+        }
+        
+        // Attach the other end of the link to the node
+        let nodeBounds = node.getBoundingClientRect();
+        let divLink = document.getElementById("link-div");
+
+        if (divLink) {
+            currentX = nodeBounds.left + nodeBounds.width  / 2
+            currentY = nodeBounds.top  + nodeBounds.height / 2
+            let dX = currentX - originX;
+            let dY = currentY - originY;
+            let ang = Math.atan2(dY, dX);
+
+            // Elongate
+            divLink.style.width = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
+            divLink.style.height = "1px"
+            
+            divLink.style.rotate = ang + "rad";
+        }
+    
         document.onmouseup = null;
         document.onmousemove = null;
         console.log(e);
@@ -220,6 +267,17 @@ window.addEventListener("load", (event) => {
         nodeRing.append(node);
         nodeRing.append(nodeText);
         daWorkArea.append(nodeRing);
+
+        // Clone the template
+        let newNode = {...nodeTemplate};
+        newNode.x = x;
+        newNode.y = y;
+        newNode.divNodeBase = nodeRing;
+        
+        // Find index, use it to stamp the node for ease of access
+        let nodeIndex = nodes.length;
+        nodeRing.setAttribute("nodeIndex", nodeIndex);
+        nodes[nodeIndex] = newNode;
 
         dragElement(nodeRing);
     }
