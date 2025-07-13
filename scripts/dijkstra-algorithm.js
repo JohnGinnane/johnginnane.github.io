@@ -1,3 +1,27 @@
+// Returns a random UUID of specified length
+function generateNewID(length) {
+    length = length || 4;
+
+    let newID = "";
+
+    // Functions to check if a specified ID is present
+    let checkNodes = x => nodes.find(y => y.id == x);
+    let checkLinks = x => links.find(y => y.id == x);
+
+    // Keep generating new IDs until we find one that is unique
+    while (newID == "" || checkNodes(newID) || checkLinks(newID)) {
+        // Keep appending the new ID until it's long enough
+        while (newID.length < length) {
+            newID += crypto.randomUUID().replaceAll("-", "");
+        }
+        
+        // Then truncate to match length
+        newID = newID.substring(1, length+1); // Add 1 as substring doesn't include last character
+    }
+
+    return newID;
+}
+
 // https://stackoverflow.com/a/1421988
 // Handy JS function to check if value is a number
 function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
@@ -60,21 +84,60 @@ function numberToExcel(n) {
 
 // Structure of NODE object
 var nodeTemplate = {
-    x: 0,
-    y: 0,
-    name: "",
-    divNodeBase: null
+    x:       0,
+    y:       0,
+    name:    "",
+    id:      "",
+    divNode: null
 }
 
 // Structure of LINK object
 var linkTemplate = {
-    nodeA: null,
-    nodeB: null,
-    divLink: null
+    nodeA:    null,
+    nodeB:    null,
+    id:       "",
+    distance: 0,
+    divLink:  null
 }
 
 var nodes = [];
 var links = []
+
+function getFreeID() {
+    let newID = null;
+
+    // Generate ID and check if it's free
+    while(true) {
+        newID = generateNewID(4);
+        let inUse = false;
+
+        // Check nodes
+        if (!inUse) {
+            for (let node in nodes) {
+                if (node.id == newID) {
+                    inUse = true;
+                    break;
+                }
+            }   
+        }
+
+        // Check links
+        if (!inUse) {
+            for (let link in links) {
+                if (link.id == newID) {
+                    inUse = true;
+                    break;
+                }
+            }
+        }
+
+        // If the ID definitely isn't in use then
+        // break out of the loop
+        if (!inUse) { break; }
+    }
+
+    return newID;
+}
 
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function dragElement(el) {
@@ -83,12 +146,6 @@ function dragElement(el) {
     el.onmousedown = nodeMouseDown;
 
     function nodeMouseDown(e) {
-        
-        // Make sure we're hovering
-        // over the node ring and 
-        // not the node itself
-        console.log("nodeMouseDown", e);
-
         e = e || window.event;
         e.preventDefault();
 
@@ -145,7 +202,8 @@ function dragElement(el) {
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        
+        let divNode = nodes.find((x) => x.id == el.id);
+                
         // Calculate new positions
         originX = currentX - e.clientX;
         originY = currentY - e.clientY;
@@ -177,7 +235,10 @@ function dragElement(el) {
 
         // Place the div between original 
         // node and cursor?
-        let divLink = document.getElementById("link-div");
+        let divLink = document.getElementById("link-div")
+
+        if (!divLink) { return; }
+
         divLink.style.left = originX + "px";
         divLink.style.top = originY + "px";
         
@@ -195,10 +256,16 @@ function dragElement(el) {
     }
     
     function closeLinkElement(e) {
+        document.onmouseup = null;
+        document.onmousemove = null;
+
         // Somehow check if we're hovering over
         // another node or node ring
         if (!e) { return; }
         if (!e.target) { return; }
+
+        let divLink = document.getElementById("link-div");
+        if (!divLink) { return; }
 
         // Try to find the node we're attaching to (if any)
         let node;
@@ -208,10 +275,15 @@ function dragElement(el) {
         } else if (e.target.classList.contains("da-node-ring")) {
             node = e.target;
         }
+
+        if (!node) {
+            // Didn't mouseup over node, so delete link
+            divLink.parentElement.removeChild(divLink);
+            return;
+        }
         
         // Attach the other end of the link to the node
         let nodeBounds = node.getBoundingClientRect();
-        let divLink = document.getElementById("link-div");
 
         if (divLink) {
             currentX = nodeBounds.left + nodeBounds.width  / 2
@@ -225,11 +297,10 @@ function dragElement(el) {
             divLink.style.height = "1px"
             
             divLink.style.rotate = ang + "rad";
+
+            // Give it a new unique ID pls
+            //divLink.id = generateNewID(4)
         }
-    
-        document.onmouseup = null;
-        document.onmousemove = null;
-        console.log(e);
     }
 }
 
@@ -268,15 +339,20 @@ window.addEventListener("load", (event) => {
         nodeRing.append(nodeText);
         daWorkArea.append(nodeRing);
 
+        
+        // Find index, use it to stamp the node for ease of access
+        let nodeIndex = nodes.length;
+        nodeRing.setAttribute("nodeIndex", nodeIndex);
+        
         // Clone the template
         let newNode = {...nodeTemplate};
         newNode.x = x;
         newNode.y = y;
         newNode.divNodeBase = nodeRing;
-        
-        // Find index, use it to stamp the node for ease of access
-        let nodeIndex = nodes.length;
-        nodeRing.setAttribute("nodeIndex", nodeIndex);
+        newNode.id = getFreeID();
+
+        nodeRing.id = newNode.id;
+        newNode.divNode = nodeRing;
         nodes[nodeIndex] = newNode;
 
         dragElement(nodeRing);
