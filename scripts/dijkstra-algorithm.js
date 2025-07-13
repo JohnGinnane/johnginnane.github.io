@@ -179,12 +179,13 @@ function dragElement(el) {
             // Create a line from this node
             divLink = document.createElement("div");
             divLink.id = "link-div";
+            divLink.classList.add("da-link");
             divLink.style.left = (currentX + originX) / 2 + "px";
             divLink.style.top = (currentY + originY) / 2 + "px";
 
             sender.parentElement.append(divLink);
 
-            return
+            return;
         }
 
         if (e.target.classList.contains("da-node")) {
@@ -299,7 +300,9 @@ function dragElement(el) {
             divLink.style.rotate = ang + "rad";
 
             // Give it a new unique ID pls
-            //divLink.id = generateNewID(4)
+            let newID = generateNewID(4);
+            console.log(newID);
+            divLink.id = newID;
         }
     }
 }
@@ -361,5 +364,5 @@ window.addEventListener("load", (event) => {
     $("#da-btn-add-node").on("click", createNode);
 
     createNode();
-    createNode(20, 50);
+    createNode(100, 150);
 });
