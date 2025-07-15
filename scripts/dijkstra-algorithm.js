@@ -142,6 +142,7 @@ function getFreeID() {
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function dragElement(el) {
     var originX = 0, originY = 0, currentX = 0, currentY = 0;
+    var links = [];
 
     el.onmousedown = nodeMouseDown;
 
@@ -180,6 +181,7 @@ function dragElement(el) {
             divLink = document.createElement("div");
             divLink.id = "link-div";
             divLink.classList.add("da-link");
+            divLink.setAttribute("node-a", sender.id);
             divLink.style.left = (currentX + originX) / 2 + "px";
             divLink.style.top = (currentY + originY) / 2 + "px";
 
@@ -193,6 +195,23 @@ function dragElement(el) {
             currentX = e.clientX;
             currentY = e.clientY;
 
+            // Get the list of links to/from this node
+            links = Array.prototype.slice.call(document.getElementsByClassName("da-link"));
+
+            for (let i = links.length - 1; i >= 0; i--) {
+                let nodeA = links[i].getAttribute("node-a");
+                let nodeB = links[i].getAttribute("node-b");
+                // console.log("sender: " + sender.parentElement.id);
+                // console.log("node-a: " + nodeA);
+                // console.log("node-b: " + nodeB);
+
+                // Make sure this link references the node we started to drag
+                if (!(sender.parentElement.id == nodeA || sender.parentElement.id == nodeB)) {
+                    console.log("splice");
+                    links.splice(i, 1);
+                }
+            }
+
             document.onmouseup = closeDragElement;
             document.onmousemove = elementDrag;
 
@@ -204,6 +223,22 @@ function dragElement(el) {
         e = e || window.event;
         e.preventDefault();
         let divNode = nodes.find((x) => x.id == el.id);
+        
+        // Iterate over the links and update them
+        if (links.length > 0) {
+            links.forEach((link) => {
+                let otherNode;
+
+                if (link.getAttribute("node-a") == divNode.id) {
+                    otherNode = document.getElementById(link.getAttribute("node-b"));
+                } else {
+                    otherNode = document.getElementById(link.getAttribute("node-a"));
+                }
+                
+                if (!otherNode) { return; }
+                console.log(otherNode);
+            })
+        }
                 
         // Calculate new positions
         originX = currentX - e.clientX;
@@ -282,11 +317,14 @@ function dragElement(el) {
             divLink.parentElement.removeChild(divLink);
             return;
         }
-        
+
         // Attach the other end of the link to the node
         let nodeBounds = node.getBoundingClientRect();
 
         if (divLink) {
+            // Mark the second node on the link
+            divLink.setAttribute("node-b", node.id);
+        
             currentX = nodeBounds.left + nodeBounds.width  / 2
             currentY = nodeBounds.top  + nodeBounds.height / 2
             let dX = currentX - originX;
@@ -301,8 +339,11 @@ function dragElement(el) {
 
             // Give it a new unique ID pls
             let newID = generateNewID(4);
-            console.log(newID);
             divLink.id = newID;
+
+            // Demonstrate the link knows the two nodes
+            let nodeA = document.getElementById(divLink.getAttribute("node-a"));
+            let nodeB = document.getElementById(divLink.getAttribute("node-b"));
         }
     }
 }
