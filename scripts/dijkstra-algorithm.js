@@ -185,6 +185,10 @@ function dragElement(el) {
             divLink.style.left = (currentX + originX) / 2 + "px";
             divLink.style.top = (currentY + originY) / 2 + "px";
 
+            spanDist = document.createElement("span");
+            spanDist.classList.add("da-link-dist");
+            divLink.append(spanDist);
+
             sender.parentElement.append(divLink);
 
             return;
@@ -197,15 +201,11 @@ function dragElement(el) {
 
             // Get the list of links to/from this node
             updateTheselinks = Array.prototype.slice.call(document.getElementsByClassName("da-link"));
-            console.log(updateTheselinks);
 
             for (let i = updateTheselinks.length - 1; i >= 0; i--) {
                 let nodeA = updateTheselinks[i].getAttribute("node-a");
                 let nodeB = updateTheselinks[i].getAttribute("node-b");
-                // console.log("sender: " + sender.parentElement.id);
-                // console.log("node-a: " + nodeA);
-                // console.log("node-b: " + nodeB);
-
+                
                 // Make sure this link references the node we started to drag
                 if (!(sender.parentElement.id == nodeA || sender.parentElement.id == nodeB)) {
                     updateTheselinks.splice(i, 1);
@@ -342,8 +342,6 @@ function dragElement(el) {
 }
 
 function updateLink(divLink, origin, current) {
-    //console.log(divLink, origin, current);
-
     // Pos 1 will be the origin (x, y)
     // Pos 2 will be the destination (x, y)
     // We calculate distance and angle
@@ -357,9 +355,15 @@ function updateLink(divLink, origin, current) {
     let ang = Math.atan2(dY, dX);
 
     // Elongate
-    divLink.style.width = Math.sqrt(Math.pow((current.x - origin.x), 2) + Math.pow((current.y - origin.y), 2)) + "px";
+    let dist = Math.sqrt(Math.pow((current.x - origin.x), 2) + Math.pow((current.y - origin.y), 2));
+    divLink.style.width = dist + "px";
     divLink.style.height = "1px"
     divLink.style.rotate = ang + "rad";
+
+    // Set the text on the link
+    let spanDist = $(divLink).children().first()[0];
+    spanDist.style.rotate = -ang + "rad";
+    spanDist.innerHTML = (dist/10).toFixed(2);
 }
 
 window.addEventListener("load", (event) => {
@@ -418,6 +422,6 @@ window.addEventListener("load", (event) => {
 
     $("#da-btn-add-node").on("click", createNode);
 
-    createNode();
+    createNode(30, 30);
     createNode(100, 150);
 });
