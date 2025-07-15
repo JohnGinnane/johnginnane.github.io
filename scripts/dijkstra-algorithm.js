@@ -142,7 +142,7 @@ function getFreeID() {
 // https://www.w3schools.com/howto/howto_js_draggable.asp
 function dragElement(el) {
     var originX = 0, originY = 0, currentX = 0, currentY = 0;
-    var links = [];
+    var updateTheselinks = [];
 
     el.onmousedown = nodeMouseDown;
 
@@ -196,19 +196,19 @@ function dragElement(el) {
             currentY = e.clientY;
 
             // Get the list of links to/from this node
-            links = Array.prototype.slice.call(document.getElementsByClassName("da-link"));
+            updateTheselinks = Array.prototype.slice.call(document.getElementsByClassName("da-link"));
+            console.log(updateTheselinks);
 
-            for (let i = links.length - 1; i >= 0; i--) {
-                let nodeA = links[i].getAttribute("node-a");
-                let nodeB = links[i].getAttribute("node-b");
+            for (let i = updateTheselinks.length - 1; i >= 0; i--) {
+                let nodeA = updateTheselinks[i].getAttribute("node-a");
+                let nodeB = updateTheselinks[i].getAttribute("node-b");
                 // console.log("sender: " + sender.parentElement.id);
                 // console.log("node-a: " + nodeA);
                 // console.log("node-b: " + nodeB);
 
                 // Make sure this link references the node we started to drag
                 if (!(sender.parentElement.id == nodeA || sender.parentElement.id == nodeB)) {
-                    console.log("splice");
-                    links.splice(i, 1);
+                    updateTheselinks.splice(i, 1);
                 }
             }
 
@@ -225,8 +225,8 @@ function dragElement(el) {
         let thisNode = document.getElementById(nodes.find((x) => x.id == el.id).id);
         
         // Iterate over the links and update them
-        if (links.length > 0) {
-            links.forEach((link) => {
+        if (updateTheselinks.length > 0) {
+            updateTheselinks.forEach((link) => {
                 let otherNode;
 
                 // if the node we are dragging is "node a" then
@@ -328,26 +328,15 @@ function dragElement(el) {
         if (divLink) {
             // Mark the second node on the link
             divLink.setAttribute("node-b", node.id);
-        
+            
             currentX = nodeBounds.left + nodeBounds.width  / 2
             currentY = nodeBounds.top  + nodeBounds.height / 2
-            let dX = currentX - originX;
-            let dY = currentY - originY;
-            let ang = Math.atan2(dY, dX);
-
-            // Elongate
-            divLink.style.width = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
-            divLink.style.height = "1px"
             
-            divLink.style.rotate = ang + "rad";
+            updateLink(divLink, { x: originX, y: originY }, { x: currentX, y: currentY });
 
             // Give it a new unique ID pls
             let newID = generateNewID(4);
             divLink.id = newID;
-
-            // Demonstrate the link knows the two nodes
-            let nodeA = document.getElementById(divLink.getAttribute("node-a"));
-            let nodeB = document.getElementById(divLink.getAttribute("node-b"));
         }
     }
 }
