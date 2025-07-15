@@ -155,6 +155,7 @@ function dragElement(el) {
 
         let sender = e.target;
 
+        // Clicks on ring, so create a link
         if (sender.classList.contains("da-node-ring")) {
             // Do linking
             // Set the origin of the line on the node pls
@@ -194,6 +195,7 @@ function dragElement(el) {
             return;
         }
 
+        // Clicked on node, so drag it around
         if (e.target.classList.contains("da-node")) {
             // Do dragging
             currentX = e.clientX;
@@ -205,7 +207,7 @@ function dragElement(el) {
             for (let i = updateTheselinks.length - 1; i >= 0; i--) {
                 let nodeA = updateTheselinks[i].getAttribute("node-a");
                 let nodeB = updateTheselinks[i].getAttribute("node-b");
-                
+
                 // Make sure this link references the node we started to drag
                 if (!(sender.parentElement.id == nodeA || sender.parentElement.id == nodeB)) {
                     updateTheselinks.splice(i, 1);
@@ -322,22 +324,42 @@ function dragElement(el) {
             return;
         }
 
+        // If the node we started linking and the node
+        // we ending linking are already linked then
+        // delete the link!
+        let originID = divLink.getAttribute("node-a");
+        let destID   = node.id;
+
+        $(".da-link").each((k, v) => {
+            let nodeA = v.getAttribute("node-a");
+            let nodeB = v.getAttribute("node-b");
+            
+            if ((nodeA == originID && nodeB == destID) ||
+                (nodeA == destID   && nodeB == originID)) {
+                // A link already exists between these two!
+                v.parentElement.removeChild(v);
+                
+                // Also delete the link we're currently doing
+                divLink.parentElement.removeChild(divLink);
+
+                return;
+            }
+        })
+
+        // Mark the second node on the link
+        divLink.setAttribute("node-b", node.id);
+        
         // Attach the other end of the link to the node
         let nodeBounds = node.getBoundingClientRect();
 
-        if (divLink) {
-            // Mark the second node on the link
-            divLink.setAttribute("node-b", node.id);
-            
-            currentX = nodeBounds.left + nodeBounds.width  / 2
-            currentY = nodeBounds.top  + nodeBounds.height / 2
-            
-            updateLink(divLink, { x: originX, y: originY }, { x: currentX, y: currentY });
+        currentX = nodeBounds.left + nodeBounds.width  / 2
+        currentY = nodeBounds.top  + nodeBounds.height / 2
+        
+        updateLink(divLink, { x: originX, y: originY }, { x: currentX, y: currentY });
 
-            // Give it a new unique ID pls
-            let newID = generateNewID(4);
-            divLink.id = newID;
-        }
+        // Give it a new unique ID pls
+        let newID = generateNewID(4);
+        divLink.id = newID;
     }
 }
 
@@ -364,6 +386,10 @@ function updateLink(divLink, origin, current) {
     let spanDist = $(divLink).children().first()[0];
     spanDist.style.rotate = -ang + "rad";
     spanDist.innerHTML = (dist/10).toFixed(2);
+}
+
+function clearNodes() {
+    console.log("clear nodes");
 }
 
 window.addEventListener("load", (event) => {
@@ -421,7 +447,12 @@ window.addEventListener("load", (event) => {
     }
 
     $("#da-btn-add-node").on("click", createNode);
+    $("#da-btn-clear-nodes").on("click", clearNodes);
 
     createNode(30, 30);
     createNode(100, 150);
 });
+
+function start(sender) {
+    console.log("start plotting");
+}
