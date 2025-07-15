@@ -472,5 +472,31 @@ window.addEventListener("load", (event) => {
 });
 
 function start(sender) {
-    console.log("start plotting");
+    let startNode = $("#da-input-start").val().trim().toLowerCase();
+    let endNode   = $("#da-input-end").val().trim().toLowerCase();
+
+    if (!startNode || !endNode) { return; }
+
+    $("p.da-node-p").each((k, v) => {
+        let nodeLetter = v.innerHTML.trim().toLowerCase();
+
+        if (nodeLetter == startNode) {
+            startNode = v;
+            return;
+        }
+
+        if (nodeLetter == endNode) {
+            endNode = v;
+        }
+    });
+
+    if (typeof startNode == "string" ||
+        typeof endNode   == "string") {    
+        // If either node is still a letter then leave
+        return;
+    }
+    
+    // Try to find those divs
+    console.log("gonna try find a way from " + startNode + " to " + endNode);
+
 }
