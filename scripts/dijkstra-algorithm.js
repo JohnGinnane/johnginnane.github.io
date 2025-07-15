@@ -222,21 +222,36 @@ function dragElement(el) {
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        let divNode = nodes.find((x) => x.id == el.id);
+        let thisNode = document.getElementById(nodes.find((x) => x.id == el.id).id);
         
         // Iterate over the links and update them
         if (links.length > 0) {
             links.forEach((link) => {
                 let otherNode;
 
-                if (link.getAttribute("node-a") == divNode.id) {
+                // if the node we are dragging is "node a" then
+                // we want to get "node b"
+                if (link.getAttribute("node-a") == thisNode.id) {
                     otherNode = document.getElementById(link.getAttribute("node-b"));
                 } else {
                     otherNode = document.getElementById(link.getAttribute("node-a"));
                 }
                 
                 if (!otherNode) { return; }
-                console.log(otherNode);
+
+                // need to get the bounding box for the node on the 
+                // other end of this link and then get the "centre"
+                let thisBounds = thisNode.getBoundingClientRect();
+                let currentX = thisBounds.x + thisBounds.width  / 2;
+                let currentY = thisBounds.y + thisBounds.height / 2;
+
+                let otherBounds = otherNode.getBoundingClientRect();
+                let originX = otherBounds.x + otherBounds.width  / 2;
+                let originY = otherBounds.y + otherBounds.height / 2;
+                
+                updateLink(link,
+                           { x: originX,  y: originY  },
+                           { x: currentX, y: currentY });
             })
         }
                 
@@ -275,20 +290,9 @@ function dragElement(el) {
 
         if (!divLink) { return; }
 
-        divLink.style.left = originX + "px";
-        divLink.style.top = originY + "px";
-        
-        // Calculate angle
-        // https://stackoverflow.com/a/15994225
-        let dX = currentX - originX;
-        let dY = currentY - originY;
-        let ang = Math.atan2(dY, dX);
-
-        // Elongate
-        divLink.style.width = Math.sqrt(Math.pow((currentX - originX), 2) + Math.pow((currentY - originY), 2)) + "px";
-        divLink.style.height = "1px"
-        
-        divLink.style.rotate = ang + "rad";
+        updateLink(divLink,
+                   { x: originX,  y: originY  }, 
+                   { x: currentX, y: currentY });
     }
     
     function closeLinkElement(e) {
@@ -346,6 +350,27 @@ function dragElement(el) {
             let nodeB = document.getElementById(divLink.getAttribute("node-b"));
         }
     }
+}
+
+function updateLink(divLink, origin, current) {
+    //console.log(divLink, origin, current);
+
+    // Pos 1 will be the origin (x, y)
+    // Pos 2 will be the destination (x, y)
+    // We calculate distance and angle
+    divLink.style.left = origin.x + "px";
+    divLink.style.top  = origin.y + "px";
+
+    // Calculate angle
+    // https://stackoverflow.com/a/15994225
+    let dX = current.x - origin.x;
+    let dY = current.y - origin.y;
+    let ang = Math.atan2(dY, dX);
+
+    // Elongate
+    divLink.style.width = Math.sqrt(Math.pow((current.x - origin.x), 2) + Math.pow((current.y - origin.y), 2)) + "px";
+    divLink.style.height = "1px"
+    divLink.style.rotate = ang + "rad";
 }
 
 window.addEventListener("load", (event) => {
