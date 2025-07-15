@@ -481,12 +481,13 @@ function start(sender) {
         let nodeLetter = v.innerHTML.trim().toLowerCase();
 
         if (nodeLetter == startNode) {
-            startNode = v;
+            startNode = v.parentElement;
             return;
         }
 
         if (nodeLetter == endNode) {
-            endNode = v;
+            endNode = v.parentElement;
+            return;
         }
     });
 
@@ -497,6 +498,46 @@ function start(sender) {
     }
     
     // Try to find those divs
-    console.log("gonna try find a way from " + startNode + " to " + endNode);
+    console.log("gonna try find a way from ");
+    console.log(startNode);
+    console.log(" to ");
+    console.log(endNode);
 
+    let Vertices = [];
+    $("div.da-node-ring").each((k, v) => {
+        let newVertex = {}
+
+        if (v.id == startNode.id) {
+            newVertex = { node:   v.id, 
+                          dist:   0,
+                          status: "P" };
+        } else {
+            newVertex = { node:   v.id, 
+                          dist:   Infinity,
+                          status: "T" };
+        }
+
+        Vertices.push(newVertex);
+    });
+
+    let Edges = [];
+    $("div.da-link").each((k, v) => {
+        Edges.push({
+            nodeA: v.getAttribute("node-a"),
+            nodeB: v.getAttribute("node-b")
+        });
+    });
+
+    let C = [];
+    $("div.da-link").each((k, v) => {
+        C.push({
+            nodeA: v.getAttribute("node-a"),
+            nodeB: v.getAttribute("node-b"),
+            dist: $(v).children().first()[0].innerHTML
+        });
+    });
+
+    console.log(Vertices);
+    console.log(Edges);
+    console.log(C);
 }
