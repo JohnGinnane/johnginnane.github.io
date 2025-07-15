@@ -389,7 +389,25 @@ function updateLink(divLink, origin, current) {
 }
 
 function clearNodes() {
-    console.log("clear nodes");
+    // iterate over links and delete first
+    $("div.da-link").each((k, v) => {
+        if (!v) { return; }
+
+        v.parentElement.removeChild(v);
+    });
+
+    // then iterate over the nodes and delete their elements
+    nodes.forEach((node) => {
+        if (!node) { return; }
+
+        let divNode = document.getElementById(node.id);
+
+        if (divNode) {
+            divNode.parentNode.removeChild(divNode);
+        }
+    });
+
+    nodes = [];
 }
 
 window.addEventListener("load", (event) => {
