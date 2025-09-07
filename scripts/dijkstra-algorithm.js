@@ -337,11 +337,6 @@ function dragElement(el) {
         let divLink = document.getElementById("link-div");
         if (!divLink) { return; }
 
-        // This link's index
-        let linkIndex = links.findIndex(x => x.nodeA == divLink.id || x.nodeB == divLink.id);
-
-        console.log(linkIndex);
-
         // Try to find the node we're attaching to (if any)
         let otherNode;
 
@@ -363,21 +358,17 @@ function dragElement(el) {
         let originID = divLink.getAttribute("node-a");
         let destID   = otherNode.id;
 
-        $(".da-link").each((k, v) => {
-            let nodeA = v.getAttribute("node-a");
-            let nodeB = v.getAttribute("node-b");
-            
+        for (let i = links.length - 1; i >= 0; i--) {
+            let nodeA = links[i].nodeA;
+            let nodeB = links[i].nodeB;
+
             if ((nodeA == originID && nodeB == destID) ||
                 (nodeA == destID   && nodeB == originID)) {
-                // A link already exists between these two!
-                v.parentElement.removeChild(v);
-                
-                // Also delete the link we're currently doing
-                divLink.parentElement.removeChild(divLink);
-
+                deleteLink(links[i].id);
+                deleteLink(divLink.id);
                 return;
             }
-        })
+        }
 
         createLink(originID, destID)
     }
@@ -435,7 +426,25 @@ function updateLink(divLink, origin, current) {
     }
 }
 
-function createLink(a, b, id, distance) {
+function deleteLink(id) {
+    if (!id) { return; }
+
+    let linkDiv = document.getElementById(id);
+
+    if (linkDiv) {
+        if (linkDiv.parentElement) {
+            linkDiv.parentElement.removeChild(linkDiv);
+        }
+    }
+
+    let linkIndex = links.findIndex(x => x.id == id);
+
+    if (linkIndex >= 0) {
+        links.splice(linkIndex, 1);
+    }
+}
+
+function createLink(a, b, id) {
     if (!a || !b) { return; }
     if (!id) { id = getFreeID(); }
 
@@ -443,7 +452,6 @@ function createLink(a, b, id, distance) {
     newLink.nodeA = a;
     newLink.nodeB = b;
     newLink.id = id;
-    newLink.distance = distance;
     
     // Create new link div
     let newLinkDiv = document.createElement("div");
@@ -499,6 +507,10 @@ function clearNodes() {
     });
 
     nodes = [];
+
+    for (let i = links.length - 1; i >= 0; i--) {
+        deleteLink(links[i].id);
+    }
 }
 
 window.addEventListener("load", (event) => {
@@ -577,10 +589,20 @@ window.addEventListener("load", (event) => {
                     loadedNodes.forEach(node => {
                         createNode(node.x, node.y, node.n, node.i);
                     });
-
-                    return true;
                 }
             }
+
+            let loadedLinks = JSON.parse(urlParams.get("links"));
+
+            if (loadedLinks) {
+                if (loadedLinks.length > 0) {
+                    loadedLinks.forEach(link => {
+                        createLink(link.a, link.b, link.i);
+                    });
+                }
+            }
+
+            return true;
         } catch (ex) {
             console.error(ex);
         } // Don't care if we failed to load the URL
@@ -679,12 +701,6 @@ function save(sender) {
         });
     });
 
-    console.log(JSON.stringify(saveNodes));
-
-    const savedURL = new URL(window.location.href);
-    savedURL.searchParams.set("nodes", JSON.stringify(saveNodes));
-    window.history.replaceState(null, null, savedURL);
-
     // Iterate over all links
     // turn them into JSON
     // save JSON to URL?
@@ -693,9 +709,14 @@ function save(sender) {
         saveLinks.push({
             a: link.nodeA,
             b: link.nodeB,
+            i: link.id
+        });
+    });
 
-        })
-    })
+    const savedURL = new URL(window.location.href);
+    savedURL.searchParams.set("nodes", JSON.stringify(saveNodes));
+    savedURL.searchParams.set("links", JSON.stringify(saveLinks));
+    window.history.replaceState(null, null, savedURL);
 
     return true
 }
