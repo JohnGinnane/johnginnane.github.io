@@ -337,6 +337,11 @@ function dragElement(el) {
         let divLink = document.getElementById("link-div");
         if (!divLink) { return; }
 
+        // This link's index
+        let linkIndex = links.findIndex(x => x.nodeA == divLink.id || x.nodeB == divLink.id);
+
+        console.log(linkIndex);
+
         // Try to find the node we're attaching to (if any)
         let otherNode;
 
@@ -374,27 +379,27 @@ function dragElement(el) {
             }
         })
 
-        // Mark the second node on the link
-        divLink.setAttribute("node-b", otherNode.id);
-        
-        // Attach the other end of the link to the node
-        let nodeBounds = otherNode.getBoundingClientRect();
+        createLink(originID, destID)
+    }
+}
 
-        currentX = nodeBounds.left + nodeBounds.width  / 2
-        currentY = nodeBounds.top  + nodeBounds.height / 2
-        
-        updateLink(divLink, { x: originX, y: originY }, { x: currentX, y: currentY });
+function getNodeDiv(id) {
+    let nodeIndex = nodes.findIndex(x => x.id == id);
+    
+    if (nodeIndex >= 0) {
+        return nodes[nodeIndex].divNodeBase;
+    }
 
-        // Give it a new unique ID pls
-        let newID = generateNewID(4);
-        divLink.id = newID;
+    return null;
+}
 
-        let newLink = {...linkTemplate};
-        newLink.divLink = divLink;
-        newLink.id = newID;
-        newLink.nodeA = divLink.getAttribute("node-a");
-        newLink.nodeB = divLink.getAttribute("node-b");
-        links.push(newLink);
+function getNodePos(id) {
+    let nodeDiv = document.getElementById(id);
+    let bb = nodeDiv.getBoundingClientRect();
+
+    return {
+        x: bb.left + bb.width  / 2,
+        y: bb.top  + bb.height / 2
     }
 }
 
@@ -420,7 +425,58 @@ function updateLink(divLink, origin, current) {
     // Set the text on the link
     let spanDist = $(divLink).children().first()[0];
     spanDist.style.rotate = -ang + "rad";
-    spanDist.innerHTML = (dist/10).toFixed(2);
+    dist = (dist/10).toFixed(2);
+    spanDist.innerHTML = dist;
+
+    let linkIndex = links.findIndex(x => x.id == divLink.id);
+
+    if (linkIndex >= 0) {
+        links[linkIndex].distance = dist;
+    }
+}
+
+function createLink(a, b, id, distance) {
+    if (!a || !b) { return; }
+    if (!id) { id = getFreeID(); }
+
+    let newLink = {...linkTemplate};
+    newLink.nodeA = a;
+    newLink.nodeB = b;
+    newLink.id = id;
+    newLink.distance = distance;
+    
+    // Create new link div
+    let newLinkDiv = document.createElement("div");
+    newLink.divLink = newLinkDiv;
+    newLinkDiv.id = id;
+    newLinkDiv.classList.add("da-link");
+    newLinkDiv.setAttribute("node-a", a);
+    newLinkDiv.setAttribute("node-b", b);
+
+    let aPos = getNodePos(a);
+    let bPos = getNodePos(b);
+    let aDiv = getNodeDiv(a);
+
+    newLinkDiv.style.left = aPos.x + "px";
+    newLinkDiv.style.top  = aPos.y + "px";
+
+    spanDist = document.createElement("span");
+    spanDist.classList.add("da-link-dist");
+    newLinkDiv.append(spanDist);
+
+    aDiv.parentElement.append(newLinkDiv);
+    updateLink(newLinkDiv, aPos, bPos);
+
+    // Give it a new unique ID pls
+    newLinkDiv.id = id;
+    links.push(newLink);
+
+    // Finally delete the cursor-link div (if there is one)
+    let linkDiv = document.getElementById("link-div");
+
+    if (linkDiv) {
+        linkDiv.parentElement.removeChild(linkDiv);
+    }
 }
 
 function clearNodes() {
@@ -458,13 +514,9 @@ window.addEventListener("load", (event) => {
         if (!isNumber(x)) { x = 0; }
         if (!isNumber(y)) { y = 0; }
 
-        if (!name) {
-            name = numberToExcel(nextNodeLetter++);
-        }
+        if (!name) { name = numberToExcel(nextNodeLetter++); }
 
-        if (!id) {
-            id = getFreeID();
-        }
+        if (!id) { id = getFreeID(); }
         
         // Ring used to attach links 
         // between nodes
@@ -488,7 +540,6 @@ window.addEventListener("load", (event) => {
         nodeRing.append(nodeText);
         daWorkArea.append(nodeRing);
 
-        
         // Find index, use it to stamp the node for ease of access
         let nodeIndex = nodes.length;
         nodeRing.setAttribute("nodeIndex", nodeIndex);
@@ -521,16 +572,11 @@ window.addEventListener("load", (event) => {
             let urlParams = new URLSearchParams(window.location.search);
             let loadedNodes = JSON.parse(urlParams.get("nodes"));
             
-            console.log("a");
             if (loadedNodes) {
-                console.log("b");
                 if (loadedNodes.length > 0) {
-                    console.log("c");
                     loadedNodes.forEach(node => {
-                        console.log(node);
-                        createNode(node.x, node.y, node.name, node.id);
+                        createNode(node.x, node.y, node.n, node.i);
                     });
-                    console.log("d");
 
                     return true;
                 }
@@ -541,6 +587,7 @@ window.addEventListener("load", (event) => {
 
         return false
     }
+
     if (!load()) {
         createNode(30, 30);
         createNode(100, 150);
@@ -627,8 +674,8 @@ function save(sender) {
         saveNodes.push({
             x: node.x,
             y: node.y,
-            name: node.name,
-            id: node.id
+            n: node.name,
+            i: node.id
         });
     });
 
@@ -641,6 +688,14 @@ function save(sender) {
     // Iterate over all links
     // turn them into JSON
     // save JSON to URL?
+    let saveLinks = [];
+    links.forEach(link => {
+        saveLinks.push({
+            a: link.nodeA,
+            b: link.nodeB,
+
+        })
+    })
 
     return true
 }
