@@ -101,7 +101,7 @@ var linkTemplate = {
 }
 
 var nodes = [];
-var links = []
+var links = [];
 
 function getFreeID() {
     let newID = null;
@@ -224,7 +224,10 @@ function dragElement(el) {
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        let thisNode = document.getElementById(nodes.find((x) => x.id == el.id).id);
+        let divNode = document.getElementById(nodes.find((x) => x.id == el.id).id);
+        let thisNode = nodes.find(x => x.id == divNode.id);
+
+        if (!divNode || !thisNode) { return; }
         
         // Iterate over the links and update them
         if (updateTheselinks.length > 0) {
@@ -233,7 +236,7 @@ function dragElement(el) {
 
                 // if the node we are dragging is "node a" then
                 // we want to get "node b"
-                if (link.getAttribute("node-a") == thisNode.id) {
+                if (link.getAttribute("node-a") == divNode.id) {
                     otherNode = document.getElementById(link.getAttribute("node-b"));
                 } else {
                     otherNode = document.getElementById(link.getAttribute("node-a"));
@@ -243,7 +246,7 @@ function dragElement(el) {
 
                 // need to get the bounding box for the node on the 
                 // other end of this link and then get the "centre"
-                let thisBounds = thisNode.getBoundingClientRect();
+                let thisBounds = divNode.getBoundingClientRect();
                 let currentX = thisBounds.x + thisBounds.width  / 2;
                 let currentY = thisBounds.y + thisBounds.height / 2;
 
@@ -268,9 +271,34 @@ function dragElement(el) {
         el.style.left = (el.offsetLeft - originX) + "px";
     }
 
-    function closeDragElement() {
+    function closeDragElement(e) {
         document.onmouseup = null;
         document.onmousemove = null;
+
+        // Update the URL        
+        if (!e) { return; }
+        if (!e.target) { return; }
+        if (!e.target.parentElement) { return; }
+        let divNode = e.target.parentElement
+        
+        let nodeIndex = nodes.findIndex(x => x.id == divNode.id);
+        
+        if (nodeIndex < 0) { return; }
+
+        let nodeBounds = divNode.getBoundingClientRect();
+        nodes[nodeIndex].x = nodeBounds.left;
+        nodes[nodeIndex].y = nodeBounds.top;
+
+        // Update links
+        $("div.da-link").each((k, v) => {
+            if (!v) { return; }
+            let link = links.find((x) => { x.id == v.id; });
+            if (!link) { return; }
+
+            if (link.nodeA == node.id || link.nodeB == node.id) {
+                link.distance = link.getBoundingClientRect().width;
+            }
+        });
     }
 
     function elementLink(e) {
@@ -310,15 +338,15 @@ function dragElement(el) {
         if (!divLink) { return; }
 
         // Try to find the node we're attaching to (if any)
-        let node;
+        let otherNode;
 
         if (e.target.classList.contains("da-node")) {
-            node = e.target.parentElement;
+            otherNode = e.target.parentElement;
         } else if (e.target.classList.contains("da-node-ring")) {
-            node = e.target;
+            otherNode = e.target;
         }
 
-        if (!node) {
+        if (!otherNode) {
             // Didn't mouseup over node, so delete link
             divLink.parentElement.removeChild(divLink);
             return;
@@ -328,7 +356,7 @@ function dragElement(el) {
         // we ending linking are already linked then
         // delete the link!
         let originID = divLink.getAttribute("node-a");
-        let destID   = node.id;
+        let destID   = otherNode.id;
 
         $(".da-link").each((k, v) => {
             let nodeA = v.getAttribute("node-a");
@@ -347,10 +375,10 @@ function dragElement(el) {
         })
 
         // Mark the second node on the link
-        divLink.setAttribute("node-b", node.id);
+        divLink.setAttribute("node-b", otherNode.id);
         
         // Attach the other end of the link to the node
-        let nodeBounds = node.getBoundingClientRect();
+        let nodeBounds = otherNode.getBoundingClientRect();
 
         currentX = nodeBounds.left + nodeBounds.width  / 2
         currentY = nodeBounds.top  + nodeBounds.height / 2
@@ -360,6 +388,13 @@ function dragElement(el) {
         // Give it a new unique ID pls
         let newID = generateNewID(4);
         divLink.id = newID;
+
+        let newLink = {...linkTemplate};
+        newLink.divLink = divLink;
+        newLink.id = newID;
+        newLink.nodeA = divLink.getAttribute("node-a");
+        newLink.nodeB = divLink.getAttribute("node-b");
+        links.push(newLink);
     }
 }
 
@@ -415,7 +450,7 @@ window.addEventListener("load", (event) => {
     
     // Must define this function here when the page 
     // has finished loading
-    function createNode(x, y) {
+    function createNode(x, y, name, id) {
         // Create div
         // Assign class
         // Assign event handlers
@@ -423,6 +458,14 @@ window.addEventListener("load", (event) => {
         if (!isNumber(x)) { x = 0; }
         if (!isNumber(y)) { y = 0; }
 
+        if (!name) {
+            name = numberToExcel(nextNodeLetter++);
+        }
+
+        if (!id) {
+            id = getFreeID();
+        }
+        
         // Ring used to attach links 
         // between nodes
         let nodeRing = document.createElement("div");
@@ -439,8 +482,8 @@ window.addEventListener("load", (event) => {
         // node, centered perfectly
         let nodeText = document.createElement("p");
         nodeText.classList.add("da-node-p");
-        nodeText.innerHTML = numberToExcel(nextNodeLetter++);
-        
+        nodeText.innerHTML = name;
+
         nodeRing.append(node);
         nodeRing.append(nodeText);
         daWorkArea.append(nodeRing);
@@ -455,7 +498,8 @@ window.addEventListener("load", (event) => {
         newNode.x = x;
         newNode.y = y;
         newNode.divNodeBase = nodeRing;
-        newNode.id = getFreeID();
+        newNode.id = id;
+        newNode.name = name;
 
         nodeRing.id = newNode.id;
         newNode.divNode = nodeRing;
@@ -467,8 +511,40 @@ window.addEventListener("load", (event) => {
     $("#da-btn-add-node").on("click", createNode);
     $("#da-btn-clear-nodes").on("click", clearNodes);
 
-    createNode(30, 30);
-    createNode(100, 150);
+    function load() {
+        // Try to get data from the URL
+        // if we couldn't get the data 
+        // then return "false" which 
+        // tells us it's a new session
+        
+        try {
+            let urlParams = new URLSearchParams(window.location.search);
+            let loadedNodes = JSON.parse(urlParams.get("nodes"));
+            
+            console.log("a");
+            if (loadedNodes) {
+                console.log("b");
+                if (loadedNodes.length > 0) {
+                    console.log("c");
+                    loadedNodes.forEach(node => {
+                        console.log(node);
+                        createNode(node.x, node.y, node.name, node.id);
+                    });
+                    console.log("d");
+
+                    return true;
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+        } // Don't care if we failed to load the URL
+
+        return false
+    }
+    if (!load()) {
+        createNode(30, 30);
+        createNode(100, 150);
+    }
 });
 
 function start(sender) {
@@ -540,4 +616,31 @@ function start(sender) {
     console.log(Vertices);
     console.log(Edges);
     console.log(C);
+}
+
+function save(sender) {
+    // Iterate over all nodes
+    // turn them into JSON
+    let saveNodes = [];
+
+    nodes.forEach(node => {
+        saveNodes.push({
+            x: node.x,
+            y: node.y,
+            name: node.name,
+            id: node.id
+        });
+    });
+
+    console.log(JSON.stringify(saveNodes));
+
+    const savedURL = new URL(window.location.href);
+    savedURL.searchParams.set("nodes", JSON.stringify(saveNodes));
+    window.history.replaceState(null, null, savedURL);
+
+    // Iterate over all links
+    // turn them into JSON
+    // save JSON to URL?
+
+    return true
 }
