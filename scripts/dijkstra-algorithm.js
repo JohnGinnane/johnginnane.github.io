@@ -86,8 +86,8 @@ function numberToExcel(n) {
 var nodeTemplate = {
     x:       0,
     y:       0,
-    name:    "",
     id:      "",
+    name:    "",
     divNode: null
 }
 
@@ -576,10 +576,19 @@ window.addEventListener("load", (event) => {
 
     function tryParseURLParamJSON() {        
         let urlParams = new URLSearchParams(window.location.search);
-        let loadedNodes = JSON.parse(urlParams.get("nodes"));
-        let loadedLinks = JSON.parse(urlParams.get("links"));
-
+        let loadedNodes = null;
+        let loadedLinks = null;
         let data = {};
+
+        // Just try to parse the JSON, if
+        // it fails then move past it
+        try { 
+            loadedNodes = JSON.parse(urlParams.get("nodes"));
+        } catch (ex) { }
+
+        try {
+            loadedLinks = JSON.parse(urlParams.get("links"));
+        } catch (ex) { }
 
         if (loadedNodes) { data.nodes = loadedNodes; }
         if (loadedLinks) { data.links = loadedLinks; }
@@ -594,7 +603,7 @@ window.addEventListener("load", (event) => {
         return null;
     }
 
-    function isParseURLArray() {
+    function tryParseURLParamArray() {
         let urlParams = new URLSearchParams(window.location.search);
         let loadedNodes = urlParams.get("nodes");
         let loadedLinks = urlParams.get("links");
@@ -610,7 +619,11 @@ window.addEventListener("load", (event) => {
         // tells us it's a new session
         
         try {
-            let paramData = tryParseURLParamJSON();
+            let paramData = tryParseURLParamArray();
+
+            if (!paramData) {
+                paramData = tryParseURLParamJSON();
+            }
 
             if (paramData) {
                 paramData.nodes.forEach(node => {
@@ -709,27 +722,41 @@ function start(sender) {
 }
 
 function save(sender) {
-    let newParams = graphToJSON();
+    //let newParams = graphToJSON();
+    let newParams = graphToArray();
     
     window.history.replaceState(null, null, newParams);
 }
 
 function graphToArray() {
-    let saveNodes = Array();
+    let saveNodes = "";
 
     nodes.forEach(node => {
-        saveNodes.push([node.x, node.y, node.name, node.id]);
+        if (saveNodes.length > 0) { saveNodes += "_"; }
+
+        saveNodes += "(" + node.x    + "_" +
+                           node.y    + "_" +
+                           node.id   + "_" +
+                           node.name       + ")"
     });
 
-    let saveLinks = Array();
+    saveNodes = "(" + saveNodes + ")";
+
+    let saveLinks = "";
 
     links.forEach(link => {
-        saveLinks.push([link.nodeA, link.nodeB, link.id]);
+        if (saveLinks.length > 0) { saveLinks += "_"; }
+
+        saveLinks += "(" + link.nodeA + "_" +
+                           link.nodeB + "_" +
+                           link.id          + ")"
     });
 
+    saveLinks = "(" + saveLinks + ")";
+
     const savedURL = new URL(window.location.href);
-    savedURL.searchParams.set("nodes", saveNodes.toString());
-    savedURL.searchParams.set("links", saveLinks.toString());
+    savedURL.searchParams.set("nodes", saveNodes);
+    savedURL.searchParams.set("links", saveLinks);
 
     return savedURL;
 }
