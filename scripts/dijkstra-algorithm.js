@@ -574,6 +574,30 @@ window.addEventListener("load", (event) => {
     $("#da-btn-add-node").on("click", createNode);
     $("#da-btn-clear-nodes").on("click", clearNodes);
 
+    function tryParseURLParamJSON() {        
+        let urlParams = new URLSearchParams(window.location.search);
+        let loadedNodes = JSON.parse(urlParams.get("nodes"));
+        let loadedLinks = JSON.parse(urlParams.get("links"));
+
+        let data = {};
+
+        if (loadedNodes) { data.nodes = loadedNodes; }
+        if (loadedLinks) { data.links = loadedLinks; }
+
+        if (Object.keys(data).length > 0) {
+            if (!data.nodes) { data.nodes = []; }
+            if (!data.links) { data.links = []; }
+            
+            return data;
+        }
+        
+        return null;
+    }
+
+    function isParseURLArray(data) {
+
+    }
+
     function load() {
         // Try to get data from the URL
         // if we couldn't get the data 
@@ -581,28 +605,19 @@ window.addEventListener("load", (event) => {
         // tells us it's a new session
         
         try {
-            let urlParams = new URLSearchParams(window.location.search);
-            let loadedNodes = JSON.parse(urlParams.get("nodes"));
-            
-            if (loadedNodes) {
-                if (loadedNodes.length > 0) {
-                    loadedNodes.forEach(node => {
-                        createNode(node.x, node.y, node.n, node.i);
-                    });
-                }
+            let paramData = tryParseURLParamJSON();
+
+            if (paramData) {
+                paramData.nodes.forEach(node => {
+                    createNode(node.x, node.y, node.n, node.i);
+                });
+
+                paramData.links.forEach(link => {
+                    createLink(link.a, link.b, link.i);
+                });
+
+                return true;
             }
-
-            let loadedLinks = JSON.parse(urlParams.get("links"));
-
-            if (loadedLinks) {
-                if (loadedLinks.length > 0) {
-                    loadedLinks.forEach(link => {
-                        createLink(link.a, link.b, link.i);
-                    });
-                }
-            }
-
-            return true;
         } catch (ex) {
             console.error(ex);
         } // Don't care if we failed to load the URL
@@ -611,6 +626,7 @@ window.addEventListener("load", (event) => {
     }
 
     if (!load()) {
+        console.log("Unable to load from URL. Creating two nodes!");
         createNode(30, 30);
         createNode(100, 150);
     }
