@@ -594,8 +594,13 @@ window.addEventListener("load", (event) => {
         return null;
     }
 
-    function isParseURLArray(data) {
+    function isParseURLArray() {
+        let urlParams = new URLSearchParams(window.location.search);
+        let loadedNodes = urlParams.get("nodes");
+        let loadedLinks = urlParams.get("links");
 
+        console.log("Nodes");
+        console.log(loadedNodes);
     }
 
     function load() {
@@ -704,6 +709,32 @@ function start(sender) {
 }
 
 function save(sender) {
+    let newParams = graphToJSON();
+    
+    window.history.replaceState(null, null, newParams);
+}
+
+function graphToArray() {
+    let saveNodes = Array();
+
+    nodes.forEach(node => {
+        saveNodes.push([node.x, node.y, node.name, node.id]);
+    });
+
+    let saveLinks = Array();
+
+    links.forEach(link => {
+        saveLinks.push([link.nodeA, link.nodeB, link.id]);
+    });
+
+    const savedURL = new URL(window.location.href);
+    savedURL.searchParams.set("nodes", saveNodes.toString());
+    savedURL.searchParams.set("links", saveLinks.toString());
+
+    return savedURL;
+}
+
+function graphToJSON() {
     // Iterate over all nodes
     // turn them into JSON
     let saveNodes = [];
@@ -732,7 +763,6 @@ function save(sender) {
     const savedURL = new URL(window.location.href);
     savedURL.searchParams.set("nodes", JSON.stringify(saveNodes));
     savedURL.searchParams.set("links", JSON.stringify(saveLinks));
-    window.history.replaceState(null, null, savedURL);
 
-    return true
+    return savedURL
 }
