@@ -86,8 +86,8 @@ function numberToExcel(n) {
 var nodeTemplate = {
     x:       0,
     y:       0,
-    name:    "",
     id:      "",
+    name:    "",
     divNode: null
 }
 
@@ -574,6 +574,44 @@ window.addEventListener("load", (event) => {
     $("#da-btn-add-node").on("click", createNode);
     $("#da-btn-clear-nodes").on("click", clearNodes);
 
+    function tryParseURLParamJSON() {        
+        let urlParams = new URLSearchParams(window.location.search);
+        let loadedNodes = null;
+        let loadedLinks = null;
+        let data = {};
+
+        // Just try to parse the JSON, if
+        // it fails then move past it
+        try { 
+            loadedNodes = JSON.parse(urlParams.get("nodes"));
+        } catch (ex) { }
+
+        try {
+            loadedLinks = JSON.parse(urlParams.get("links"));
+        } catch (ex) { }
+
+        if (loadedNodes) { data.nodes = loadedNodes; }
+        if (loadedLinks) { data.links = loadedLinks; }
+
+        if (Object.keys(data).length > 0) {
+            if (!data.nodes) { data.nodes = []; }
+            if (!data.links) { data.links = []; }
+            
+            return data;
+        }
+        
+        return null;
+    }
+
+    function tryParseURLParamArray() {
+        let urlParams = new URLSearchParams(window.location.search);
+        let loadedNodes = urlParams.get("nodes");
+        let loadedLinks = urlParams.get("links");
+
+        console.log("Nodes");
+        console.log(loadedNodes);
+    }
+
     function load() {
         // Try to get data from the URL
         // if we couldn't get the data 
@@ -581,28 +619,23 @@ window.addEventListener("load", (event) => {
         // tells us it's a new session
         
         try {
-            let urlParams = new URLSearchParams(window.location.search);
-            let loadedNodes = JSON.parse(urlParams.get("nodes"));
-            
-            if (loadedNodes) {
-                if (loadedNodes.length > 0) {
-                    loadedNodes.forEach(node => {
-                        createNode(node.x, node.y, node.n, node.i);
-                    });
-                }
+            let paramData = tryParseURLParamArray();
+
+            if (!paramData) {
+                paramData = tryParseURLParamJSON();
             }
 
-            let loadedLinks = JSON.parse(urlParams.get("links"));
+            if (paramData) {
+                paramData.nodes.forEach(node => {
+                    createNode(node.x, node.y, node.n, node.i);
+                });
 
-            if (loadedLinks) {
-                if (loadedLinks.length > 0) {
-                    loadedLinks.forEach(link => {
-                        createLink(link.a, link.b, link.i);
-                    });
-                }
+                paramData.links.forEach(link => {
+                    createLink(link.a, link.b, link.i);
+                });
+
+                return true;
             }
-
-            return true;
         } catch (ex) {
             console.error(ex);
         } // Don't care if we failed to load the URL
@@ -611,6 +644,7 @@ window.addEventListener("load", (event) => {
     }
 
     if (!load()) {
+        console.log("Unable to load from URL. Creating two nodes!");
         createNode(30, 30);
         createNode(100, 150);
     }
@@ -688,6 +722,46 @@ function start(sender) {
 }
 
 function save(sender) {
+    //let newParams = graphToJSON();
+    let newParams = graphToArray();
+    
+    window.history.replaceState(null, null, newParams);
+}
+
+function graphToArray() {
+    let saveNodes = "";
+
+    nodes.forEach(node => {
+        if (saveNodes.length > 0) { saveNodes += "_"; }
+
+        saveNodes += "(" + node.x    + "_" +
+                           node.y    + "_" +
+                           node.id   + "_" +
+                           node.name       + ")"
+    });
+
+    saveNodes = "(" + saveNodes + ")";
+
+    let saveLinks = "";
+
+    links.forEach(link => {
+        if (saveLinks.length > 0) { saveLinks += "_"; }
+
+        saveLinks += "(" + link.nodeA + "_" +
+                           link.nodeB + "_" +
+                           link.id          + ")"
+    });
+
+    saveLinks = "(" + saveLinks + ")";
+
+    const savedURL = new URL(window.location.href);
+    savedURL.searchParams.set("nodes", saveNodes);
+    savedURL.searchParams.set("links", saveLinks);
+
+    return savedURL;
+}
+
+function graphToJSON() {
     // Iterate over all nodes
     // turn them into JSON
     let saveNodes = [];
@@ -716,7 +790,6 @@ function save(sender) {
     const savedURL = new URL(window.location.href);
     savedURL.searchParams.set("nodes", JSON.stringify(saveNodes));
     savedURL.searchParams.set("links", JSON.stringify(saveLinks));
-    window.history.replaceState(null, null, savedURL);
 
-    return true
+    return savedURL
 }
